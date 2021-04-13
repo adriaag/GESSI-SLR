@@ -1,0 +1,12 @@
+@INPROCEEDINGS{6337350,
+author={A. B. {Marques} and R. {Rodrigues} and T. {Conte}},
+booktitle={2012 IEEE Seventh International Conference on Global Software Engineering}, title={Systematic Literature Reviews in Distributed Software Development: A Tertiary Study},
+year={2012},
+volume={},
+number={},
+pages={134-143},
+abstract={Distributed Software Development (DSD) emerged from the need to achieve geographically distant customers and currently, allows organizations have global customers and other benefits. This scenario has given rise to new Software Engineering challenges resulting from DSD particularities. Several Systematic Reviews were conducted to address these new challenges. The objective of this paper is to categorize systematic reviews conducted in DSD context. We used the systematic review method to identify SLRs (Systematic Literature Reviews) that address DSD aspects. This study is categorized as a tertiary review. Of fourteen SLRs, seven address aspects of managing distributed development. Four SLRs addressed topics of engineering process. The three remaining are related to Requirements, Design and Software Engineering Education in DSD. The topic areas covered by SLRs are limited, where the majority are focused on summarize the current knowledge concerning a research question. Despite the number of SLRs, the amount of empirical studies is relatively small.},
+keywords={computer science education;formal specification;groupware;reviews;software engineering;distributed software development;DSD;geographically distant customers;global customers;systematic literature reviews;SLR;tertiary review;distributed development management;software requirements;software design;software engineering education;organizations;Systematics;Software;Software engineering;Collaboration;Research and development management;Organizations;Context;Distributed Software Development;Global Software Engineering;Empirical Evidence;Systematic Review;Tertiary Study},
+doi={10.1109/ICGSE.2012.29},
+ISSN={2329-6313},
+month={Aug},}

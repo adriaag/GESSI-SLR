@@ -1,19 +1,6 @@
 ----------------------------------------------------------------
-Tue Apr 13 01:28:29 CEST 2021:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0178-c86a-3d11-00000afb0a30 
-on database directory memory:C:\Apache\tfg-definitivo\cadaffcc-b6f4-431d-8c30-2fc7ca5efae6 with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@368239c8 
-Loaded from file:/C:/Users/sheid/.m2/repository/org/apache/derby/derby/10.14.2.0/derby-10.14.2.0.jar
-java.vendor=AdoptOpenJDK
-java.runtime.version=11.0.10+9
-user.dir=C:\Apache\tfg-definitivo
-os.name=Windows 10
-os.arch=amd64
-os.version=10.0
-derby.system.home=null
-Database Class Loader started - derby.database.classpath=''
-----------------------------------------------------------------
-Tue Apr 13 01:28:31 CEST 2021:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance 176240b2-0178-c86a-3d11-00000afb0a30 
+Tue Apr 13 19:02:23 CEST 2021:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0178-cc2f-1ddf-0000101670a0 
 on database directory C:\Apache\tfg-definitivo\derbyDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@368239c8 
 Loaded from file:/C:/Users/sheid/.m2/repository/org/apache/derby/derby/10.14.2.0/derby-10.14.2.0.jar
 java.vendor=AdoptOpenJDK

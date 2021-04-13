@@ -1,8 +1,6 @@
 package com.example.tfgdefinitivo.dao;
 
-import com.example.tfgdefinitivo.model.Reference;
-import com.example.tfgdefinitivo.model.article;
-import com.example.tfgdefinitivo.model.digitalLibrary;
+import com.example.tfgdefinitivo.model.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -97,27 +95,22 @@ public class ReferenceDao {
 
         String framework = "embedded";
         String dbName = "derbyDB";
-        String protocol = "jdbc:derby:";
         Properties props = new Properties();;
         props.put("user", "user1");
         props.put("password", "user1");
-        System.out.println("Program starting in " + framework + " mode");
         Connection conn;
         ArrayList<Statement> statements = new ArrayList<>(); // list of Statements, PreparedStatements
         Statement s = null;
         try {
             String url = "jdbc:derby:derbyDB;create=true";
             conn = DriverManager.getConnection(url, props);
-            System.out.println("Connected to and created database " + dbName);
             conn.setAutoCommit(false);
 
             // Statement object for running various SQL statements commands against the database.
             s = conn.createStatement();
 
-            System.out.println("Entra al get all");
             ResultSet rs = getAll(s);
 
-            System.out.println("Sale al get all");
             int number = 1;
 
             refList = new ArrayList<Reference>();
@@ -139,12 +132,37 @@ public class ReferenceDao {
                 Statement s3 = conn.createStatement();
                 ResultSet rsAr = articleDao.getArticle(s3,doiR);
                 article ar = null;
-                if(rsAr.next())
+                if(rsAr.next()) {
                     ar = new article(rsAr.getString(1), rsAr.getString(2),
-                            rsAr.getString(3),rsAr.getInt(4), rsAr.getString(5),
-                            rsAr.getString(6), rsAr.getString(7),rsAr.getInt(8),
+                            rsAr.getString(3), rsAr.getInt(4), rsAr.getString(5),
+                            rsAr.getString(6), rsAr.getString(7), rsAr.getInt(8),
                             rsAr.getInt(9), rsAr.getString(10), rsAr.getInt(11),
-                            rsAr.getInt(12),rsAr.getString(13));
+                            rsAr.getInt(12), rsAr.getString(13));
+
+                    rsAr = venueDao.getVenue(s3,rsAr.getInt(4));
+                    venue v = null;
+                    if (rsAr.next())
+                        v = new venue(rsAr.getInt(1), rsAr.getString(2), rsAr.getString(3));
+                    ar.setVen(v);
+
+                    rsAr = companyDao.getCompanies(s3,doiR);
+                    List<company> c = new ArrayList<company>();
+                    company auxC = null;
+                    while (rsAr.next()) {
+                        auxC = new company(rsAr.getInt(1), rsAr.getString(2));
+                        c.add(auxC);
+                    }
+                    ar.setCompanies(c);
+
+                    rsAr = researcherDao.getResearchers(s3,doiR);
+                    List<researcher> rss = new ArrayList<researcher>();
+                    researcher auxR = null;
+                    while (rsAr.next()) {
+                        auxR = new researcher(rsAr.getInt(1), rsAr.getString(2));
+                        rss.add(auxR);
+                    }
+                    ar.setResearchers(rss);
+                }
                 NewRef.setArt(ar);
 
                 refList.add(NewRef);
@@ -216,23 +234,23 @@ public class ReferenceDao {
         if (digitalLibraryDao.createTable(s))
             //insert rows in table
             digitalLibraryDao.insertRows(conn, statements);
-        researcher.createTable(s);
-        venue.createTable(s);
-        company.createTable(s);
+        researcherDao.createTable(s);
+        venueDao.createTable(s);
+        companyDao.createTable(s);
         articleDao.createTable(s);
         ReferenceDao.createTable(s);
-        affiliation.createTable(s);
-        author.createTable(s);
+        affiliationDao.createTable(s);
+        authorDao.createTable(s);
     }
 
     private static void deleteTables(Statement s, Connection conn, ArrayList<Statement> statements) throws SQLException {
-        affiliation.dropTable(s);
-        company.dropTable(s);
-        author.dropTable(s);
+        affiliationDao.dropTable(s);
+        companyDao.dropTable(s);
+        authorDao.dropTable(s);
         ReferenceDao.dropTable(s);
-        researcher.dropTable(s);
+        researcherDao.dropTable(s);
         articleDao.dropTable(s);
-        venue.dropTable(s);
+        venueDao.dropTable(s);
         digitalLibraryDao.dropTable(s);
     }
 }

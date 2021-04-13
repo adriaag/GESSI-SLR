@@ -1,5 +1,9 @@
 package com.example.tfgdefinitivo.model;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "venue")
 public class venue {
     private int idVen;
     private String name;
@@ -18,7 +22,7 @@ public class venue {
     public int getIdVen() {
         return idVen;
     }
-
+    @XmlElement
     public void setIdVen(int idVen) {
         this.idVen = idVen;
     }
@@ -26,7 +30,7 @@ public class venue {
     public String getName() {
         return name;
     }
-
+    @XmlElement
     public void setName(String name) {
         this.name = name;
     }
@@ -34,7 +38,7 @@ public class venue {
     public String getAcronym() {
         return acronym;
     }
-
+    @XmlElement
     public void setAcronym(String acronym) {
         this.acronym = acronym;
     }

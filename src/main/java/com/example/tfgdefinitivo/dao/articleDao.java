@@ -1,6 +1,5 @@
 package com.example.tfgdefinitivo.dao;
 
-import com.example.tfgdefinitivo.model.*;
 import org.jbibtex.*;
 
 import java.io.FileReader;
@@ -69,11 +68,14 @@ public class articleDao {
             String doi = addArticle(nameDL, s, entry);
             if (doi != null) {
                 if (authorsToInsert != null) {
-                    Integer[] idsResearchers = researcher.insertRows(authorsToInsert, s);
+                    Integer[] idsResearchers = researcherDao.insertRows(authorsToInsert, s);
                     s.getConnection().commit();
-                    author.insertRows(idsResearchers, doi, s);
+                    authorDao.insertRows(idsResearchers, doi, s);
                 }
-                if (affiliationToInsert != -1) affiliation.insertRow(s, affiliationToInsert, doi);
+                if (affiliationToInsert != -1) {
+                    affiliationDao.insertRow(s, affiliationToInsert, doi);
+                    System.out.println(affiliationToInsert);
+                }
             }
         }
         reader.close();
@@ -84,14 +86,18 @@ public class articleDao {
         rs = s.executeQuery("SELECT * FROM articles");
         return rs;
     }
+
     public static ResultSet getArticle(Statement s, String doi) throws SQLException {
         return s.executeQuery("SELECT * FROM articles where doi = '" + doi + "' ");
     }
 
 //Devuelve un string de todos los autores de la referencia
     static String addArticle(String idDL, Statement s, BibTeXEntry entry) throws SQLException {
-
-        String doi = entry.getField(BibTeXEntry.KEY_DOI).toUserString();
+        String doi;
+        if (entry.getField(BibTeXEntry.KEY_DOI) == null)
+            doi = entry.getKey().toString();
+        else
+            doi = entry.getField(BibTeXEntry.KEY_DOI).toUserString();
 
         if (doi != null) {
             doi = doi.replaceAll("[{-}]", "");
@@ -145,7 +151,7 @@ public class articleDao {
                 String ven;
                 if (booktitle != null) ven = booktitle.toUserString().replaceAll("[{-}]", "");
                 else ven = article.toUserString().replaceAll("[{-}]", "");
-                int idVen = venue.insertRow(s, ven);
+                int idVen = venueDao.insertRow(s, ven);
                 atributsOfRow.append(", idVen");
                 valuesOfRow.append(", ").append(idVen);
             }
@@ -198,13 +204,13 @@ public class articleDao {
             affiliationToInsert = -1;
             if (affil != null) {
                 String aux1 = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "");
-                affiliationToInsert = company.insertRow(s, aux1);
+                affiliationToInsert = companyDao.insertRow(s, aux1);
             }
             query = atributsOfRow.toString() + valuesOfRow.append(") ");
             System.out.println(query);
 
             s.execute(query);
-            System.out.println("Inserted row with author, doi, ....");
+            System.out.println("Inserted row with authorDao, doi, ....");
         } catch (SQLException e) {
             System.out.println("Error");
             while (e != null) {
@@ -248,7 +254,7 @@ public class articleDao {
                 String ven;
                 if (booktitle != null) ven = booktitle.toUserString().replaceAll("[{-}]", "");
                 else ven = article.toUserString().replaceAll("[{-}]", "");
-                int idVen = venue.insertRow(s, ven);
+                int idVen = venueDao.insertRow(s, ven);
                 first = false;
                 queryIni.append(" idVen = ").append(idVen);
             }
@@ -310,7 +316,7 @@ public class articleDao {
             affiliationToInsert = -1;
             if (affil != null) {
                 String aux1 = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "");
-                affiliationToInsert = company.insertRow(s, aux1);
+                affiliationToInsert = companyDao.insertRow(s, aux1);
             }
             query = queryIni.toString() + queryEnd;
 
@@ -318,7 +324,7 @@ public class articleDao {
                 System.out.println(query );
                 s.execute(query);
             }
-            System.out.println("Inserted row with author, doi, ....");
+            System.out.println("Inserted row with authorDao, doi, ....");
         } catch (SQLException e) {
             System.out.println("Error");
             while (e != null) {
@@ -339,10 +345,17 @@ public class articleDao {
                     "PRIMARY KEY (doi), CONSTRAINT VEN_FK_R FOREIGN KEY (idVen) REFERENCES venues (idVen))");
             //type y citekey not null
             System.out.println("Created table articles");
-        } catch (SQLException t  ) {
-            if (t.getSQLState().equals("X0Y32"))
-                System.out.println("Table articles exists");
-            else System.out.println("Error en la creación de table articles");
+        } catch (SQLException e  ) {
+            System.out.println("Error");
+            while (e != null) {
+                System.err.println("\n----- SQLException -----");
+                System.err.println("  SQL State:  " + e.getSQLState());
+                System.err.println("  Error Code: " + e.getErrorCode());
+                System.err.println("  Message:    " + e.getMessage());
+                // for stack traces, refer to derby.log or uncomment this:
+                //e.printStackTrace(System.err);
+                e = e.getNextException();
+            }
         }
     }
 

@@ -26,11 +26,6 @@ public class ReferenceService {
 
     ReferenceDao refDao = new ReferenceDao();
 
-    @RequestMapping("/0")
-    public String getHelloWorld(){
-        return "Hello World";
-    }
-
     @GetMapping(value = "/getAllReferences", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Reference> getReferences(){
         return refDao.getAllReferences();
@@ -44,9 +39,6 @@ public class ReferenceService {
     public void deleteTables(){
         refDao.delete();
     }
-
-
-
 
     //@PostMapping(value = "/references", produces = MediaType.APPLICATION_JSON_VALUE)
     //public String postReference(@RequestParam String name) {}

@@ -2,6 +2,7 @@ package com.example.tfgdefinitivo.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement(name = "article")
 public class article {
@@ -18,8 +19,12 @@ public class article {
     private int volume;
     private int año;
     private String abstractA;
+    private venue ven;
+    private company[] companies;
+    private researcher[] researchers;
 
-    public article(String doi, String type, String citeKey, int idVen, String title, String journal,String keywords, int number, int numpages, String pages, int volume, int año, String abstractA) {
+    public article(String doi, String type, String citeKey, int idVen, String title, String journal,
+                   String keywords, int number, int numpages, String pages, int volume, int año, String abstractA) {
         this.doi = doi;
         this.type = type;
         this.citeKey = citeKey;
@@ -118,7 +123,7 @@ public class article {
     public int getIdVen() {
         return idVen;
     }
-
+    @XmlElement
     public void setIdVen(int idVen) {
         this.idVen = idVen;
     }
@@ -126,8 +131,33 @@ public class article {
     public String getJournal() {
         return journal;
     }
-
+    @XmlElement
     public void setJournal(String journal) {
         this.journal = journal;
+    }
+
+    public venue getVen() {
+        return ven;
+    }
+    @XmlElement
+    public void setVen(venue ven) {
+        this.ven = ven;
+    }
+
+
+    public company[] getCompanies() {
+        return companies;
+    }
+
+    public void setCompanies(List<company> companies) {
+        this.companies = companies.toArray(new company[0]);
+    }
+
+    public researcher[] getResearchers() {
+        return researchers;
+    }
+
+    public void setResearchers(List<researcher> rss) {
+        this.researchers = rss.toArray(new researcher[0]);
     }
 }
