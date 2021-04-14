@@ -12,17 +12,6 @@ import java.util.Properties;
 
 @RestController
 public class ReferenceService {
-    static String framework = "embedded";
-    static String dbName = "derbyDB";
-    static String protocol = "jdbc:derby:";
-    static Properties props = iniProperties(); // connection properties
-
-    private static Properties iniProperties() {
-        Properties props = new Properties();
-        props.put("user", "user1");
-        props.put("password", "user1");
-        return props;
-    }
 
     ReferenceDao refDao = new ReferenceDao();
 
