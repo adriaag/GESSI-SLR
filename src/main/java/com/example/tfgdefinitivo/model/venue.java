@@ -28,7 +28,8 @@ public class venue {
     }
 
     public String getName() {
-        return name;
+        if (name!=null) return name;
+        else return null;
     }
     @XmlElement
     public void setName(String name) {
