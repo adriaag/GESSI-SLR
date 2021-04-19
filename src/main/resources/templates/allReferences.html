@@ -1,10 +1,19 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <title>$Title$</title>
+    <title>  </title>
+    <meta charset="UTF-8" content="">
 </head>
 <body>
-$END$
+<h1>References Information</h1>
+<div id="personify"> </div>
+<p th:text="'References list: '  "></p>
+<!----${referencesList[0].getIdRef()}--->
+<div th:each="i,iterStat : ${referencesList}">
+    <span th:text="${i.getIdRef()}"/><!--This will print the index value-->
+    <span th:text="${iterStat.index}"/><!--This will print the Index-->
+</div>
+<p>Download all references <a href="/download">here</a></p>
 </body>
 </html>

@@ -8,17 +8,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Properties;
 
 @RestController
-public class ReferenceService {
+@RequestMapping("/references")
+public class ReferenceController {
 
-    ReferenceDao refDao = new ReferenceDao();
+    private static ReferenceDao refDao= new ReferenceDao();
 
-    @GetMapping(value = "/getAllReferences", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Reference> getReferences(){
-        return refDao.getAllReferences();
-    }
+    @GetMapping(value = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
+    public static List<Reference> getReferences(){ return refDao.getAllReferences(); }
 
     @RequestMapping(value = "/createTables")
     public void createTables(){
@@ -31,4 +29,6 @@ public class ReferenceService {
 
     //@PostMapping(value = "/references", produces = MediaType.APPLICATION_JSON_VALUE)
     //public String postReference(@RequestParam String name) {}
+
+
 }
