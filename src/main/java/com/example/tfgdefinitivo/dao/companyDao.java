@@ -8,7 +8,7 @@ public interface companyDao {
     public static void createTable(Statement s) {
         try {
             s.execute("create table companies(idCom INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)," +
-                    " name varchar(200) UNIQUE, PRIMARY KEY (idCom) ) ");
+                    " name varchar(500) UNIQUE, PRIMARY KEY (idCom) ) ");
             System.out.println("Created table companies");
         } catch (SQLException t  ){
             if (t.getSQLState().equals("X0Y32"))

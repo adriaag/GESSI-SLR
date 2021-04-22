@@ -15,13 +15,6 @@ import java.util.Scanner;
 
 
 public class articleDao {
-    private static articleDao instance;
-
-    public static articleDao getInstance() {
-        if(instance==null)
-            instance = new articleDao();
-        return instance;
-    }
 
     private static String authorsToInsert = null;
     private static int affiliationToInsert = -1;
@@ -100,7 +93,7 @@ public class articleDao {
             doi = entry.getField(BibTeXEntry.KEY_DOI).toUserString();
 
         if (doi != null) {
-            doi = doi.replaceAll("[{-}]", "");
+            doi = doi.replaceAll("[{-}]", "").replaceAll("'", "''");
             ResultSet rs = getArticle(s, doi);
             if (rs.next()) {
                 System.out.println("El article se actualiza.");
@@ -149,61 +142,61 @@ public class articleDao {
 
             if (booktitle != null || article != null) {
                 String ven;
-                if (booktitle != null) ven = booktitle.toUserString().replaceAll("[{-}]", "");
-                else ven = article.toUserString().replaceAll("[{-}]", "");
+                if (booktitle != null) ven = booktitle.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
+                else ven = article.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
                 int idVen = venueDao.insertRow(s, ven);
                 atributsOfRow.append(", idVen");
                 valuesOfRow.append(", ").append(idVen);
             }
             if (title != null) {
                 atributsOfRow.append(", title");
-                valuesOfRow.append(", '").append(title.toUserString().replaceAll("[{-}]", "")).append("'");
+                valuesOfRow.append(", '").append(title.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
             }
             if (journal != null) {
                 atributsOfRow.append(", journal");
-                valuesOfRow.append(", '").append(journal.toUserString().replaceAll("[{-}]", "")).append("'");
+                valuesOfRow.append(", '").append(journal.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
             }
             if (keywords != null) {
                 atributsOfRow.append(", keywords");
-                valuesOfRow.append(", '").append(keywords.toUserString().replaceAll("[{-}]", "")).append("'");
+                valuesOfRow.append(", '").append(keywords.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
             }
             if (number != null ) {
-                if (!number.toUserString().replaceAll("[{-}]", "").equals("")) {
+                if (!number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")) {
                     atributsOfRow.append(", number");
-                    valuesOfRow.append(", ").append(number.toUserString().replaceAll("[{-}]", ""));
+                    valuesOfRow.append(", ").append(number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
                 }
             }
             if (numpages != null) {
                 atributsOfRow.append(", numpages");
-                valuesOfRow.append(", ").append(numpages.toUserString().replaceAll("[{-}]", ""));
+                valuesOfRow.append(", ").append(numpages.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
             }
             if (pages != null) {
                 atributsOfRow.append(", pages");
-                valuesOfRow.append(", '").append(pages.toUserString().replaceAll("[{-}]", "")).append("'");
+                valuesOfRow.append(", '").append(pages.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
             }
             if (volume != null) {
-                if (!volume.toUserString().replaceAll("[{-}]", "").equals("")) {
+                if (!volume.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")) {
                     atributsOfRow.append(", volume");
-                    valuesOfRow.append(", ").append(volume.toUserString().replaceAll("[{-}]", ""));
+                    valuesOfRow.append(", '").append(volume.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
                 }
             }
             if (year != null) {
                 atributsOfRow.append(", año");
-                valuesOfRow.append(", ").append(year.toUserString().replaceAll("[{-}]", ""));
+                valuesOfRow.append(", ").append(year.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
             }
             if (abstractE != null) {
-                String aux1 = abstractE.toUserString().replaceAll("[']", "");
+                String aux1 = abstractE.toUserString().replaceAll("[']", "").replaceAll("'", "''");
                 //El simbolo ' dentro del abstract provoca errores
                 atributsOfRow.append(", abstract");
-                valuesOfRow.append(", \'").append(aux1.replaceAll("[{-}]", "")).append("\'");
+                valuesOfRow.append(", \'").append(aux1.replaceAll("[{-}]", "").replaceAll("'", "''")).append("\'");
             }
             authorsToInsert = null;
             if (authors != null)
-                authorsToInsert = authors.toUserString().replaceAll("[\n]", " ").replaceAll("[{-}]", "");
+                authorsToInsert = authors.toUserString().replaceAll("[\n]", " ").replaceAll("[{-}]", "").replaceAll("'", "''");
 
             affiliationToInsert = -1;
             if (affil != null) {
-                String aux1 = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "");
+                String aux1 = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "").replaceAll("'", "''");
                 affiliationToInsert = companyDao.insertRow(s, aux1);
             }
             query = atributsOfRow.toString() + valuesOfRow.append(") ");
@@ -252,8 +245,8 @@ public class articleDao {
 
             if ((rs.getString(4) == null ) & (booktitle != null || article != null)) {
                 String ven;
-                if (booktitle != null) ven = booktitle.toUserString().replaceAll("[{-}]", "");
-                else ven = article.toUserString().replaceAll("[{-}]", "");
+                if (booktitle != null) ven = booktitle.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
+                else ven = article.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
                 int idVen = venueDao.insertRow(s, ven);
                 first = false;
                 queryIni.append(" idVen = ").append(idVen);
@@ -261,61 +254,61 @@ public class articleDao {
             if ((rs.getString(5) == null ) & (title != null)) {
                 if (first) first = false;
                 else queryIni.append(", ");
-                queryIni.append(" title = '").append(title.toUserString().replaceAll("[{-}]", "")).append("'");
+                queryIni.append(" title = '").append(title.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
             }
             if ((rs.getString(6) == null ) & (journal != null)) {
                 if (first) first = false;
                 else queryIni.append(", ");
-                queryIni.append(" journal = '").append(journal.toUserString().replaceAll("[{-}]", "")).append("'");
+                queryIni.append(" journal = '").append(journal.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
             }
             if ((rs.getString(7) == null ) & (keywords != null)) {
                 if (first) first = false;
                 else queryIni.append(", ");
-                queryIni.append(" keywords = '").append(keywords.toUserString().replaceAll("[{-}]", "")).append("'");
+                queryIni.append(" keywords = '").append(keywords.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
             }
             if ((rs.getString(8) == null ) & (number != null )) {
-                if (!number.toUserString().replaceAll("[{-}]", "").equals("")){
+                if (!number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")){
                     if (first) first = false;
                     else queryIni.append(", ");
-                    queryIni.append(" number = ").append(number.toUserString().replaceAll("[{-}]", ""));
+                    queryIni.append(" number = ").append(number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
                 }
             }
             if ((rs.getString(9) == null ) & (numpages != null)) {
                 if (first) first = false;
                 else queryIni.append(", ");
-                queryIni.append(" numpages = ").append(numpages.toUserString().replaceAll("[{-}]", ""));
+                queryIni.append(" numpages = ").append(numpages.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
             }
             if ((rs.getString(10) == null ) & (pages != null)) {
                 if (first) first = false;
                 else queryIni.append(", ");
-                queryIni.append(" pages = '").append(pages.toUserString().replaceAll("[{-}]", "")).append("'");
+                queryIni.append(" pages = '").append(pages.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
             }
             if ((rs.getString(11) == null) & (volume != null )) {
-                if (!volume.toUserString().replaceAll("[{-}]", "").equals("")) {
+                if (!volume.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")) {
                     if (first) first = false;
                     else queryIni.append(", ");
-                    queryIni.append(" volume = ").append(volume.toUserString().replaceAll("[{-}]", ""));
+                    queryIni.append(" volume = '").append(volume.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
                 }
             }
             if ((rs.getString(12) == null ) &(year != null)) {
                 if (first) first = false;
                 else queryIni.append(", ");
-                queryIni.append(" año = ").append(year.toUserString().replaceAll("[{-}]", ""));
+                queryIni.append(" año = ").append(year.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
             }
             if ((rs.getString(13) == null ) & (abstractE != null)) {
                 if (first) first = false;
                 else queryIni.append(", ");
-                String aux1 = abstractE.toUserString().replaceAll("[']", "");
+                String aux1 = abstractE.toUserString().replaceAll("[']", "").replaceAll("'", "''");
                 //El simbolo ' dentro del abstract provoca errores
-                queryIni.append(" abstract = \'").append(aux1.replaceAll("[{-}]", "")).append("\'");
+                queryIni.append(" abstract = \'").append(aux1.replaceAll("[{-}]", "").replaceAll("'", "''")).append("\'");
             }
             authorsToInsert = null;
             if (authors != null)
-                authorsToInsert = authors.toUserString().replaceAll("[\n]", " ").replaceAll("[{-}]", "");
+                authorsToInsert = authors.toUserString().replaceAll("[\n]", " ").replaceAll("[{-}]", "").replaceAll("'", "''");
 
             affiliationToInsert = -1;
             if (affil != null) {
-                String aux1 = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "");
+                String aux1 = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "").replaceAll("'", "''");
                 affiliationToInsert = companyDao.insertRow(s, aux1);
             }
             query = queryIni.toString() + queryEnd;
@@ -340,8 +333,8 @@ public class articleDao {
     public static void createTable(Statement s) {
         try {
             s.execute("create table articles( doi varchar(50), type varchar(50), citeKey varchar(50), " +
-                    "idVen int, title varchar(200), journal varchar(100), keywords varchar(1000), " +
-                    "number INT, numpages INT, pages varchar(20), volume INT, año INT, abstract varchar(3000), " +
+                    "idVen int, title varchar(200), journal varchar(300), keywords varchar(1000), " +
+                    "number INT, numpages INT, pages varchar(20), volume varchar(20), año INT, abstract varchar(4000), " +
                     "PRIMARY KEY (doi), CONSTRAINT VEN_FK_R FOREIGN KEY (idVen) REFERENCES venues (idVen))");
             //type y citekey not null
             System.out.println("Created table articles");

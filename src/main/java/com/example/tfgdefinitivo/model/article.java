@@ -16,7 +16,7 @@ public class article {
     private int number;
     private int numpages;
     private String pages;
-    private int volume;
+    private String volume;
     private int año;
     private String abstractA;
     private venue ven;
@@ -24,7 +24,7 @@ public class article {
     private researcher[] researchers;
 
     public article(String doi, String type, String citeKey, int idVen, String title, String journal,
-                   String keywords, int number, int numpages, String pages, int volume, int año, String abstractA) {
+                   String keywords, int number, int numpages, String pages, String volume, int año, String abstractA) {
         this.doi = doi;
         this.type = type;
         this.citeKey = citeKey;
@@ -96,11 +96,11 @@ public class article {
         this.pages = pages;
     }
 
-    public int getVolume() {
+    public String getVolume() {
         return volume;
     }
     @XmlElement
-    public void setVolume(int volume) {
+    public void setVolume(String volume) {
         this.volume = volume;
     }
 

@@ -13,18 +13,17 @@ import java.util.List;
 @RequestMapping("/references")
 public class ReferenceController {
 
-    private static ReferenceDao refDao= new ReferenceDao();
 
     @GetMapping(value = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static List<Reference> getReferences(){ return refDao.getAllReferences(); }
+    public static List<Reference> getReferences(){ return ReferenceDao.getAllReferences(); }
 
     @RequestMapping(value = "/createTables")
     public void createTables(){
-        refDao.create();
+        ReferenceDao.create();
     }
     @RequestMapping(value = "/deleteTables")
     public void deleteTables(){
-        refDao.delete();
+        ReferenceDao.delete();
     }
 
     //@PostMapping(value = "/references", produces = MediaType.APPLICATION_JSON_VALUE)

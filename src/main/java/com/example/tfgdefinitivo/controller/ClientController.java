@@ -24,8 +24,6 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ClientController {
     public String type;
 
-    ReferenceDao refDao = new ReferenceDao();
-
     @RequestMapping(value=("/"))
     public String index(){
         return "index";
@@ -51,7 +49,7 @@ public class ClientController {
     @GetMapping(value = "/getAllReferences", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getReferences(Model model){
         //List<Reference>
-        List<Reference> list = refDao.getAllReferences();
+        List<Reference> list = ReferenceDao.getAllReferences();
         model.addAttribute("referencesList", list);
         return "allReferences";
     }
