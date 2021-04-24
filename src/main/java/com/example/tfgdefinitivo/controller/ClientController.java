@@ -3,6 +3,7 @@ package com.example.tfgdefinitivo.controller;
 import com.example.tfgdefinitivo.CreateExcel;
 import com.example.tfgdefinitivo.dao.ReferenceDao;
 import com.example.tfgdefinitivo.model.Reference;
+import com.example.tfgdefinitivo.model.formDTO;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -18,7 +19,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Controller
 public class ClientController {
@@ -28,23 +28,6 @@ public class ClientController {
     public String index(){
         return "index";
     }
-
-    @GetMapping(value = "/NewReference")
-    public String greeting( Model model) throws SQLException {
-        String path = "Empty";
-        int nameDL = 0;
-        model.addAttribute("path", path);
-        model.addAttribute("nameDL", nameDL);
-        model.addAttribute("DLnames", digitalLibraryController.getNames());
-        return "NewReference";
-    }
-
-    @PostMapping(value = "/info")
-    public String askInformation(@RequestParam(name= "path", required=false, defaultValue="path no") String path,
-                                 @RequestParam(name="nameDL", required=false, defaultValue= "0") int nameDL){
-        return "NewReference";
-    }
-
 
     @GetMapping(value = "/getAllReferences", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getReferences(Model model){
@@ -70,5 +53,27 @@ public class ClientController {
                 .body(resource);
     }
     //curl http://localhost:8080/all/?name=Enric
+
+    @RequestMapping(value = "/askInformation")
+    public String askInformation(Model model){
+        model.addAttribute("formDTO", new formDTO());
+        return "formReference";
+    }
+
+    /*@PostMapping(value = "/NewReference")
+    public String addReference( formDTO form, Model model ) throws SQLException {
+        model.addAttribute("path", form.getPath());
+        model.addAttribute("nameDL", form.getDl());
+        model.addAttribute("DLnames", digitalLibraryController.getNames());
+        return "NewReference";
+    }*/
+    //@RequestParam(name= "path", required=false, defaultValue="path no") String path
+    @RequestMapping(value = "/NewReference")
+    public String addReference( formDTO form, Model model ) throws SQLException {
+        model.addAttribute("path", form.getPath());
+        model.addAttribute("nameDL", form.getDl());
+        model.addAttribute("DLnames", digitalLibraryController.getNames());
+        return "NewReference";
+    }
 }
 

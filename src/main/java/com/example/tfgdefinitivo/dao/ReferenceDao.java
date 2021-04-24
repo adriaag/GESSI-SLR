@@ -1,6 +1,7 @@
 package com.example.tfgdefinitivo.dao;
 
 import com.example.tfgdefinitivo.model.*;
+import org.jbibtex.ParseException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public interface ReferenceDao {
+public class ReferenceDao {
 
     public static int insertRow(Statement s, String doi, String idDL) throws SQLException {
         try {
@@ -258,5 +259,11 @@ public interface ReferenceDao {
         articleDao.dropTable(s);
         venueDao.dropTable(s);
         digitalLibraryDao.dropTable(s);
+    }
+
+    public static void importar(String path, String nameDL, Statement s)
+            throws SQLException, IOException, ParseException {
+        articleDao.importar(path, nameDL, s);
+        s.getConnection().commit();
     }
 }

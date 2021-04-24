@@ -6,7 +6,7 @@
 </head>
 <body>
 <!---
-<form th:action="@{/info}" method="post" th:object="${form}">
+<formDTO th:action="@{/info}" method="post" th:object="${formDTO}">
     <input type= "file" name="Archivo"/>
     <p th:text="'File path: ' + ${path} "></p>
 
@@ -18,8 +18,10 @@
         <option value=5 th:text="${DLnames[4]}" ></option>
         <option value=6 th:text="${DLnames[5]}" ></option>
     </select>
-</form>
+</formDTO>
 --->
+<form action="#" th:action="@{/references/add}" th:object="${Reference}" method="post">
+
 <p th:text="'Digital library selected: ' + ${nameDL} "></p>
 
 </body>

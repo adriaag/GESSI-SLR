@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class CreateExcel {
     private static String[] columnHeadings = {"#referencia",/*article*/ "DOI" , "Type" , "Cite key" , "Title" ,
-            "Journal", "Keywords" , "Mumber","Numpages","Pages","Volume","Year", /*idVen*/ "Venue" , "Abstract",
+            "Journal", "Keywords" , "Number","Numpages","Pages","Volume","Year", /*idVen*/ "Venue" , "Abstract",
             /*researchers*/ "Authors" , /*companies*/ "Affiliations", /*dl*/ "Digital Library"  };
 
     public static Workbook create() throws IOException {
@@ -54,7 +54,7 @@ public class CreateExcel {
                 row.createCell(8).setCellValue(art.getNumpages());
                 row.createCell(9).setCellValue(art.getPages());
                 row.createCell(10).setCellValue(art.getVolume());
-                row.createCell(11).setCellValue(art.getAño());
+                row.createCell(11).setCellValue(art.getAny());
 
                 if(art.getVen() != null)
                     row.createCell(12).setCellValue(art.getVen().getName());

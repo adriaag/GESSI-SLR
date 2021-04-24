@@ -17,7 +17,7 @@ public class article {
     private int numpages;
     private String pages;
     private String volume;
-    private int año;
+    private int any;
     private String abstractA;
     private venue ven;
     private company[] companies;
@@ -36,7 +36,7 @@ public class article {
         this.numpages = numpages;
         this.pages = pages;
         this.volume = volume;
-        this.año = año;
+        this.any = año;
         this.abstractA = abstractA;
     }
 
@@ -104,12 +104,12 @@ public class article {
         this.volume = volume;
     }
 
-    public int getAño() {
-        return año;
+    public int getAny() {
+        return any;
     }
     @XmlElement
-    public void setAño(int año) {
-        this.año = año;
+    public void setAny(int any) {
+        this.any = any;
     }
 
     public String getAbstractA() {
