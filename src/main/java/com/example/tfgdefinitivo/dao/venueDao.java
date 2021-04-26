@@ -52,7 +52,7 @@ public interface venueDao {
         rs.next();
         return rs.getInt(1);
     }
-    static ResultSet getVenue(Statement s, int idVen) throws SQLException {
+    public static ResultSet getVenue(Statement s, int idVen) throws SQLException {
         return s.executeQuery("SELECT * FROM venues where idVen = " + idVen);
     }
 }

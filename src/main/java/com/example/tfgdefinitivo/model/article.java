@@ -16,15 +16,15 @@ public class article {
     private int number;
     private int numpages;
     private String pages;
-    private int volume;
-    private int año;
+    private String volume;
+    private int any;
     private String abstractA;
     private venue ven;
     private company[] companies;
     private researcher[] researchers;
 
     public article(String doi, String type, String citeKey, int idVen, String title, String journal,
-                   String keywords, int number, int numpages, String pages, int volume, int año, String abstractA) {
+                   String keywords, int number, int numpages, String pages, String volume, int año, String abstractA) {
         this.doi = doi;
         this.type = type;
         this.citeKey = citeKey;
@@ -36,7 +36,7 @@ public class article {
         this.numpages = numpages;
         this.pages = pages;
         this.volume = volume;
-        this.año = año;
+        this.any = año;
         this.abstractA = abstractA;
     }
 
@@ -96,20 +96,20 @@ public class article {
         this.pages = pages;
     }
 
-    public int getVolume() {
+    public String getVolume() {
         return volume;
     }
     @XmlElement
-    public void setVolume(int volume) {
+    public void setVolume(String volume) {
         this.volume = volume;
     }
 
-    public int getAño() {
-        return año;
+    public int getAny() {
+        return any;
     }
     @XmlElement
-    public void setAño(int año) {
-        this.año = año;
+    public void setAny(int any) {
+        this.any = any;
     }
 
     public String getAbstractA() {

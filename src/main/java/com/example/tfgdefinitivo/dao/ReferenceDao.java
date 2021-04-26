@@ -1,6 +1,7 @@
 package com.example.tfgdefinitivo.dao;
 
 import com.example.tfgdefinitivo.model.*;
+import org.jbibtex.ParseException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,28 +13,6 @@ import java.util.List;
 import java.util.Properties;
 
 public class ReferenceDao {
-
-    //Añadir conexion a derby
-    private static ReferenceDao instance;
-
-    public static ReferenceDao getInstance() {
-        if (instance == null)
-            instance = new ReferenceDao();
-        return instance;
-    }
-
-    private void saveReferenceList(List<Reference> refList) {
-        try {
-            File file = new File("References.dat");
-            FileOutputStream fos;
-            fos = new FileOutputStream(file);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(refList);
-            oos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public static int insertRow(Statement s, String doi, String idDL) throws SQLException {
         try {
@@ -60,14 +39,24 @@ public class ReferenceDao {
         try {
             s.execute("create table referencias(idRef INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, " +
                     "INCREMENT BY 1), doi varchar(50), idDL int, " +
-                    "PRIMARY KEY (idRef), CONSTRAINT DL_FK_R FOREIGN KEY (idDL) REFERENCES digitalLibraries (idDL)," +
+                    "PRIMARY KEY (doi,idDL), CONSTRAINT DL_FK_R FOREIGN KEY (idDL) REFERENCES digitalLibraries (idDL)," +
                     "CONSTRAINT AR_FK_R FOREIGN KEY (doi) REFERENCES articles (doi))");
             //UNIQUE EN DOI
             System.out.println("Created table referencias");
-        } catch (SQLException t) {
-            if (t.getSQLState().equals("X0Y32"))
+        } catch (SQLException e) {
+            if (e.getSQLState().equals("X0Y32"))
                 System.out.println("Table referencias exists");
-            else System.out.println("Error en la creación de table referencias");
+            else if (e.getMessage().contains("primary key"))
+                System.out.println("Referencia ya importada");
+            else {
+                while (e != null) {
+                    System.err.println("\n----- SQLException -----");
+                    System.err.println("  SQL State:  " + e.getSQLState());
+                    System.err.println("  Error Code: " + e.getErrorCode());
+                    System.err.println("  Message:    " + e.getMessage());
+                    e = e.getNextException();
+                }
+            }
         }
     }
 
@@ -89,7 +78,7 @@ public class ReferenceDao {
         return rs;
     }
 
-    public List<Reference> getAllReferences() {
+    public static List<Reference> getAllReferences() {
 
         List<Reference> refList = null;
 
@@ -136,7 +125,7 @@ public class ReferenceDao {
                     ar = new article(rsAr.getString(1), rsAr.getString(2),
                             rsAr.getString(3), rsAr.getInt(4), rsAr.getString(5),
                             rsAr.getString(6), rsAr.getString(7), rsAr.getInt(8),
-                            rsAr.getInt(9), rsAr.getString(10), rsAr.getInt(11),
+                            rsAr.getInt(9), rsAr.getString(10), rsAr.getString(11),
                             rsAr.getInt(12), rsAr.getString(13));
 
                     rsAr = venueDao.getVenue(s3,rsAr.getInt(4));
@@ -172,7 +161,7 @@ public class ReferenceDao {
         }
         return refList;
     }
-    public void create() {
+    public static void create() {
         String framework = "embedded";
         String dbName = "derbyDB";
         String protocol = "jdbc:derby:";
@@ -200,8 +189,17 @@ public class ReferenceDao {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        finally{
+            if(s!=null) {
+                try {
+                    s.close();
+                } catch (SQLException ex) {
+                    System.out.println("Could not close query");
+                }
+            }
+        }
     }
-    public void delete() {
+    public static void delete() {
         String framework = "embedded";
         String dbName = "derbyDB";
         String protocol = "jdbc:derby:";
@@ -228,19 +226,28 @@ public class ReferenceDao {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        finally{
+            if(s!=null) {
+                try {
+                    s.close();
+                } catch (SQLException ex) {
+                    System.out.println("Could not close query");
+                }
+            }
+        }
     }
-    private void crearTablas(Statement s, Connection conn, ArrayList<Statement> statements) throws SQLException {
+    private static void crearTablas(Statement s, Connection conn, ArrayList<Statement> statements) throws SQLException {
         // Create table digitalLibraries if not exist
         if (digitalLibraryDao.createTable(s))
             //insert rows in table
             digitalLibraryDao.insertRows(conn, statements);
-        researcherDao.createTable(s);
         venueDao.createTable(s);
-        companyDao.createTable(s);
         articleDao.createTable(s);
+        researcherDao.createTable(s);
         ReferenceDao.createTable(s);
-        affiliationDao.createTable(s);
         authorDao.createTable(s);
+        companyDao.createTable(s);
+        affiliationDao.createTable(s);
     }
 
     private static void deleteTables(Statement s, Connection conn, ArrayList<Statement> statements) throws SQLException {
@@ -252,5 +259,11 @@ public class ReferenceDao {
         articleDao.dropTable(s);
         venueDao.dropTable(s);
         digitalLibraryDao.dropTable(s);
+    }
+
+    public static void importar(String path, String nameDL, Statement s)
+            throws SQLException, IOException, ParseException {
+        articleDao.importar(path, nameDL, s);
+        s.getConnection().commit();
     }
 }

@@ -3,7 +3,7 @@ package com.example.tfgdefinitivo.dao;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public interface authorDao {
+public class authorDao {
     /* create table authors( name varchar(50),
     PRIMARY KEY (name));*/
     public static void createTable(Statement s) {
