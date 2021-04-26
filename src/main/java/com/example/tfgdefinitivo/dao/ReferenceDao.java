@@ -121,9 +121,9 @@ public class ReferenceDao {
                 if(rsAr.next()) {
                     ar = new article(rsAr.getString(1), rsAr.getString(2),
                             rsAr.getString(3), rsAr.getInt(4), rsAr.getString(5),
-                            rsAr.getString(6), rsAr.getString(7), rsAr.getInt(8),
-                            rsAr.getInt(9), rsAr.getString(10), rsAr.getString(11),
-                            rsAr.getInt(12), rsAr.getString(13));
+                            rsAr.getString(6), rsAr.getInt(7),
+                            rsAr.getInt(8), rsAr.getString(9), rsAr.getString(10),
+                            rsAr.getInt(11), rsAr.getString(12));
 
                     rsAr = venueDao.getVenue(s3,rsAr.getInt(4));
                     venue v = null;

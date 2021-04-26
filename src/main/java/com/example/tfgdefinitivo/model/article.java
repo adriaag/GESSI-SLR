@@ -11,7 +11,6 @@ public class article {
     private String citeKey;
     private int idVen;
     private String title;
-    private String journal;
     private String keywords;
     private int number;
     private int numpages;
@@ -23,14 +22,13 @@ public class article {
     private company[] companies;
     private researcher[] researchers;
 
-    public article(String doi, String type, String citeKey, int idVen, String title, String journal,
+    public article(String doi, String type, String citeKey, int idVen, String title,
                    String keywords, int number, int numpages, String pages, String volume, int año, String abstractA) {
         this.doi = doi;
         this.type = type;
         this.citeKey = citeKey;
         this.idVen = idVen;
         this.title = title;
-        this.journal = journal;
         this.keywords = keywords;
         this.number = number;
         this.numpages = numpages;
@@ -126,14 +124,6 @@ public class article {
     @XmlElement
     public void setIdVen(int idVen) {
         this.idVen = idVen;
-    }
-
-    public String getJournal() {
-        return journal;
-    }
-    @XmlElement
-    public void setJournal(String journal) {
-        this.journal = journal;
     }
 
     public venue getVen() {

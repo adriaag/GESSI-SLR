@@ -140,9 +140,10 @@ public class articleDao {
             valuesOfRow.append(", '").append(type).append("', '").append(entry.getKey()).append("'");
             //Citekey puede contener el DOI
 
-            if (booktitle != null || article != null) {
+            if (booktitle != null || article != null || journal != null) {
                 String ven;
                 if (booktitle != null) ven = booktitle.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
+                if (journal != null) ven = journal.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
                 else ven = article.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
                 int idVen = venueDao.insertRow(s, ven);
                 atributsOfRow.append(", idVen");
@@ -151,10 +152,6 @@ public class articleDao {
             if (title != null) {
                 atributsOfRow.append(", title");
                 valuesOfRow.append(", '").append(title.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
-            }
-            if (journal != null) {
-                atributsOfRow.append(", journal");
-                valuesOfRow.append(", '").append(journal.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
             }
             if (keywords != null) {
                 atributsOfRow.append(", keywords");
@@ -243,9 +240,10 @@ public class articleDao {
 
            // "idVen int, title varchar(200), journal varchar(100), keywords varchar(1000) number INT, numpages INT, pages varchar(20), volume INT, año INT, abstract "
 
-            if ((rs.getString(4) == null ) & (booktitle != null || article != null)) {
+            if ((rs.getString(4) == null ) & (booktitle != null || article != null || (journal != null))) {
                 String ven;
                 if (booktitle != null) ven = booktitle.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
+                if (journal != null) ven = journal.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
                 else ven = article.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
                 int idVen = venueDao.insertRow(s, ven);
                 first = false;
@@ -256,46 +254,42 @@ public class articleDao {
                 else queryIni.append(", ");
                 queryIni.append(" title = '").append(title.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
             }
-            if ((rs.getString(6) == null ) & (journal != null)) {
-                if (first) first = false;
-                else queryIni.append(", ");
-                queryIni.append(" journal = '").append(journal.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
-            }
-            if ((rs.getString(7) == null ) & (keywords != null)) {
+
+            if ((rs.getString(6) == null ) & (keywords != null)) {
                 if (first) first = false;
                 else queryIni.append(", ");
                 queryIni.append(" keywords = '").append(keywords.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
             }
-            if ((rs.getString(8) == null ) & (number != null )) {
+            if ((rs.getString(7) == null ) & (number != null )) {
                 if (!number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")){
                     if (first) first = false;
                     else queryIni.append(", ");
                     queryIni.append(" number = ").append(number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
                 }
             }
-            if ((rs.getString(9) == null ) & (numpages != null)) {
+            if ((rs.getString(8) == null ) & (numpages != null)) {
                 if (first) first = false;
                 else queryIni.append(", ");
                 queryIni.append(" numpages = ").append(numpages.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
             }
-            if ((rs.getString(10) == null ) & (pages != null)) {
+            if ((rs.getString(9) == null ) & (pages != null)) {
                 if (first) first = false;
                 else queryIni.append(", ");
                 queryIni.append(" pages = '").append(pages.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
             }
-            if ((rs.getString(11) == null) & (volume != null )) {
+            if ((rs.getString(10) == null) & (volume != null )) {
                 if (!volume.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")) {
                     if (first) first = false;
                     else queryIni.append(", ");
                     queryIni.append(" volume = '").append(volume.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
                 }
             }
-            if ((rs.getString(12) == null ) &(year != null)) {
+            if ((rs.getString(11) == null ) &(year != null)) {
                 if (first) first = false;
                 else queryIni.append(", ");
                 queryIni.append(" año = ").append(year.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
             }
-            if ((rs.getString(13) == null ) & (abstractE != null)) {
+            if ((rs.getString(12) == null ) & (abstractE != null)) {
                 if (first) first = false;
                 else queryIni.append(", ");
                 String aux1 = abstractE.toUserString().replaceAll("[']", "").replaceAll("'", "''");
@@ -333,7 +327,7 @@ public class articleDao {
     public static void createTable(Statement s) {
         try {
             s.execute("create table articles( doi varchar(50), type varchar(50), citeKey varchar(50), " +
-                    "idVen int, title varchar(200), journal varchar(300), keywords varchar(1000), " +
+                    "idVen int, title varchar(200), keywords varchar(1000), " +
                     "number INT, numpages INT, pages varchar(20), volume varchar(20), año INT, abstract varchar(4000), " +
                     "PRIMARY KEY (doi), CONSTRAINT VEN_FK_R FOREIGN KEY (idVen) REFERENCES venues (idVen))");
             //type y citekey not null
