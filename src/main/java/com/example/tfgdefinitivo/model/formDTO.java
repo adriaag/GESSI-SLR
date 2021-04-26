@@ -7,9 +7,9 @@ import java.io.Serializable;
 @XmlRootElement(name = "formDTO")
 public class formDTO implements Serializable {
     private String path;
-    private int dlNum;
+    private String dlNum;
 
-    public formDTO(String path, int dl) {
+    public formDTO(String path, String dl) {
         this.path = path;
         this.dlNum = dl;
     }
@@ -22,12 +22,12 @@ public class formDTO implements Serializable {
         this.path = path;
     }
 
-    public int getDl() {
+    public String getDl() {
         return dlNum;
     }
 
     @XmlElement
-    public void setDl(int dl) {
-        this.dlNum = dl;
+    public void setDl(String dlNum) {
+        this.dlNum = dlNum;
     }
 }

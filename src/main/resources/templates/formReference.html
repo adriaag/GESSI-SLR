@@ -5,10 +5,19 @@
     <title>Form</title>
 </head>
 <body>
-<p th:text="${formDTO}"/>
-<form action="#" th:action="@{/NewReference}" th:object="${formDTO}" method="POST">
-    Path <input type="text" name="Path" th:field="*{path}"/><br/>
-
+<form action="#" th:action="@{/NewReference}" th:object="${form}" method="POST">
+    <p th:text="'File path: ' + ${path} "></p>
+    <input type= "file" name="Archivo"/>
+    </br>
+    <p> Digital library: </p>
+    <select type="text" name="Digital Library" th:field="${dl}" >
+        <option value=1 th:text="${DLnames[0]}" ></option>
+        <option value=2 th:text="${DLnames[1]}" ></option>
+        <option value=3 th:text="${DLnames[2]}" ></option>
+        <option value=4 th:text="${DLnames[3]}" ></option>
+        <option value=5 th:text="${DLnames[4]}" ></option>
+        <option value=6 th:text="${DLnames[5]}" ></option>
+    </select>
     <button name="submit" type="submit" value="0"> Submit</button>
 </form>
 

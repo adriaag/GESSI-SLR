@@ -7,17 +7,7 @@
 <body>
 <!---
 <formDTO th:action="@{/info}" method="post" th:object="${formDTO}">
-    <input type= "file" name="Archivo"/>
-    <p th:text="'File path: ' + ${path} "></p>
 
-    <select name="dl" th:field="*{value}">
-        <option value=1 th:text="${DLnames[0]}" ></option>
-        <option value=2 th:text="${DLnames[1]}" ></option>
-        <option value=3 th:text="${DLnames[2]}" ></option>
-        <option value=4 th:text="${DLnames[3]}" ></option>
-        <option value=5 th:text="${DLnames[4]}" ></option>
-        <option value=6 th:text="${DLnames[5]}" ></option>
-    </select>
 </formDTO>
 --->
 <form action="#" th:action="@{/references/add}" th:object="${Reference}" method="post">

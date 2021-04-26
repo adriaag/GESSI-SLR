@@ -9,9 +9,11 @@
               integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     </head>
     <body>
+    <div>
         <h1>References Information</h1>
+        <p> Download all references information <a href="/download">here</a></p>
         <table class="table table-bordered table-striped">
-            <thread class="thread-dark">
+            <thread class="thread-light">
                 <tr>
                     <th>#referencia</th>
                     <th>DOI</th>
@@ -47,13 +49,19 @@
                 <td th:text="${i.getArt().getVolume()}"/>
                 <td th:text="${i.getArt().getAny() }"/>
 
-                <td th:if="${i.getArt().getVen() != null }" th:text="${i.getArt().getVen().getName()}"/>
-                <td th:text="${i.getArt().getAbstractA()}"/>
-                <!---Authors-->
-                <!---Companies-->
+                <td th:if="${i.getArt().getVen() != null }" th:text="${i.getArt().getVen().getName()}" />
+                <td th:if="${i.getArt().getVen() == null }" /> <p></p>
+                <td th:utext="${i.getArt().getAbstractA()}"/>
+                <!---th:each="image,status : ${String.split(i.getArt().getAbstractA(), 3)}"-->
+                <td>
+                     <li th:each="j,iterStatj : ${i.getArt().getResearchers()}" th:text="${j.getName()}"> </li>
+                </td>
+                <td>
+                    <li th:each="j,iterStatj : ${i.getArt().getCompanies()}" th:text="${j.getName()}"> </li>
+                </td>
                 <td th:text="${i.getDl().getName()}"/>
             </tbody>
         </table>
-        <p>Download all references <a href="/download">here</a></p>
+    </div>
     </body>
 </html>

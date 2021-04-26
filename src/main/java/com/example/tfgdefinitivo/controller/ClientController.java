@@ -55,8 +55,12 @@ public class ClientController {
     //curl http://localhost:8080/all/?name=Enric
 
     @RequestMapping(value = "/askInformation")
-    public String askInformation(Model model){
-        model.addAttribute("formDTO", new formDTO());
+    public String askInformation(Model model) throws SQLException {
+        model.addAttribute("form", new formDTO());
+        model.addAttribute("DLnames", digitalLibraryController.getNames());
+
+        model.addAttribute("path", "");
+        model.addAttribute("dl", "");
         return "formReference";
     }
 
@@ -72,7 +76,6 @@ public class ClientController {
     public String addReference( formDTO form, Model model ) throws SQLException {
         model.addAttribute("path", form.getPath());
         model.addAttribute("nameDL", form.getDl());
-        model.addAttribute("DLnames", digitalLibraryController.getNames());
         return "NewReference";
     }
 }
