@@ -17,7 +17,7 @@ import java.util.Scanner;
 public class articleDao {
 
     private static String authorsToInsert = null;
-    private static int affiliationToInsert = -1;
+    private static String affiliationToInsert = null;
 
     static Key abstractKey = new Key("abstract");
     static Key keywordsKey = new Key("keywords");
@@ -58,6 +58,7 @@ public class articleDao {
         Collection<BibTeXEntry> entries = entryMap.values();
         // add rows of file
         for(BibTeXEntry entry : entries){
+            System.out.println(entry.getKey());
             String doi = addArticle(nameDL, s, entry);
             if (doi != null) {
                 if (authorsToInsert != null) {
@@ -65,9 +66,10 @@ public class articleDao {
                     s.getConnection().commit();
                     authorDao.insertRows(idsResearchers, doi, s);
                 }
-                if (affiliationToInsert != -1) {
-                    affiliationDao.insertRow(s, affiliationToInsert, doi);
-                    System.out.println(affiliationToInsert);
+                if (affiliationToInsert !=  null) {
+                    Integer[] idsComps = companyDao.insertRows(s, affiliationToInsert);
+                    s.getConnection().commit();
+                    affiliationDao.insertRows(s, idsComps, doi);
                 }
             }
         }
@@ -81,7 +83,7 @@ public class articleDao {
     }
 
     public static ResultSet getArticle(Statement s, String doi) throws SQLException {
-        return s.executeQuery("SELECT * FROM articles where doi = '" + doi + "' ");
+        return s.executeQuery("SELECT * FROM articles where doi = '" + doi.replaceAll("'", "''") + "' ");
     }
 
 //Devuelve un string de todos los autores de la referencia
@@ -137,13 +139,13 @@ public class articleDao {
             valuesOfRow.append("'").append(doi).append("'");
 
             atributsOfRow.append(", type, citeKey");
-            valuesOfRow.append(", '").append(type).append("', '").append(entry.getKey()).append("'");
+            valuesOfRow.append(", '").append(type).append("', '").append(entry.getKey().toString().replaceAll("'", "''")).append("'");
             //Citekey puede contener el DOI
 
             if (booktitle != null || article != null || journal != null) {
                 String ven;
                 if (booktitle != null) ven = booktitle.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
-                if (journal != null) ven = journal.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
+                else if (journal != null) ven = journal.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
                 else ven = article.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
                 int idVen = venueDao.insertRow(s, ven);
                 atributsOfRow.append(", idVen");
@@ -160,7 +162,7 @@ public class articleDao {
             if (number != null ) {
                 if (!number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")) {
                     atributsOfRow.append(", number");
-                    valuesOfRow.append(", ").append(number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+                    valuesOfRow.append(", '").append(number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
                 }
             }
             if (numpages != null) {
@@ -191,10 +193,9 @@ public class articleDao {
             if (authors != null)
                 authorsToInsert = authors.toUserString().replaceAll("[\n]", " ").replaceAll("[{-}]", "").replaceAll("'", "''");
 
-            affiliationToInsert = -1;
+            affiliationToInsert = null;
             if (affil != null) {
-                String aux1 = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "").replaceAll("'", "''");
-                affiliationToInsert = companyDao.insertRow(s, aux1);
+                affiliationToInsert = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "").replaceAll("'", "''");
             }
             query = atributsOfRow.toString() + valuesOfRow.append(") ");
             System.out.println(query);
@@ -264,7 +265,7 @@ public class articleDao {
                 if (!number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")){
                     if (first) first = false;
                     else queryIni.append(", ");
-                    queryIni.append(" number = ").append(number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+                    queryIni.append(" number = '").append(number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
                 }
             }
             if ((rs.getString(8) == null ) & (numpages != null)) {
@@ -300,10 +301,9 @@ public class articleDao {
             if (authors != null)
                 authorsToInsert = authors.toUserString().replaceAll("[\n]", " ").replaceAll("[{-}]", "").replaceAll("'", "''");
 
-            affiliationToInsert = -1;
+            affiliationToInsert = null;
             if (affil != null) {
-                String aux1 = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "").replaceAll("'", "''");
-                affiliationToInsert = companyDao.insertRow(s, aux1);
+                affiliationToInsert = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "").replaceAll("'", "''");
             }
             query = queryIni.toString() + queryEnd;
 
@@ -321,6 +321,7 @@ public class articleDao {
                 System.err.println("  Message:    " + e.getMessage());
                 e = e.getNextException();
             }
+
         }
     }
 
@@ -328,7 +329,7 @@ public class articleDao {
         try {
             s.execute("create table articles( doi varchar(50), type varchar(50), citeKey varchar(50), " +
                     "idVen int, title varchar(200), keywords varchar(1000), " +
-                    "number INT, numpages INT, pages varchar(20), volume varchar(20), año INT, abstract varchar(4000), " +
+                    "number varchar(10), numpages INT, pages varchar(20), volume varchar(20), año INT, abstract varchar(6000), " +
                     "PRIMARY KEY (doi), CONSTRAINT VEN_FK_R FOREIGN KEY (idVen) REFERENCES venues (idVen))");
             //type y citekey not null
             System.out.println("Created table articles");

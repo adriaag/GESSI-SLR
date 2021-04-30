@@ -15,51 +15,52 @@
         <table class="table table-bordered table-striped">
             <thread class="thread-light">
                 <tr>
-                    <th>#referencia</th>
+                    <th>#ref</th>
+                    <th>DL-name</th>
+                    <th>Year</th>
                     <th>DOI</th>
-                    <th>Type</th>
-                    <th>Cite key</th>
+                    <th>Authors</th>
                     <th>Title</th>
-                    <th>Journal</th>
-                    <th>Keywords</th>
+                    <th>Venue</th>
+                    <th>Type</th>
+                    <th>Affiliations</th>
+                    <th>Volume</th>
+                    <th>Pages</th>
                     <th>Number</th>
                     <th>Numpages</th>
-                    <th>Pages</th>
-                    <th>Volume</th>
-                    <th>Year</th>
-                    <th>Venue</th>
+                    <th>Keywords</th>
+                    <th>Cite key</th>
                     <th>Abstract</th>
-                    <th>Authors</th>
-                    <th>Affiliations</th>
-                    <th>Digital Library</th>
                 </tr>
             </thread>
             <tbody th:each="i,iterStat : ${referencesList}">
                 <td th:text="${i.getIdRef()}"/><!--This will print the index value-->
                 <!-- <td th:text="${iterStat.index}"/>This will print the Index-->
-                <td th:text="${i.getDoi()}"/>
-                <td th:text="${i.getArt().getType()}"/>
-                <td th:text="${i.getArt().getCiteKey()}"/>
-                <td th:text="${i.getArt().getTitle()}"/>
-                <td th:text="${i.getArt().getJournal()}"/>
-                <td th:text="${i.getArt().getKeywords()}"/>
-                <td th:text="${i.getArt().getNumber()}"/>
-                <td th:text="${i.getArt().getNumpages()}"/>
-                <td th:text="${i.getArt().getPages()}"/>
-                <td th:text="${i.getArt().getVolume()}"/>
+                <td th:text="${i.getDl().getName()}"/>
                 <td th:text="${i.getArt().getAny() }"/>
+                <td th:text="${i.getDoi()}"/>
+                <td>
+                    <li th:each="j,iterStatj : ${i.getArt().getResearchers()}" th:text="${j.getName()}"> </li>
+                </td>
+
+                <td th:text="${i.getArt().getTitle()}"/>
 
                 <td th:if="${i.getArt().getVen() != null }" th:text="${i.getArt().getVen().getName()}" />
                 <td th:if="${i.getArt().getVen() == null }" /> <p></p>
-                <td th:utext="${i.getArt().getAbstractA()}"/>
                 <!---th:each="image,status : ${String.split(i.getArt().getAbstractA(), 3)}"-->
-                <td>
-                     <li th:each="j,iterStatj : ${i.getArt().getResearchers()}" th:text="${j.getName()}"> </li>
-                </td>
+
+                <td th:text="${i.getArt().getType()}"/>
                 <td>
                     <li th:each="j,iterStatj : ${i.getArt().getCompanies()}" th:text="${j.getName()}"> </li>
                 </td>
-                <td th:text="${i.getDl().getName()}"/>
+
+                <td th:text="${i.getArt().getVolume()}"/>
+                <td th:text="${i.getArt().getPages()}"/>
+                <td th:text="${i.getArt().getNumber()}"/>
+                <td th:text="${i.getArt().getNumpages()}"/>
+                <td th:text="${i.getArt().getKeywords()}"/>
+                <td th:text="${i.getArt().getCiteKey()}"/>
+                <td th:utext="${i.getArt().getAbstractA()}"/>
             </tbody>
         </table>
     </div>

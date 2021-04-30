@@ -73,7 +73,7 @@ public class researcherDao implements Serializable {
     static ResultSet getResearchers(Statement s3, String doi) throws SQLException {
         ResultSet rs;
         rs = s3.executeQuery("select rss.IDRES , rss.NAME from RESEARCHERS rss, AUTHORS au, ARTICLES ar \n" +
-                "where ar.DOI = '" + doi + "' AND au.IDA = ar.DOI and au.IDRES = rss.IDRES" );
+                "where ar.DOI = '" + doi.replaceAll("'", "''") + "' AND au.IDA = ar.DOI and au.IDRES = rss.IDRES" );
         return rs;
     }
 }

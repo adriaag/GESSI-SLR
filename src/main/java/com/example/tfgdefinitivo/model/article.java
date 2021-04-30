@@ -12,11 +12,11 @@ public class article {
     private int idVen;
     private String title;
     private String keywords;
-    private int number;
-    private int numpages;
+    private String number;
+    private Integer numpages;
     private String pages;
     private String volume;
-    private int any;
+    private Integer any;
     private String abstractA;
     private venue ven;
     private company[] companies;
@@ -70,11 +70,11 @@ public class article {
         this.keywords = keywords;
     }
 
-    public int getNumber() {
+    public String getNumber() {
         return number;
     }
     @XmlElement
-    public void setNumber(int number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
@@ -135,9 +135,7 @@ public class article {
     }
 
 
-    public company[] getCompanies() {
-        return companies;
-    }
+    public company[] getCompanies() { return companies; }
 
     public void setCompanies(List<company> companies) {
         this.companies = companies.toArray(new company[0]);

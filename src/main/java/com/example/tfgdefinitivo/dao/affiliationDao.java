@@ -1,5 +1,6 @@
 package com.example.tfgdefinitivo.dao;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -22,19 +23,42 @@ public class affiliationDao {
         s.execute("drop table affiliations");
         System.out.println("Dropped table affiliations");
     }
-    public static void insertRow(Statement s, int idCom, String idA) throws SQLException {
-        String queryRow = "INSERT INTO affiliations(idCom, idA) VALUES (";
-        String query;
-        query = queryRow + idCom + ", '" + idA + "')";
+
+
+    public static Integer insertRow(Statement s, int idCom, String idA) throws SQLException {
         try {
+            String queryRow = "INSERT INTO affiliations(idCom, idA) VALUES (";
+            String query;
+            query = queryRow + idCom + ", '" + idA + "')";
             System.out.println(query);
             s.execute(query);
             System.out.println("Inserted row with idCom and idA in affiliations");
+            s.getConnection().commit();
         }
         catch(SQLException e) {
             if (e.getSQLState().equals("23505"))
                 System.out.println("Affiliation exists");
             else System.out.println("Error en insertRow Affiliation");
+        }
+        ResultSet rs = s.executeQuery("SELECT idCom FROM affiliations where idCom = " + idCom + " and idA='" + idA+ "'");
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    public static void insertRows(Statement s, Integer[] idCom, String doi) throws SQLException {
+        String queryRow = "INSERT INTO affiliations(idCom,idA) VALUES (";
+        String query;
+        for(int x : idCom) {
+            query = queryRow + x + ", '" + doi + "')";
+            try {
+                s.execute(query);
+                System.out.println("Inserted row with idCom and idA in Affiliation");
+            }
+            catch (SQLException e) {
+                if (e.getSQLState().equals("23505"))
+                    System.out.println("Affiliation exists");
+                else System.out.println("Error en insertRow Affiliation");
+            }
         }
     }
 }

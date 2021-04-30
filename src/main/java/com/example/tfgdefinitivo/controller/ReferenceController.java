@@ -4,10 +4,7 @@ import com.example.tfgdefinitivo.dao.ReferenceDao;
 import com.example.tfgdefinitivo.model.Reference;
 import org.jbibtex.ParseException;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -21,6 +18,9 @@ public class ReferenceController {
 
     @GetMapping(value = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public static List<Reference> getReferences(){ return ReferenceDao.getAllReferences(); }
+
+    @GetMapping(value = "/get{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public static Reference getReference(@PathVariable int id){ return ReferenceDao.getReference(id); }
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
     public static void addReference(String path, String nameDL, Statement s)

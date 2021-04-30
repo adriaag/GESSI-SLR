@@ -5,14 +5,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public interface venueDao {
-    /*Venue name unique - comprobar if exists y afegirla si no esta
-    create table venues(idVenue, nom, acronim)
-    PRIMARY KEY (idVenue));*/
 
     public static void createTable(Statement s) {
         try {
             s.execute("create table venues(idVen INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)," +
-                    " name varchar(100) UNIQUE, acronym varchar(20), PRIMARY KEY (idVen) ) ");
+                    " name varchar(300) UNIQUE, acronym varchar(20), PRIMARY KEY (idVen) ) ");
             System.out.println("Created table venues");
         } catch (SQLException t  ){
             if (t.getSQLState().equals("X0Y32"))

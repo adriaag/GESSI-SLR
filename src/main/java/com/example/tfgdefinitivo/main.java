@@ -43,7 +43,7 @@ public class main {
             int numero = 1;
             while (rs.next()){
                 System.out.println(numero++);
-                for(int i = 1; i<=13; i++) {
+                for(int i = 1; i<=12; i++) {
                     System.out.println(rs.getString(i));
                 }
             }

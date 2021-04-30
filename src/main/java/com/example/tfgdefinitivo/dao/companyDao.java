@@ -46,7 +46,6 @@ public interface companyDao {
                 }
             }
         }
-
         ResultSet rs = s.executeQuery("SELECT idCom FROM companies where name = '" + name + "'");
         rs.next();
         return rs.getInt(1);
@@ -55,8 +54,17 @@ public interface companyDao {
     public static ResultSet getCompanies(Statement s, String doi) throws SQLException {
         ResultSet rs;
         rs = s.executeQuery("select c.IDCOM, c.NAME from companies c, AFFILIATIONS af, ARTICLES a " +
-                "where a.DOI = '" + doi + "' AND AF.IDCOM = c.idcom and af.ida = a.DOI" );
+                "where a.DOI = '" + doi.replaceAll("'", "''") + "' AND AF.IDCOM = c.idcom and af.ida = a.DOI" );
         return rs;
     }
 
+    static Integer[] insertRows(Statement s, String affiliationToInsert) throws SQLException {
+        String[] splitArray = affiliationToInsert.split(";");
+        Integer[] ret = new Integer[splitArray.length];
+        int i = 0;
+        for(String x : splitArray) {
+            ret[i++] = insertRow(s,x);
+        }
+        return ret;
+    }
 }
