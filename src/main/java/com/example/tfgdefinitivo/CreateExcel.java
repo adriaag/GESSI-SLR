@@ -75,7 +75,7 @@ public class CreateExcel {
 
             row.createCell(11).setCellValue(art.getNumber());
 
-            if (art.getNumpages().equals(0)) row.createCell(12).setCellValue("-");
+            if (art.getNumpages()==0) row.createCell(12).setCellValue("-");
             else row.createCell(12).setCellValue(art.getNumpages());
             row.createCell(13).setCellValue(art.getCiteKey());
             row.createCell(14).setCellValue(art.getKeywords());

@@ -23,7 +23,7 @@ public class article {
     private researcher[] researchers;
 
     public article(String doi, String type, String citeKey, int idVen, String title,
-                   String keywords, int number, int numpages, String pages, String volume, int año, String abstractA) {
+                   String keywords, String number, int numpages, String pages, String volume, int año, String abstractA) {
         this.doi = doi;
         this.type = type;
         this.citeKey = citeKey;

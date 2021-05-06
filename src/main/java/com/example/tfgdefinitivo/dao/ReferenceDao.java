@@ -121,7 +121,7 @@ public class ReferenceDao {
                 if(rsAr.next()) {
                     ar = new article(rsAr.getString(1), rsAr.getString(2),
                             rsAr.getString(3), rsAr.getInt(4), rsAr.getString(5),
-                            rsAr.getString(6), rsAr.getInt(7),
+                            rsAr.getString(6), rsAr.getString(7),
                             rsAr.getInt(8), rsAr.getString(9), rsAr.getString(10),
                             rsAr.getInt(11), rsAr.getString(12));
 
@@ -262,5 +262,10 @@ public class ReferenceDao {
             throws SQLException, IOException, ParseException {
         articleDao.importar(path, nameDL, s);
         s.getConnection().commit();
+    }
+
+    public static Reference getReference(int id) {
+        Reference r = new Reference();
+        return r;
     }
 }
