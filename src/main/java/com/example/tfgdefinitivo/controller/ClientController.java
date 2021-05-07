@@ -30,16 +30,15 @@ public class ClientController {
     }
 
     @GetMapping(value = "/getReference", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getReference(@RequestParam(name= "id", required=false, defaultValue="1") int idR , Model model){
-        //pedir al otro controlador
-        System.out.println(idR);
+    public String getReference(@RequestParam(name= "id") int idR , Model model){
         Reference r = ReferenceController.getReference(idR);
         model.addAttribute("ref", r);
         return "oneReference";
     }
+
     @GetMapping(value = "/getAllReferences", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getReferences(Model model){
-        List<Reference> list = ReferenceDao.getAllReferences();
+        List<Reference> list = ReferenceController.getReferences();
         model.addAttribute("referencesList", list);
         return "allReferences";
     }
