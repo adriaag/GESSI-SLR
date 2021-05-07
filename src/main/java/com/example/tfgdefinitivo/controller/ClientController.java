@@ -1,6 +1,6 @@
 package com.example.tfgdefinitivo.controller;
 
-import com.example.tfgdefinitivo.CreateExcel;
+import com.example.tfgdefinitivo.dao.CreateExcel;
 import com.example.tfgdefinitivo.dao.ReferenceDao;
 import com.example.tfgdefinitivo.model.Reference;
 import com.example.tfgdefinitivo.model.formDTO;
@@ -29,9 +29,16 @@ public class ClientController {
         return "index";
     }
 
+    @GetMapping(value = "/getReference", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getReference(@RequestParam(name= "id", required=false, defaultValue="1") int idR , Model model){
+        //pedir al otro controlador
+        System.out.println(idR);
+        Reference r = ReferenceController.getReference(idR);
+        model.addAttribute("ref", r);
+        return "oneReference";
+    }
     @GetMapping(value = "/getAllReferences", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getReferences(Model model){
-        //List<Reference>
         List<Reference> list = ReferenceDao.getAllReferences();
         model.addAttribute("referencesList", list);
         return "allReferences";

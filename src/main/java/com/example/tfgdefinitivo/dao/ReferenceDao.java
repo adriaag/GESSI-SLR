@@ -265,7 +265,6 @@ public class ReferenceDao {
     }
 
     public static Reference getReference(int idR) {
-        System.out.println("Entraaaaaaaaaaaaaaaa");
         Reference r = null;
 
         Properties props = new Properties();;

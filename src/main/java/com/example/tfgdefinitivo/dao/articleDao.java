@@ -23,7 +23,7 @@ public class articleDao {
     static Key keywordsKey = new Key("keywords");
     static Key numpagesKey = new Key("numpages");
     static Key articleKey = new Key("article");
-    static Key affiliationKey = new Key("affiliation");
+    static Key affiliationKey = new Key("affiliationDTO");
 
     public static String[] pedirInfo(Statement s) throws SQLException {
         System.out.println("Escribir el path absoluto donde se encuentra el fichero a exportar: ");

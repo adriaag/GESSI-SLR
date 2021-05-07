@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Title</title>
+</head>
+<body>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    /* Create two equal columns that floats next to each other */
+    .column1 {
+        float: left;
+        width: 13%;
+        padding: 10px;
+
+    }
+
+    .column2 {
+        float: left;
+        width: 75%;
+        padding: 10px;
+
+    }
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+    ul {
+        padding: 0px;
+    }
+    li {
+        float: left;
+        width: auto;
+        list-style: outside none none;
+    }
+</style>
+</head>
+
+<h2>One reference</h2>
+
+<div class="row">
+    <div class="column1" style="background-color:#bbb;font-weight:bold;">
+        <h2>Reference</h2>
+        <p>#ref:</p>
+        <p>DL-name</p>
+        <p>Year</p>
+        <p>DOI</p>
+        <p>Authors</p>
+        <p>Title</p>
+        <p>Venue</p>
+        <p>Type</p>
+        <p>Affiliations</p>
+        <p>Volume</p>
+        <p>Pages</p>
+        <p>Number</p>
+        <p>Numpages</p>
+        <p>Keywords</p>
+        <p>Cite key</p>
+        <p>Abstract</p>
+    </div>
+    <div class="column2" style="background-color:#bbb;">
+        <h2> </br> </h2>
+        <p th:text="${ref.getIdRef()}" ></p>
+        <p th:text="${ref.getDl().getName()}"/><p>
+        <p th:text="${ref.getArt().getAny()}"/><p>
+
+        <p th:text="${ref.getDoi()}"/><p>
+        <p>
+        <li th:each="j,iterStatj : ${ref.getArt().getResearchers()}" th:text="${j.getName()}"></li>
+        </p>
+        </br>
+        <p th:text="${ref.getArt().getTitle()}"/><p>
+        <p>Venue</p>
+        <p th:text="${ref.getArt().getType()}"/><p>
+        <p>
+        <li th:each="j,iterStatj : ${ref.getArt().getCompanies()}" th:text="${j.getName()}"> </li>
+        </p>
+        </br>
+        <p th:text="${ref.getArt().getVolume()}"/></p>
+        <p th:text="${ref.getArt().getPages()}"/></p>
+        <p th:text="${ref.getArt().getNumber()}"/></p>
+        <p th:text="${ref.getArt().getNumpages()}"/></p>
+        <p th:text="${ref.getArt().getKeywords()}"/></p>
+        <p th:text="${ref.getArt().getCiteKey()}"/></p>
+        <p th:text="${ref.getArt().getAbstractA()}"/></p>
+    </div>
+</div>
+</body>
+</html>

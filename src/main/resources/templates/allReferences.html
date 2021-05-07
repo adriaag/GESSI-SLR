@@ -40,15 +40,15 @@
         <td th:if="${i.getArt().getVen() != null }" th:text="${i.getArt().getVen().getName()}" />
         <td th:if="${i.getArt().getVen() == null }" /> <p></p>
         <!---th:each="image,status : ${String.split(i.getArt().getAbstractA(), 3)}"-->
-        <td> <button class="btn btn-primary" type="submit" th:field="${i.getArt().getDoi()}">+ </button> </td>
-        <!--- pedir info articleDTO y pasar como parametro doi, #ref y dl -->
-
-        <td th:text="${i.getArt().getType()}"/>
         <td>
-            <li th:each="j,iterStatj : ${i.getArt().getCompanies()}" th:text="${j.getName()}"> </li>
+            <button class="btn btn-primary"
+                    th:data-url="@{/getReference?id={id}(id=${i.getIdRef()})}"
+                    onclick="window.open(this.getAttribute('data-url'))">+
+            </button>
         </td>
+        <!--- pasar como parametro idREF -->
 
-        <td th:text="${i.getArt().getVolume()}"/>
+
         </tbody>
     </table>
 </div>

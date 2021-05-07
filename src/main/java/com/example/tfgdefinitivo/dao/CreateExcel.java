@@ -1,4 +1,4 @@
-package com.example.tfgdefinitivo;
+package com.example.tfgdefinitivo.dao;
 
 import com.example.tfgdefinitivo.controller.ReferenceController;
 import com.example.tfgdefinitivo.model.*;
@@ -92,9 +92,4 @@ public class CreateExcel {
         return workbook;
 
     }
-
-    public static void main(String[] args) throws IOException {
-        create();
-    }
-
 }
