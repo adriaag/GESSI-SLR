@@ -264,8 +264,82 @@ public class ReferenceDao {
         s.getConnection().commit();
     }
 
-    public static Reference getReference(int id) {
-        Reference r = new Reference();
+    public static Reference getReference(int idR) {
+        System.out.println("Entraaaaaaaaaaaaaaaa");
+        Reference r = null;
+
+        Properties props = new Properties();;
+        props.put("user", "user1");
+        props.put("password", "user1");
+        Connection conn;
+        Statement s;
+        try {
+            String url = "jdbc:derby:derbyDB;create=true";
+            conn = DriverManager.getConnection(url, props);
+            conn.setAutoCommit(false);
+
+            s = conn.createStatement();
+
+            Reference NewRef = find(idR,s);
+
+            String doiR = NewRef.getDoi();
+            int dlR = NewRef.getidDL();
+
+            System.out.println(idR + " " + doiR + " " + dlR);
+
+            digitalLibrary dl = null;
+            Statement s2 = conn.createStatement();
+            ResultSet rsDL = digitalLibraryDao.getdigitalLibrary(s2,dlR);
+            if(rsDL.next())
+                dl = new digitalLibrary(rsDL.getInt(1),rsDL.getString(2), rsDL.getString(3));
+            NewRef.setDl(dl);
+
+            Statement s3 = conn.createStatement();
+            ResultSet rsAr = articleDao.getArticle(s3,doiR);
+            article ar = null;
+            if(rsAr.next()) {
+                ar = new article(rsAr.getString(1), rsAr.getString(2),
+                        rsAr.getString(3), rsAr.getInt(4), rsAr.getString(5),
+                        rsAr.getString(6), rsAr.getString(7),
+                        rsAr.getInt(8), rsAr.getString(9), rsAr.getString(10),
+                        rsAr.getInt(11), rsAr.getString(12));
+                rsAr = venueDao.getVenue(s3,rsAr.getInt(4));
+                venue v = null;
+                if (rsAr.next())
+                    v = new venue(rsAr.getInt(1), rsAr.getString(2), rsAr.getString(3));
+                ar.setVen(v);
+
+                rsAr = companyDao.getCompanies(s3,doiR);
+                List<company> c = new ArrayList<company>();
+                company auxC = null;
+                while (rsAr.next()) {
+                    auxC = new company(rsAr.getInt(1), rsAr.getString(2));
+                    c.add(auxC);
+                }
+                ar.setCompanies(c);
+
+                rsAr = researcherDao.getResearchers(s3,doiR);
+                List<researcher> rss = new ArrayList<researcher>();
+                researcher auxR = null;
+                while (rsAr.next()) {
+                    auxR = new researcher(rsAr.getInt(1), rsAr.getString(2));
+                    rss.add(auxR);
+                }
+                ar.setResearchers(rss);
+            }
+            NewRef.setArt(ar);
+            r=NewRef;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return r;
+    }
+
+    private static Reference find(int idR,Statement s) throws SQLException {
+        ResultSet rs;
+        rs = s.executeQuery("SELECT * FROM referencias where idRef=" + idR);
+        rs.next();
+        Reference r = new Reference(rs.getInt(1),rs.getString(2),rs.getInt(3));
         return r;
     }
 }

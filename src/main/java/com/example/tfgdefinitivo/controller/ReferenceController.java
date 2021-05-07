@@ -19,8 +19,10 @@ public class ReferenceController {
     @GetMapping(value = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public static List<Reference> getReferences(){ return ReferenceDao.getAllReferences(); }
 
-    @GetMapping(value = "/get{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static Reference getReference(@PathVariable int id){ return ReferenceDao.getReference(id); }
+    @GetMapping(value = "/get", produces = MediaType.APPLICATION_JSON_VALUE)
+    public static Reference getReference(@RequestParam(name= "id", required=false, defaultValue="1") int id){
+        return ReferenceDao.getReference(id);
+    }
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
     public static void addReference(String path, String nameDL, Statement s)
