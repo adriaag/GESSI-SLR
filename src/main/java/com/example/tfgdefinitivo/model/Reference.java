@@ -13,6 +13,7 @@ public class Reference implements Serializable {
     private int idRef;
     private String doi;
     private int idDL;
+    private boolean duplicate;
     private article art;
     private digitalLibrary dl;
 

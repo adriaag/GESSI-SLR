@@ -1,4 +1,4 @@
-package com.example.tfgdefinitivo.dao;
+package com.example.tfgdefinitivo.classes;
 
 import com.example.tfgdefinitivo.controller.ReferenceController;
 import com.example.tfgdefinitivo.model.*;

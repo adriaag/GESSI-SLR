@@ -1,11 +1,10 @@
 package com.example.tfgdefinitivo;
 
-import com.example.tfgdefinitivo.dao.*;
+import com.example.tfgdefinitivo.classes.*;
 import org.jbibtex.ParseException;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.Properties;
 
 public class main {

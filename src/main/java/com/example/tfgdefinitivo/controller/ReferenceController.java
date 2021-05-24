@@ -1,6 +1,6 @@
 package com.example.tfgdefinitivo.controller;
 
-import com.example.tfgdefinitivo.dao.ReferenceDao;
+import com.example.tfgdefinitivo.classes.ReferenceDao;
 import com.example.tfgdefinitivo.model.Reference;
 import org.jbibtex.ParseException;
 import org.springframework.http.MediaType;

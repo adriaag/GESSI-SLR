@@ -1,4 +1,4 @@
-package com.example.tfgdefinitivo.dao;
+package com.example.tfgdefinitivo.classes;
 
 import com.example.tfgdefinitivo.model.*;
 import org.jbibtex.ParseException;
@@ -11,9 +11,11 @@ import java.util.Properties;
 
 public class ReferenceDao {
 
-    public static int insertRow(Statement s, String doi, String idDL) throws SQLException {
+    public static int insertRow(Statement s, String doi, String idDL, boolean dupli)
+            throws SQLException {
         try {
-            String query = "INSERT INTO referencias(doi,idDL) VALUES (\'" + doi + "\', " + idDL + ")";
+            String query = "INSERT INTO referencias(doi,idDL,duplicate) VALUES (\'" + doi
+                    + "\', " + idDL + "," + dupli+")";
             System.out.println(query);
             s.execute(query);
             System.out.println("Inserted row with doi, idDL in referencias");
@@ -35,10 +37,10 @@ public class ReferenceDao {
     public static void createTable(Statement s) {
         try {
             s.execute("create table referencias(idRef INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, " +
-                    "INCREMENT BY 1), doi varchar(50), idDL int, " +
+                    "INCREMENT BY 1), doi varchar(50), idDL int, duplicate boolean," +
                     "PRIMARY KEY (doi,idDL), CONSTRAINT DL_FK_R FOREIGN KEY (idDL) REFERENCES digitalLibraries (idDL)," +
                     "CONSTRAINT AR_FK_R FOREIGN KEY (doi) REFERENCES articles (doi))");
-            //UNIQUE EN DOI
+
             System.out.println("Created table referencias");
         } catch (SQLException e) {
             if (e.getSQLState().equals("X0Y32"))
@@ -158,6 +160,7 @@ public class ReferenceDao {
         }
         return refList;
     }
+
     public static void create() {
         String framework = "embedded";
         String dbName = "derbyDB";
@@ -196,6 +199,7 @@ public class ReferenceDao {
             }
         }
     }
+
     public static void delete() {
         String framework = "embedded";
         String dbName = "derbyDB";
@@ -233,6 +237,7 @@ public class ReferenceDao {
             }
         }
     }
+
     private static void crearTablas(Statement s, Connection conn, ArrayList<Statement> statements) throws SQLException {
         // Create table digitalLibraries if not exist
         if (digitalLibraryDao.createTable(s))
@@ -245,9 +250,11 @@ public class ReferenceDao {
         authorDao.createTable(s);
         companyDao.createTable(s);
         affiliationDao.createTable(s);
+        ImportationLogError.createTable(s);
     }
 
     private static void deleteTables(Statement s, Connection conn, ArrayList<Statement> statements) throws SQLException {
+        ImportationLogError.dropTable(s);
         affiliationDao.dropTable(s);
         companyDao.dropTable(s);
         authorDao.dropTable(s);
@@ -258,8 +265,7 @@ public class ReferenceDao {
         digitalLibraryDao.dropTable(s);
     }
 
-    public static void importar(String path, String nameDL, Statement s)
-            throws SQLException, IOException, ParseException {
+    public static void importar(String path, String nameDL, Statement s) throws SQLException, IOException, ParseException {
         articleDao.importar(path, nameDL, s);
         s.getConnection().commit();
     }

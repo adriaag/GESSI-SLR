@@ -1,4 +1,4 @@
-package com.example.tfgdefinitivo.dao;
+package com.example.tfgdefinitivo.classes;
 
 import java.io.Serializable;
 import java.sql.ResultSet;

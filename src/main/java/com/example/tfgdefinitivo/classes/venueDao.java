@@ -1,10 +1,10 @@
-package com.example.tfgdefinitivo.dao;
+package com.example.tfgdefinitivo.classes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public interface venueDao {
+public class venueDao {
 
     public static void createTable(Statement s) {
         try {

@@ -91,8 +91,20 @@ public class articleDao {
         String doi;
         if (entry.getField(BibTeXEntry.KEY_DOI) == null)
             doi = entry.getKey().toString();
-        else
-            doi = entry.getField(BibTeXEntry.KEY_DOI).toUserString();
+        else {
+            String str = BibTeXEntry.KEY_DOI.toString();
+            if(str.contains("http")) {
+                String[] arrOfStr = str.split("/");
+
+                StringBuilder aux = new StringBuilder();
+                for (int i = 3; i < arrOfStr.length; i++) {
+                    aux.append(arrOfStr[i]);
+                }
+                doi = aux.toString();
+            }
+            else
+                doi = entry.getField(BibTeXEntry.KEY_DOI).toUserString();
+        }
 
         if (doi != null) {
             doi = doi.replaceAll("[{-}]", "").replaceAll("'", "''");

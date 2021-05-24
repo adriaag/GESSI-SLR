@@ -1,6 +1,6 @@
 package com.example.tfgdefinitivo.controller;
 
-import com.example.tfgdefinitivo.dao.digitalLibraryDao;
+import com.example.tfgdefinitivo.classes.digitalLibraryDao;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;

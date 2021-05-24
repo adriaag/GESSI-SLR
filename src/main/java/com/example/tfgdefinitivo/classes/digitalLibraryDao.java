@@ -48,35 +48,35 @@ public interface digitalLibraryDao {
         statements.add(psInsert);
 
         psInsert.setString(1, "1");
-        psInsert.setString(2, "ACM DL");
-        psInsert.setString(3, "https://dl.acm.org/");
-        psInsert.executeUpdate();
-
-        psInsert.setString(1, "2");
-        psInsert.setString(2, "IEE Explore");
-        psInsert.setString(3, "https://ieeexplore.ieee.org/Xplore/home.jsp");
-        psInsert.executeUpdate();
-
-        psInsert.setString(1, "3");
-        psInsert.setString(2, "ScienceDirect");
-        psInsert.setString(3, "https://www.sciencedirect.com/");
-        psInsert.executeUpdate();
-
-        psInsert.setString(1, "4");
-        psInsert.setString(2, "SpringerLink");
-        psInsert.setString(3, "https://link.springer.com/");
-        psInsert.executeUpdate();
-
-        psInsert.setString(1, "5");
         psInsert.setString(2, "Scopus");
         psInsert.setString(3, "https://www.scopus.com/");
         psInsert.executeUpdate();
 
-        psInsert.setString(1, "6");
+        psInsert.setString(1, "2");
         psInsert.setString(2, "Web of Science");
         psInsert.setString(3, "https://mjl.clarivate.com/home");
         psInsert.executeUpdate();
         System.out.println("Inserted rows in digitalLibraries ");
+
+        psInsert.setString(1, "3");
+        psInsert.setString(2, "IEE Explore");
+        psInsert.setString(3, "https://ieeexplore.ieee.org/Xplore/home.jsp");
+        psInsert.executeUpdate();
+
+        psInsert.setString(1, "4");
+        psInsert.setString(2, "ACM DL");
+        psInsert.setString(3, "https://dl.acm.org/");
+        psInsert.executeUpdate();
+
+        psInsert.setString(1, "5");
+        psInsert.setString(2, "ScienceDirect");
+        psInsert.setString(3, "https://www.sciencedirect.com/");
+        psInsert.executeUpdate();
+
+        psInsert.setString(1, "6");
+        psInsert.setString(2, "SpringerLink");
+        psInsert.setString(3, "https://link.springer.com/");
+        psInsert.executeUpdate();
     }
 
     public static void dropTable(Statement s) throws SQLException {
