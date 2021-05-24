@@ -1,4 +1,4 @@
-package com.example.tfgdefinitivo.dao;
+package com.example.tfgdefinitivo.classes;
 
 import java.sql.SQLException;
 import java.sql.Statement;

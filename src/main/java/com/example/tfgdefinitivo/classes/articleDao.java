@@ -1,10 +1,8 @@
-package com.example.tfgdefinitivo.dao;
+package com.example.tfgdefinitivo.classes;
 
 import org.jbibtex.*;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,7 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Scanner;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class articleDao {
 
@@ -56,6 +55,7 @@ public class articleDao {
         BibTeXDatabase database = bibtexParser.parse(reader);
         Map<Key, BibTeXEntry> entryMap = database.getEntries();
         Collection<BibTeXEntry> entries = entryMap.values();
+        iniCheck(path,s);
         // add rows of file
         for(BibTeXEntry entry : entries){
             System.out.println(entry.getKey());
@@ -74,6 +74,47 @@ public class articleDao {
             }
         }
         reader.close();
+    }
+
+    public static void iniCheck(String path, Statement sta) throws FileNotFoundException, SQLException {
+        File file = new File(path);
+        Scanner sc = new Scanner(file);
+        sc.useDelimiter("\\@");
+        ArrayList<String> list = new ArrayList<>();
+        String bib;
+
+        Pattern patternKey = Pattern.compile("\\{(.*),");
+        Pattern patternDOI = Pattern.compile("doi(.*)\\}");
+        while(sc.hasNext()) {
+            String data = sc.next();
+
+            bib = sc.findInLine(patternKey);
+            Matcher matcher = patternDOI.matcher(data);
+
+            if(bib!=null) {
+                String citeKey = bib.replaceAll("\\{", "").replaceAll(",", "");
+                //Comprobar citekey duplicada
+                System.out.println(citeKey);
+                if (list.contains(citeKey)) {
+                    //buscar doi
+                    String doiP;
+                    if (matcher.find()) {
+                         doiP = matcher.group(1).replaceAll("=\\{", "").replaceAll(",", "")
+                                .replaceAll("=", "");
+                        System.out.println("DOI es: " +doiP);
+                    }
+                    else doiP = citeKey;
+                    //Añadir bib a la table LogError
+                    if( ImportationLogError.ifExistsDOI(sta, doiP)){
+                        ImportationLogError.insertRow(sta,data);
+                    }
+                    //debe insert en LogError los repetidos!!!
+                    //y ver si escribe bien
+                    System.out.println("insert row if duplicated key:" + citeKey);
+                }
+                list.add(citeKey);
+            }
+        }
     }
 
     public static ResultSet getAllData(Statement s) throws SQLException {
@@ -117,7 +158,8 @@ public class articleDao {
                 System.out.println("El article se añade.");
                 insertRow(s, entry, doi);//create articleDao nuevo
             }
-            ReferenceDao.insertRow(s,doi,idDL); //despues del try catch crear una nueva referencia
+            boolean dup = false;
+            ReferenceDao.insertRow(s,doi,idDL,dup); //despues del try catch crear una nueva referencia
             return doi;
         }
         else {

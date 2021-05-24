@@ -1,9 +1,9 @@
-package com.example.tfgdefinitivo.dao;
+package com.example.tfgdefinitivo.classes;
 
 import java.sql.*;
 import java.util.ArrayList;
 
-public interface digitalLibraryDao {
+public class digitalLibraryDao {
     public static ResultSet getAllData(Statement s) throws SQLException {
         ResultSet rs;
         rs = s.executeQuery("SELECT * FROM digitalLibraries");
