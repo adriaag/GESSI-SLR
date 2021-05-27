@@ -1,6 +1,6 @@
 package com.example.tfgdefinitivo;
 
-import com.example.tfgdefinitivo.classes.*;
+import com.example.tfgdefinitivo.domain.data.*;
 import org.jbibtex.ParseException;
 
 import java.io.IOException;
@@ -30,14 +30,14 @@ public class main {
             Statement s = conn.createStatement();
             conn.setAutoCommit(false);
             ResultSet rs;
-            String[] aux = articleDao.pedirInfo(s);
+            String[] aux = article.askInfo(s);
             String path = aux[0];
             String nameDL = aux[1];
             System.out.println("SimpleApp starting in " + framework + " mode");
 
-            articleDao.importar(path, nameDL, s);
+            article.importar(path, nameDL, s);
             // Select data
-            rs = articleDao.getAllData(s);
+            rs = article.getAllData(s);
 
             int numero = 1;
             while (rs.next()){

@@ -2,18 +2,14 @@ package com.example.tfgdefinitivo;
 // Java Program to illustrate reading from FileReader
 // using Scanner Class reading entire File
 // without using loop
-import com.example.tfgdefinitivo.classes.ImportationLogError;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 
 public class pruebas {
