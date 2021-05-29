@@ -17,7 +17,7 @@ public class ReferenceController {
 
 
     @GetMapping(value = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static List<referenceDTO> getReferences(){ return reference.getAllReferences(); }
+    public static List<referenceDTO> getReferences() { return reference.getAllReferences(); }
 
     @GetMapping(value = "/get/", produces = MediaType.APPLICATION_JSON_VALUE)
     public static referenceDTO getReference(@RequestParam(name= "id", required=false, defaultValue="1") int id){

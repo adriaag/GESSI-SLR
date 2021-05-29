@@ -1,6 +1,7 @@
 package com.example.tfgdefinitivo.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
@@ -12,7 +13,7 @@ import java.sql.SQLException;
  * Class that encapsulates the database connection information
  */
 @Configuration
-@PropertySource(value="classpath:application.properties", encoding="UTF-8")
+@PropertySource("classpath:/application.properties")
 public class DBConnection {
 
     @Value("${spring.datasource.url}")
@@ -24,19 +25,19 @@ public class DBConnection {
     @Value("${spring.datasource.password}")
     private String password;
 
-    public String getURL() {
+    public  String getURL() {
         return url;
     }
-    public String getUser() {
+    public  String getUser() {
         return username;
     }
-    public String getPass() { return password; }
+    public  String getPass() { return password; }
 
+    @Bean
     public Connection getConnection() throws ClassNotFoundException, SQLException {
-        Class.forName("org.postgresql.Driver");
-
+        Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
         // We use a configuration file for customise the connection to the URL
-        return DriverManager.getConnection(url, username, password);
+        return DriverManager.getConnection(getURL(), getUser(), getPass());
 
     }
 }

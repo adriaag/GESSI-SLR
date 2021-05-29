@@ -12,8 +12,6 @@ public class digitalLibraryDTO implements Serializable{
     private String name;
     private String url;
 
-    public digitalLibraryDTO(){}
-
     public digitalLibraryDTO(int idDL, String name, String url){
         this.idDL = idDL;
         this.name = name;

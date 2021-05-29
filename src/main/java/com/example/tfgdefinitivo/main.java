@@ -41,10 +41,8 @@ public class main {
 
             int numero = 1;
             while (rs.next()){
-                System.out.println(numero++);
-                for(int i = 1; i<=12; i++) {
-                    System.out.println(rs.getString(i));
-                }
+                System.out.println("Numero ref: " + numero++);
+                System.out.println(rs.getString(1));
             }
             conn.commit();
             System.out.println("Committed the transaction");

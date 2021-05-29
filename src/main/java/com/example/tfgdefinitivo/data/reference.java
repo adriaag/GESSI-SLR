@@ -1,7 +1,10 @@
 package com.example.tfgdefinitivo.data;
 
+import com.example.tfgdefinitivo.config.DBConnection;
 import com.example.tfgdefinitivo.domain.dto.*;
 import org.jbibtex.ParseException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.IOException;
 import java.sql.*;
@@ -85,18 +88,12 @@ public class reference {
     public static List<referenceDTO> getAllReferences() {
 
         List<referenceDTO> refList = null;
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Connection conn = ctx.getBean(Connection.class);
 
-        String framework = "embedded";
-        String dbName = "derbyDB";
-        Properties props = new Properties();;
-        props.put("user", "user1");
-        props.put("password", "user1");
-        Connection conn;
         ArrayList<Statement> statements = new ArrayList<>(); // list of Statements, PreparedStatements
         Statement s = null;
         try {
-            String url = "jdbc:derby:derbyDB;create=true";
-            conn = DriverManager.getConnection(url, props);
             conn.setAutoCommit(false);
 
             // Statement object for running various SQL statements commands against the database.

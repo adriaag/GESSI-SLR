@@ -10,7 +10,7 @@ public class referenceDTO implements Serializable {
     private int idRef;
     private String doi;
     private int idDL;
-    private boolean duplicate;
+    private String estado;
     private articleDTO art;
     private digitalLibraryDTO dl;
 
