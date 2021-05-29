@@ -11,12 +11,15 @@ public class digitalLibraryDTO implements Serializable{
     private int idDL;
     private String name;
     private String url;
+    private int priority;
 
-    public digitalLibraryDTO(int idDL, String name, String url){
+    public digitalLibraryDTO(int idDL, String name, String url, int p){
         this.idDL = idDL;
         this.name = name;
         this.url = url;
+        this.priority = p;
     }
+
     public int getIdDL() {
         return idDL;
     }
@@ -37,4 +40,11 @@ public class digitalLibraryDTO implements Serializable{
     @XmlElement
     public void seturl(String url) {this.url = url; }
 
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
 }

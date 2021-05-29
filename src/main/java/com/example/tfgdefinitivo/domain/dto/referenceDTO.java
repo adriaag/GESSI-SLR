@@ -15,10 +15,11 @@ public class referenceDTO implements Serializable {
     private digitalLibraryDTO dl;
 
 
-    public referenceDTO(int aux, String aux2, int aux3) {
+    public referenceDTO(int aux, String aux2, int aux3, String estado) {
         this.idRef = aux;
         this.doi = aux2;
         this.idDL = aux3;
+        this.estado = estado;
     }
 
     public int getIdRef() {
@@ -59,5 +60,13 @@ public class referenceDTO implements Serializable {
     @XmlElement
     public void setDl(digitalLibraryDTO dl) {
         this.dl = dl;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }

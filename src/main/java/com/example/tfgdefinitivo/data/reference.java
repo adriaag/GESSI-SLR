@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 public class reference {
 
@@ -96,64 +95,23 @@ public class reference {
         try {
             conn.setAutoCommit(false);
 
-            // Statement object for running various SQL statements commands against the database.
             s = conn.createStatement();
 
             ResultSet rs = getAll(s);
 
             int number = 1;
-
             refList = new ArrayList<referenceDTO>();
             while(rs.next()) {
                 System.out.println(number++);
+
                 int idR = rs.getInt(1);
                 String doiR = rs.getString(2);
                 int dlR = rs.getInt(3);
+                String estado = rs.getString(4);
+                System.out.println(idR + " " + doiR + " " + dlR + " "+ estado);
 
-                System.out.println(idR + " " + doiR + " " + dlR);
-                referenceDTO NewRef = new referenceDTO(idR, doiR, dlR);
-                digitalLibraryDTO dl = null;
-                Statement s2 = conn.createStatement();
-                ResultSet rsDL = digitalLibrary.getdigitalLibrary(s2,dlR);
-                if(rsDL.next())
-                    dl = new digitalLibraryDTO(rsDL.getInt(1),rsDL.getString(2), rsDL.getString(3));
-                NewRef.setDl(dl);
-
-                Statement s3 = conn.createStatement();
-                ResultSet rsAr = article.getArticle(s3,doiR);
-                articleDTO ar = null;
-                if(rsAr.next()) {
-                    ar = new articleDTO(rsAr.getString(1), rsAr.getString(2),
-                            rsAr.getString(3), rsAr.getInt(4), rsAr.getString(5),
-                            rsAr.getString(6), rsAr.getString(7),
-                            rsAr.getInt(8), rsAr.getString(9), rsAr.getString(10),
-                            rsAr.getInt(11), rsAr.getString(12));
-
-                    rsAr = venue.getVenue(s3,rsAr.getInt(4));
-                    venueDTO v = null;
-                    if (rsAr.next())
-                        v = new venueDTO(rsAr.getInt(1), rsAr.getString(2), rsAr.getString(3));
-                    ar.setVen(v);
-
-                    rsAr = company.getCompanies(s3,doiR);
-                    List<companyDTO> c = new ArrayList<companyDTO>();
-                    companyDTO auxC = null;
-                    while (rsAr.next()) {
-                        auxC = new companyDTO(rsAr.getInt(1), rsAr.getString(2));
-                        c.add(auxC);
-                    }
-                    ar.setCompanies(c);
-
-                    rsAr = researcher.getResearchers(s3,doiR);
-                    List<researcherDTO> rss = new ArrayList<researcherDTO>();
-                    researcherDTO auxR = null;
-                    while (rsAr.next()) {
-                        auxR = new researcherDTO(rsAr.getInt(1), rsAr.getString(2));
-                        rss.add(auxR);
-                    }
-                    ar.setResearchers(rss);
-                }
-                NewRef.setArt(ar);
+                referenceDTO NewRef = new referenceDTO(idR,doiR,dlR,estado);
+                obtainReferenceDTO(conn, NewRef, doiR, dlR);
 
                 refList.add(NewRef);
             }
@@ -164,20 +122,12 @@ public class reference {
     }
 
     public static void create() {
-        String framework = "embedded";
-        String dbName = "derbyDB";
-        String protocol = "jdbc:derby:";
-        Properties props = new Properties();;
-        props.put("user", "user1");
-        props.put("password", "user1");
-        System.out.println("Program starting in " + framework + " mode");
         Connection conn;
         ArrayList<Statement> statements = new ArrayList<>(); // list of Statements, PreparedStatements
         Statement s = null;
         try {
-            String url = "jdbc:derby:derbyDB;create=true";
-            conn = DriverManager.getConnection(url, props);
-            System.out.println("Connected to and created database " + dbName);
+            ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+            conn = ctx.getBean(Connection.class);
             conn.setAutoCommit(false);
 
             // Statement object for running various SQL statements commands against the database.
@@ -203,20 +153,12 @@ public class reference {
     }
 
     public static void delete() {
-        String framework = "embedded";
-        String dbName = "derbyDB";
-        String protocol = "jdbc:derby:";
-        Properties props = new Properties();;
-        props.put("user", "user1");
-        props.put("password", "user1");
-        System.out.println("Program starting in " + framework + " mode");
         Connection conn;
         ArrayList<Statement> statements = new ArrayList<>(); // list of Statements, PreparedStatements
         Statement s = null;
         try {
-            String url = "jdbc:derby:derbyDB;create=true";
-            conn = DriverManager.getConnection(url, props);
-            System.out.println("Connected to and created database " + dbName);
+            ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+            conn = ctx.getBean(Connection.class);
             conn.setAutoCommit(false);
 
             // Statement object for running various SQL statements commands against the database.
@@ -276,14 +218,11 @@ public class reference {
     public static referenceDTO getReference(int idR) {
         referenceDTO r = null;
 
-        Properties props = new Properties();;
-        props.put("user", "user1");
-        props.put("password", "user1");
         Connection conn;
         Statement s;
         try {
-            String url = "jdbc:derby:derbyDB;create=true";
-            conn = DriverManager.getConnection(url, props);
+            ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+            conn = ctx.getBean(Connection.class);
             conn.setAutoCommit(false);
 
             s = conn.createStatement();
@@ -292,50 +231,10 @@ public class reference {
 
             String doiR = NewRef.getDoi();
             int dlR = NewRef.getidDL();
+            String estado = NewRef.getEstado();
+            System.out.println(idR + " " + doiR + " " + dlR + " " + estado);
 
-            System.out.println(idR + " " + doiR + " " + dlR);
-
-            digitalLibraryDTO dl = null;
-            Statement s2 = conn.createStatement();
-            ResultSet rsDL = digitalLibrary.getdigitalLibrary(s2,dlR);
-            if(rsDL.next())
-                dl = new digitalLibraryDTO(rsDL.getInt(1),rsDL.getString(2), rsDL.getString(3));
-            NewRef.setDl(dl);
-
-            Statement s3 = conn.createStatement();
-            ResultSet rsAr = article.getArticle(s3,doiR);
-            articleDTO ar = null;
-            if(rsAr.next()) {
-                ar = new articleDTO(rsAr.getString(1), rsAr.getString(2),
-                        rsAr.getString(3), rsAr.getInt(4), rsAr.getString(5),
-                        rsAr.getString(6), rsAr.getString(7),
-                        rsAr.getInt(8), rsAr.getString(9), rsAr.getString(10),
-                        rsAr.getInt(11), rsAr.getString(12));
-                rsAr = venue.getVenue(s3,rsAr.getInt(4));
-                venueDTO v = null;
-                if (rsAr.next())
-                    v = new venueDTO(rsAr.getInt(1), rsAr.getString(2), rsAr.getString(3));
-                ar.setVen(v);
-
-                rsAr = company.getCompanies(s3,doiR);
-                List<companyDTO> c = new ArrayList<companyDTO>();
-                companyDTO auxC = null;
-                while (rsAr.next()) {
-                    auxC = new companyDTO(rsAr.getInt(1), rsAr.getString(2));
-                    c.add(auxC);
-                }
-                ar.setCompanies(c);
-
-                rsAr = researcher.getResearchers(s3,doiR);
-                List<researcherDTO> rss = new ArrayList<researcherDTO>();
-                researcherDTO auxR = null;
-                while (rsAr.next()) {
-                    auxR = new researcherDTO(rsAr.getInt(1), rsAr.getString(2));
-                    rss.add(auxR);
-                }
-                ar.setResearchers(rss);
-            }
-            NewRef.setArt(ar);
+            obtainReferenceDTO(conn, NewRef, doiR,dlR);
             r=NewRef;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -343,11 +242,57 @@ public class reference {
         return r;
     }
 
+    private static void obtainReferenceDTO(Connection conn, referenceDTO newRef, String doiR, int dlR) throws SQLException {
+        Statement s2 = conn.createStatement();
+        ResultSet rsDL = digitalLibrary.getdigitalLibrary(s2,dlR);
+        digitalLibraryDTO dl = null;
+
+        if(rsDL.next())
+            dl = new digitalLibraryDTO(rsDL.getInt(1),rsDL.getString(2),
+                    rsDL.getString(3),rsDL.getInt(4));
+        newRef.setDl(dl);
+
+        Statement s3 = conn.createStatement();
+        ResultSet rsAr = article.getArticle(s3,doiR);
+        articleDTO ar = null;
+        if(rsAr.next()) {
+            ar = new articleDTO(rsAr.getString(1), rsAr.getString(2),
+                    rsAr.getString(3), rsAr.getInt(4), rsAr.getString(5),
+                    rsAr.getString(6), rsAr.getString(7),
+                    rsAr.getInt(8), rsAr.getString(9), rsAr.getString(10),
+                    rsAr.getInt(11), rsAr.getString(12));
+            rsAr = venue.getVenue(s3,rsAr.getInt(4));
+            venueDTO v = null;
+            if (rsAr.next())
+                v = new venueDTO(rsAr.getInt(1), rsAr.getString(2), rsAr.getString(3));
+            ar.setVen(v);
+
+            rsAr = company.getCompanies(s3,doiR);
+            List<companyDTO> c = new ArrayList<companyDTO>();
+            companyDTO auxC = null;
+            while (rsAr.next()) {
+                auxC = new companyDTO(rsAr.getInt(1), rsAr.getString(2));
+                c.add(auxC);
+            }
+            ar.setCompanies(c);
+
+            rsAr = researcher.getResearchers(s3,doiR);
+            List<researcherDTO> rss = new ArrayList<researcherDTO>();
+            researcherDTO auxR = null;
+            while (rsAr.next()) {
+                auxR = new researcherDTO(rsAr.getInt(1), rsAr.getString(2));
+                rss.add(auxR);
+            }
+            ar.setResearchers(rss);
+        }
+        newRef.setArt(ar);
+    }
+
     private static referenceDTO find(int idR, Statement s) throws SQLException {
         ResultSet rs;
         rs = s.executeQuery("SELECT * FROM referencias where idRef=" + idR);
         rs.next();
-        referenceDTO r = new referenceDTO(rs.getInt(1),rs.getString(2),rs.getInt(3));
+        referenceDTO r = new referenceDTO(rs.getInt(1),rs.getString(2),rs.getInt(3), rs.getString(4));
         return r;
     }
 

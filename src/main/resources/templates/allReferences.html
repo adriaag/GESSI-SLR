@@ -17,33 +17,30 @@
     </script>
     <title>All references</title>
     <style>
+        .mar {
+            padding: 0 15px 10px;
+        }
         .hide {
             display: none;
         }
 
         .myDIV:hover + .hide {
             display: block;
-            color: red;
-        }
-        .mar {
-            margin-top: 20px;
-            margin-bottom: 20px;
-            margin-right: 20px;
-            margin-left: 20px;
+            color: #aeffa0;
         }
     </style>
 </head>
 <body>
-<div class=".mar">
+<div >
     <!--    Creates a big gray field  -->
 <div class="jumbotron">
     <!-- Big words -->
-    <h1 class="display-4"> GESSI-REFERENCES MANAGEMENT</h1>
-    <p> Download all references information <a href="/download">here</a></p>
+    <h1 class="display-4"> GESSI - REFERENCES MANAGEMENT</h1>
+    <h4> Download all references information <a href="/download">here</a></h4>
 </div>
-
-<table class="table table-striped" id="dataTable" data-page-length='50' data-order='[[1, "desc"]]'>
-    <thead>
+    <div class="mar" >
+<table class="table table-striped " id="dataTable" data-page-length='50' data-order='[[1, "desc"]]'>
+    <thead >
     <tr>
         <th scope="col">DOI</th>
         <th scope="col">#ref</th>
@@ -52,12 +49,14 @@
         <th scope="col">Authors</th>
         <th scope="col">Title</th>
         <th scope="col">Venue</th>
+        <th scope="col">Estate</th>
         <th scope="col">...</th>
     </tr>
     </thead>
 
     <tbody>
-    <tr th:each="i,iterStat : ${referencesList}">
+    <tr th:each="i,iterStat : ${referencesList}"
+        th:style="${i.getEstado()} == 'duplicated' ? 'background-color:  #FFEBEE' : 'background-color: #E1F5FE'">
         <td th:text="${i.getArt().getDoi()}"></td>
         <td th:text="${i.getIdRef()}"></td>
         <td th:text="${i.getDl().getName()}"></td>
@@ -81,15 +80,15 @@
 
         <td th:if="${i.getArt().getVen() != null }" >
             <th:block th:with="name = ${i.getArt().getVen().getName()}">
-                <div th:if="${#strings.length(name)}>=65" th:text="${#strings.substring(name,0,65)}+'...'" />
-                <div th:unless="${#strings.length(name)}>=65" th:text="${name}" />
+                <div th:if="${#strings.length(name)}>=45" th:text="${#strings.substring(name,0,45)}+'...'" />
+                <div th:unless="${#strings.length(name)}>=45" th:text="${name}" />
             </th:block>
         </td>
-        <td th:if="${i.getArt().getVen() == null }" /> <p></p>
+        <td th:unless="${i.getArt().getVen() != null }"> <p></p></td>
 
+        <td th:text="${i.getEstado()}"> </td>
         <td>
-            <button class="btn btn-primary"
-                    th:data-url="@{/getReference?id={id}(id=${i.getIdRef()})}"
+            <button class="btn btn-primary" th:data-url="@{/getReference?id={id}(id=${i.getIdRef()})}"
                     onclick="window.open(this.getAttribute('data-url'))">+
             </button>
         </td>
@@ -98,7 +97,7 @@
 
     </tbody>
 </table>
-
+</div>
 </div>
 </body>
 </html>
