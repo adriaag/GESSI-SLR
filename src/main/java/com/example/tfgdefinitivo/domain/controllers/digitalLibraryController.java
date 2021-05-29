@@ -1,6 +1,6 @@
-package com.example.tfgdefinitivo.domain.controller;
+package com.example.tfgdefinitivo.domain.controllers;
 
-import com.example.tfgdefinitivo.domain.data.digitalLibrary;
+import com.example.tfgdefinitivo.data.digitalLibrary;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;

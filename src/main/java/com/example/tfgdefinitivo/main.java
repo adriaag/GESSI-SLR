@@ -1,6 +1,6 @@
 package com.example.tfgdefinitivo;
 
-import com.example.tfgdefinitivo.domain.data.*;
+import com.example.tfgdefinitivo.data.*;
 import org.jbibtex.ParseException;
 
 import java.io.IOException;

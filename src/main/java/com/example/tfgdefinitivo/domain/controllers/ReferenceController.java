@@ -1,7 +1,7 @@
 package com.example.tfgdefinitivo.domain.controllers;
 
-import com.example.tfgdefinitivo.domain.data.reference;
-import com.example.tfgdefinitivo.presentation.dto.referenceDTO;
+import com.example.tfgdefinitivo.data.reference;
+import com.example.tfgdefinitivo.domain.dto.referenceDTO;
 import org.jbibtex.ParseException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

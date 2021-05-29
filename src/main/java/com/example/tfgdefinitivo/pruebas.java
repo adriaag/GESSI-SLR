@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public class pruebas {
     public static void main(String[] args) throws FileNotFoundException, SQLException {
-        iniCheck("C:\\Apache\\tfg-definitivo\\src\\main\\resources\\BibFiles\\ieee_journal.bib");
+        iniCheck("C:\\Apache\\tfg-definitivo\\src\\main\\resources\\BibFiles\\ExScopus.bib");
     }
 
     public static void iniCheck(String path) throws FileNotFoundException, SQLException {
@@ -22,32 +22,42 @@ public class pruebas {
         Scanner sc = new Scanner(file);
         sc.useDelimiter("\\@");
         ArrayList<String> list = new ArrayList<>();
-        String bib;
 
         Pattern patternKey = Pattern.compile("\\{(.*),");
-        Pattern patternDOI = Pattern.compile("doi(.*)\\}");
+        Pattern patternDOI = Pattern.compile("doi=(.*)\\}");
+        Pattern patternDOI2 = Pattern.compile("doi =(.*)\\}");
+        Pattern patternDOI3 = Pattern.compile("DOI =(.*)\\}");
+
         while(sc.hasNext()) {
             String data = sc.next();
+            String doi = null;
 
-            bib = sc.findInLine(patternKey);
-            Matcher matcher = patternDOI.matcher(data);
-            if (matcher.find()) {
-                String doi = matcher.group(1).replaceAll("=\\{", "").replaceAll(",", "")
-                        .replaceAll("=", "");
-                System.out.println("DOI es: " +doi);
+            Matcher doiM = patternDOI.matcher(data);
+            Matcher doiM2 = patternDOI2.matcher(data);
+            Matcher doiM3 = patternDOI3.matcher(data);
+            if (doiM.find()) {
+                 doi = doiM.group(1).replaceAll("\\{", "")
+                        .replaceAll(",", "").replaceAll("=", "");
+            } else if (doiM2.find()) {
+                 doi = doiM2.group(1).replaceAll("\\{", "")
+                        .replaceAll(",", "").replaceAll("=", "");
+            } else if (doiM3.find()) {
+                 doi = doiM3.group(1).replaceAll("\\{", "")
+                        .replaceAll(",", "").replaceAll("=", "");
             }
-            if(bib!=null) {
-                String citeKey = bib.replaceAll("\\{", "").replaceAll(",", "");
+            Matcher bibM = patternKey.matcher(data);
+            if(bibM.find()) {
+                String citeKey = bibM.group(1).replaceAll("\\{", "").replaceAll(",", "");
                 //Comprobar citekey duplicada
                 System.out.println(citeKey);
                 if (list.contains(citeKey)) {
-                    //buscar doi
+                    if (doi != null ) System.out.println("DOI es: " +doi);
 
                     //Añadir bib a la table LogError
 
                     //debe insert en LogError los repetidos!!!
                     //y ver si escribe bien
-                    System.out.println("insert row if duplicate:" + citeKey);
+                    System.out.println("insert row bc duplicated cite key:" + citeKey);
                 }
                 list.add(citeKey);
             }
