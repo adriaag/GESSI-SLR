@@ -3,9 +3,7 @@ package com.example.tfgdefinitivo.data;
 import org.jbibtex.*;
 
 import java.io.*;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -83,6 +81,7 @@ public class article {
         reader.close();
     }
 
+    //Guarda las referencias que no se pueden guardar en la BD
     public static void iniCheck(String path, Statement sta, String idDL) throws FileNotFoundException, SQLException {
         File file = new File(path);
         Scanner sc = new Scanner(file);
@@ -94,6 +93,8 @@ public class article {
         Pattern patternDOI2 = Pattern.compile("doi =(.*)\\}");
         Pattern patternDOI3 = Pattern.compile("DOI =(.*)\\}");
 
+        Timestamp timesql = new Timestamp(new java.util.Date().getTime());
+        System.out.println(timesql);
         while(sc.hasNext()) {
             String data = sc.next();
             String doi = null;
@@ -114,17 +115,14 @@ public class article {
             Matcher bibM = patternKey.matcher(data);
             if(bibM.find()) {
                 String citeKey = bibM.group(1).replaceAll("\\{", "").replaceAll(",", "");
-                //Comprobar citekey duplicada
+                //Comprobar si hay citekey duplicada
                 System.out.println(citeKey);
                 if (list.contains(citeKey)) {
                     if (doi != null ) System.out.println("DOI es: " +doi);
-
-                    //Añadir bib a la table LogError
-
-                    //debe insert en LogError los repetidos!!!
-                    //y ver si escribe bien
+                    importationLogError.insertRow(sta, doi, data, idDL, timesql);
                     //clave primaria timestamp(fecha y hora , el mismo para 1 importacion)
-                    System.out.println("insert row bc duplicated cite key:" + citeKey);
+                    System.out.println("insert row bc duplicated cite key: " + citeKey);
+                    //Podria devolver este error?
                 }
                 list.add(citeKey);
             }

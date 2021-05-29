@@ -1,15 +1,13 @@
 package com.example.tfgdefinitivo.data;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class importationLogError {
     public static boolean createTable(Statement s) {
         try {
             s.execute("create TABLE ImportationLogError(" +
-                    "idLogErr int, time timestamp, doi VARCHAR(100)," +
-                    "BibTex VARCHAR(10000), idDL int, PRIMARY KEY (idLogErr)," +
+                    "idLogErr INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), time timestamp, " +
+                    "doi VARCHAR(100), idDL int, BibTex VARCHAR(10000),  PRIMARY KEY (idLogErr)," +
                     "CONSTRAINT DL_FK_I FOREIGN KEY (idDL) REFERENCES DIGITALLIBRARIES(idDL))");
             System.out.println("Created table importationLogError");
             return true;
@@ -33,7 +31,28 @@ public class importationLogError {
         return rs.next();
     }
 
-    public static void insertRow(Statement sta, String bibText) {
+    public static void insertRow(Statement s, String doi, String data, String idDL, Timestamp timesql) {
+        try {
+            PreparedStatement prepStatement = s.getConnection().
+                    prepareStatement("INSERT INTO ImportationLogError(time, doi, idDL, BibTex) VALUES (?,?,?,?)");
+            prepStatement.setTimestamp(1, timesql);
+            prepStatement.setString(2, doi);
+            prepStatement.setInt(3, Integer.parseInt(idDL));
+            prepStatement.setString(4, data);
 
+            int numberOfRowsInserted = prepStatement.executeUpdate();
+            System.out.println("numberOfRowsInserted=" + numberOfRowsInserted);
+
+            prepStatement.close(); // close PreparedStatement
+            System.out.println("Inserted row in importation log error");
+        } catch (SQLException e) {
+            while (e != null) {
+                System.err.println("\n----- SQLException -----");
+                System.err.println("  SQL State:  " + e.getSQLState());
+                System.err.println("  Error Code: " + e.getErrorCode());
+                System.err.println("  Message:    " + e.getMessage());
+                e = e.getNextException();
+            }
+        }
     }
 }
