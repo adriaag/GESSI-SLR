@@ -209,10 +209,14 @@ public class reference {
         digitalLibrary.dropTable(s);
     }
 
-    public static void importar(String path, String idDL, Statement s) throws SQLException, IOException, ParseException {
+    public static void importar(String path, String idDL) throws SQLException, IOException, ParseException {
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Connection conn = ctx.getBean(Connection.class);
+        conn.setAutoCommit(false);
+        Statement s = conn.createStatement();
 
         article.importar(path, idDL, s);
-        s.getConnection().commit();
+        conn.commit();
     }
 
     public static referenceDTO getReference(int idR) {

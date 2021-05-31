@@ -6,6 +6,7 @@ import com.example.tfgdefinitivo.presentation.creationExcel;
 import com.example.tfgdefinitivo.domain.dto.referenceDTO;
 import com.example.tfgdefinitivo.domain.dto.formDTO;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.jbibtex.ParseException;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -62,29 +63,38 @@ public class ClientController {
     }
     //curl http://localhost:8080/all/?name=Enric
 
-    @RequestMapping(value = "/askInformation")
+    @GetMapping(value = "/newReference")
     public String askInformation(Model model) throws SQLException {
-        model.addAttribute("form", new formDTO());
         model.addAttribute("DLnames", digitalLibraryController.getNames());
+        model.addAttribute("f", new formDTO());
 
-        model.addAttribute("path", "");
-        model.addAttribute("dl", "");
         return "formReference";
     }
 
-    /*@PostMapping(value = "/NewReference")
-    public String addReference( formDTO form, Model model ) throws SQLException {
-        model.addAttribute("path", form.getPath());
-        model.addAttribute("nameDL", form.getDl());
-        model.addAttribute("DLnames", digitalLibraryController.getNames());
-        return "NewReference";
-    }*/
-    //@RequestParam(name= "path", required=false, defaultValue="path no") String path
-    @RequestMapping(value = "/NewReference")
-    public String addReference( formDTO form, Model model ) throws SQLException {
-        model.addAttribute("path", form.getPath());
-        model.addAttribute("nameDL", form.getDl());
+    @PostMapping(value = "/newReference")
+    public String submit( @ModelAttribute("f") formDTO f, Model model, @ModelAttribute("myfile") File myfile)
+            throws ParseException, SQLException, IOException {
+        ReferenceController.addReference(f.getPath(),f.getdlNum());
+        System.out.println(myfile.getAbsolutePath());
+
+        model.addAttribute("path", f.getPath());
+        model.addAttribute("dlNum", f.getdlNum());
         return "NewReference";
     }
+/*
+    @RequestMapping(value = "/newReference", method = RequestMethod.POST)
+    public String addReference( Model model, @ModelAttribute formDTO formdto ) throws SQLException {
+        model.addAttribute("path", formdto.getPath());
+        model.addAttribute("nameDL", formdto.getDl());
+        return "NewReference";
+    }
+
+    //@RequestParam(name= "path", required=false, defaultValue="path no") String path
+    @RequestMapping(value = "/showNewReference")
+    public String showNewReference(formDTO form, Model model ) throws SQLException {
+        model.addAttribute("path", form.getPath());
+        model.addAttribute("nameDL", form.getDl());
+        return "NewReference";
+    }*/
 }
 

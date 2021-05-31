@@ -25,9 +25,9 @@ public class ReferenceController {
     }
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static void addReference(String path, String nameDL, Statement s)
+    public static void addReference(String path, String nameDL)
             throws ParseException, SQLException, IOException {
-        reference.importar(path, nameDL, s);
+        reference.importar(path, nameDL);
     }
 
     @RequestMapping(value = "/createTables")

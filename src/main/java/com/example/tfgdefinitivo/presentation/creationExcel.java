@@ -1,7 +1,10 @@
 package com.example.tfgdefinitivo.presentation;
 
 import com.example.tfgdefinitivo.domain.dto.*;
+import org.apache.pdfbox.util.Hex;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
@@ -9,7 +12,7 @@ import java.util.List;
 
 public class creationExcel {
     private static String[] columnHeadings = {"#ref", /*dl*/ "DL-Name", "Year", /*article*/ "DOI" ,   /*researchers*/
-            "Authors" , "Title" , "Venue" , "Type" ,  /*companies*/ "Affiliations", "Volume", "Pages",
+            "Estate" , "Authors" , "Title" , "Venue" , "Type" ,  /*companies*/ "Affiliations", "Volume", "Pages",
             "Number","Numpages","Cite key", "Keywords"  , /*idVen*/ "Abstract"};
 
     public static Workbook create(List<referenceDTO> p) throws IOException {
@@ -37,15 +40,50 @@ public class creationExcel {
 
         int rowNum = 1;
 
+        String rgbS = "FFEBEE";
+        byte[] rgbB = Hex.decodeHex(rgbS); // get byte array from hex string
+        XSSFColor color = new XSSFColor(rgbB, null); //IndexedColorMap has no usage until now. So it can be set null.
+        XSSFCellStyle styleD = (XSSFCellStyle) workbook.createCellStyle();
+        styleD.setFillForegroundColor(color);
+        styleD.setFillBackgroundColor(color);
+        styleD.setFillPattern(FillPatternType.LEAST_DOTS);
+
+        rgbS = "E1F5FE";
+        rgbB = Hex.decodeHex(rgbS); // get byte array from hex string
+        XSSFColor color2 = new XSSFColor(rgbB, null); //IndexedColorMap has no usage until now. So it can be set null.
+        XSSFCellStyle style = (XSSFCellStyle) workbook.createCellStyle();
+        style.setFillForegroundColor(color2);
+        style.setFillBackgroundColor(color2);
+        style.setFillPattern(FillPatternType.LEAST_DOTS);
+        
         referenceDTO[] references = p.toArray(new referenceDTO[0]);
         for (referenceDTO ref : references) {
             Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(ref.getIdRef());
-            row.createCell(1).setCellValue(ref.getDl().getName());
+
+            String auxEst = ref.getEstado();
+            CellStyle stRow = style;
+            if (auxEst != null && auxEst.equals("duplicated")) stRow = styleD;
+
+            Cell cell = row.createCell(0);
+            cell.setCellValue(ref.getIdRef());
+            cell.setCellStyle(stRow);
+
+            cell = row.createCell(1);
+            cell.setCellValue(ref.getDl().getName());
+            cell.setCellStyle(stRow);
 
             articleDTO art = ref.getArt();
-            row.createCell(2).setCellValue(art.getAny());
-            row.createCell(3).setCellValue(ref.getDoi());
+            cell = row.createCell(2);
+            cell.setCellValue(art.getAny());
+            cell.setCellStyle(stRow);
+
+            cell = row.createCell(3);
+            cell.setCellValue(ref.getDoi());
+            cell.setCellStyle(stRow);
+
+            cell = row.createCell(4);
+            cell.setCellValue(auxEst);
+            cell.setCellStyle(stRow);
 
             researcherDTO[] authorsList = art.getResearchers();
             StringBuilder authors = new StringBuilder();
@@ -54,12 +92,22 @@ public class creationExcel {
             }
             if(authorsList.length > 0)
                 authors.append(authorsList[authorsList.length - 1].getName());
-            row.createCell(4).setCellValue(authors.toString());
+            cell = row.createCell(5);
+            cell.setCellValue(authors.toString());
+            cell.setCellStyle(stRow);
 
-            row.createCell(5).setCellValue(art.getTitle());
-            if(art.getVen() != null)
-                row.createCell(6).setCellValue(art.getVen().getName());
-            row.createCell(7).setCellValue(art.getType());
+            cell = row.createCell(6);
+            cell.setCellValue(art.getTitle());
+            cell.setCellStyle(stRow);
+
+            if(art.getVen() != null) {
+                cell = row.createCell(7);
+                cell.setCellValue(art.getVen().getName());
+                cell.setCellStyle(stRow);
+            }
+            cell = row.createCell(8);
+            cell.setCellValue(art.getType());
+            cell.setCellStyle(stRow);
 
             companyDTO[] affiList = art.getCompanies();
             StringBuilder affils = new StringBuilder();
@@ -69,21 +117,46 @@ public class creationExcel {
             if(affiList.length > 0)
                 affils.append(affiList[affiList.length - 1].getName());
 
-            row.createCell(8).setCellValue(affils.toString());
-            row.createCell(9).setCellValue(art.getVolume());
-            row.createCell(10).setCellValue(art.getPages());
+            cell = row.createCell(9);
+            cell.setCellValue(affils.toString());
+            cell.setCellStyle(stRow);
 
-            row.createCell(11).setCellValue(art.getNumber());
+            cell = row.createCell(10);
+            cell.setCellValue(art.getVolume());
+            cell.setCellStyle(stRow);
 
-            if (art.getNumpages()==0) row.createCell(12).setCellValue("-");
-            else row.createCell(12).setCellValue(art.getNumpages());
-            row.createCell(13).setCellValue(art.getCiteKey());
-            row.createCell(14).setCellValue(art.getKeywords());
+            cell = row.createCell(11);
+            cell.setCellValue(art.getPages());
+            cell.setCellStyle(stRow);
 
-            row.createCell(15).setCellValue(art.getAbstractA());
+            cell = row.createCell(12);
+            cell.setCellValue(art.getNumber());
+            cell.setCellStyle(stRow);
+
+            if (art.getNumpages()==0) {
+                cell = row.createCell(13);
+                cell.setCellValue("-");
+                cell.setCellStyle(stRow);
+            }
+            else {
+                cell = row.createCell(13);
+                cell.setCellValue(art.getNumpages());
+                cell.setCellStyle(stRow);
+            }
+            cell = row.createCell(14);
+            cell.setCellValue(art.getCiteKey());
+            cell.setCellStyle(stRow);
+            cell = row.createCell(15);
+            cell.setCellValue(art.getKeywords());
+            cell.setCellStyle(stRow);
+
+            cell = row.createCell(16);
+            cell.setCellValue(art.getAbstractA());
+            cell.setCellStyle(stRow);
         }
         // Resize all columns to fit the content size
         for (int i = 0; i < columnHeadings.length; i++) {
+            //venue, authors, title, afiliatons , keywords, abstract - 20 caracteres
             sheet.autoSizeColumn(i);
         }
         //FileOutputStream fileOut = new FileOutputStream("references.xlsx");

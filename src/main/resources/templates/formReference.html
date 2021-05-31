@@ -2,25 +2,33 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns:th="http://www.thymeleaf.org" >
 <head>
-    <title>Form</title>
+    <title>Add reference</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
 </head>
 <body>
-<form action="#" th:action="@{/NewReference}" th:object="${form}" method="POST">
-    <p th:text="'File path: ' + ${path} "></p>
-    <input type= "file" name="Archivo"/>
-    </br>
-    <p> Digital library: </p>
-    <select type="text" name="Digital Library" th:field="${dl}" >
-        <option value=1 th:text="${DLnames[0]}" ></option>
-        <option value=2 th:text="${DLnames[1]}" ></option>
-        <option value=3 th:text="${DLnames[2]}" ></option>
-        <option value=4 th:text="${DLnames[3]}" ></option>
-        <option value=5 th:text="${DLnames[4]}" ></option>
-        <option value=6 th:text="${DLnames[5]}" ></option>
+<div class="jumbotron">
+    <!-- Big words -->
+    <h1 class="display-4"> GESSI - REFERENCES MANAGEMENT</h1>
+    <h4> New reference </h4>
+</div>
+<form action="#" method="post" th:action="@{/newReference}" th:object="${f}" >
+    <label for="myfile">Select a file:</label>
+    <input type="file" id="myfile" name="myfile">
+    <input id="path" placeholder="Enter path" required type="text" th:field="*{path}" class="form-control"/>
+    <select id="dlNum" required th:field="*{dlNum}" class="form-control">
+        <option value="1" th:text="${DLnames[0]}" ></option>
+        <option value="2" th:text="${DLnames[1]}" ></option>
+        <option value="3" th:text="${DLnames[2]}" ></option>
+        <option value="4" th:text="${DLnames[3]}" ></option>
+        <option value="5" th:text="${DLnames[4]}" ></option>
+        <option value="6" th:text="${DLnames[5]}" ></option>
     </select>
-    <button name="submit" type="submit" value="0"> Submit</button>
+    <input type="submit" class="btn btn-primary" value="Create reference">
+    <input type="reset" class="btn btn-primary"  value="Reset">
 </form>
 
-</p>
 </body>
 </html>

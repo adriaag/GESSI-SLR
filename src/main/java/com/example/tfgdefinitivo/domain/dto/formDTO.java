@@ -1,33 +1,20 @@
 package com.example.tfgdefinitivo.domain.dto;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+import org.springframework.context.annotation.Bean;
 
-@XmlRootElement(name = "formDTO")
-public class formDTO implements Serializable {
+public class formDTO  {
     private String path;
     private String dlNum;
 
-    public formDTO(String path, String dl) {
-        this.path = path;
-        this.dlNum = dl;
-    }
-    public formDTO() { }
-
     public String getPath() { return path; }
 
-    @XmlElement
     public void setPath(String path) {
         this.path = path;
     }
 
-    public String getDl() {
-        return dlNum;
-    }
+    public String getdlNum() { return dlNum; }
 
-    @XmlElement
-    public void setDl(String dlNum) {
+    public void setdlNum(String dlNum) {
         this.dlNum = dlNum;
     }
 }
