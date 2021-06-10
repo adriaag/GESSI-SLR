@@ -18,9 +18,9 @@ public class reference {
         try {
             String query;
             if (estado!=null)
-                query = "INSERT INTO referencias(doi,idDL,estate) VALUES (\'" + doi
+                query = "INSERT INTO referencias(doi,idDL,state) VALUES (\'" + doi
                     + "\', " + idDL + ",'" + estado+"')";
-            else query = "INSERT INTO referencias(doi,idDL,estate) VALUES (\'" + doi
+            else query = "INSERT INTO referencias(doi,idDL,state) VALUES (\'" + doi
                     + "\', " + idDL + "," + estado+")";
             System.out.println(query);
             s.execute(query);
@@ -43,11 +43,11 @@ public class reference {
     public static void createTable(Statement s) {
         try {
             s.execute("create table referencias(idRef INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, " +
-                    "INCREMENT BY 1), doi varchar(50), idDL int, estate VARCHAR(32), " +
+                    "INCREMENT BY 1), doi varchar(50), idDL int, state VARCHAR(10), applCriteria varchar(5), " +
                     "PRIMARY KEY(idRef), unique(doi,idDL), CONSTRAINT DL_FK_R FOREIGN KEY (idDL) " +
                     "REFERENCES digitalLibraries (idDL),CONSTRAINT AR_FK_R FOREIGN KEY (doi) REFERENCES articles (doi),"+
-                    "CONSTRAINT estate_chk CHECK (estate IN ( 'pending', 'accepted', 'duplicated','eliminated')))");
-
+                    "CONSTRAINT state_chk CHECK (state IN ( 'pending', 'in', 'duplicated','out')), " +
+                    "CONSTRAINT CRI_FK_R FOREIGN KEY (applCriteria) REFERENCES criteria(idICEC))");
             System.out.println("Created table referencias");
         } catch (SQLException e) {
             if (e.getSQLState().equals("X0Y32"))
@@ -67,8 +67,13 @@ public class reference {
     }
 
     public static void dropTable(Statement s) throws SQLException {
+        try{
         s.execute("drop table referencias");
         System.out.println("Dropped table referencias");
+        }
+        catch (SQLException sqlException) {
+            System.out.println("Tabla referencias not exist");
+        }
     }
 
     public static int getLastID(Statement s) throws SQLException {
@@ -85,20 +90,14 @@ public class reference {
     }
 
     public static List<referenceDTO> getAllReferences() {
-
         List<referenceDTO> refList = null;
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
-
-        ArrayList<Statement> statements = new ArrayList<>(); // list of Statements, PreparedStatements
-        Statement s = null;
+        Statement s;
         try {
             conn.setAutoCommit(false);
-
             s = conn.createStatement();
-
             ResultSet rs = getAll(s);
-
             int number = 1;
             refList = new ArrayList<referenceDTO>();
             while(rs.next()) {
@@ -108,13 +107,15 @@ public class reference {
                 String doiR = rs.getString(2);
                 int dlR = rs.getInt(3);
                 String estado = rs.getString(4);
-                System.out.println(idR + " " + doiR + " " + dlR + " "+ estado);
+                String applCriteria = rs.getString(5);
+                System.out.println(idR + " " + doiR + " " + dlR + " "+ estado + " " + applCriteria);
 
-                referenceDTO NewRef = new referenceDTO(idR,doiR,dlR,estado);
+                referenceDTO NewRef = new referenceDTO(idR,doiR,dlR,estado,applCriteria);
                 obtainReferenceDTO(conn, NewRef, doiR, dlR);
 
                 refList.add(NewRef);
             }
+            conn.commit();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -163,9 +164,9 @@ public class reference {
 
             // Statement object for running various SQL statements commands against the database.
             s = conn.createStatement();
-            deleteTables(s,conn,statements);
-
+            deleteTables(s,conn);
             conn.commit();
+
             System.out.println("Committed the transaction");
 
         } catch (SQLException throwables) {
@@ -190,6 +191,7 @@ public class reference {
         venue.createTable(s);
         article.createTable(s);
         researcher.createTable(s);
+        criteria.createTable(s);
         reference.createTable(s);
         author.createTable(s);
         company.createTable(s);
@@ -197,7 +199,7 @@ public class reference {
         importationLogError.createTable(s);
     }
 
-    private static void deleteTables(Statement s, Connection conn, ArrayList<Statement> statements) throws SQLException {
+    private static void deleteTables(Statement s, Connection conn) throws SQLException {
         importationLogError.dropTable(s);
         affiliation.dropTable(s);
         company.dropTable(s);
@@ -206,6 +208,7 @@ public class reference {
         researcher.dropTable(s);
         article.dropTable(s);
         venue.dropTable(s);
+        criteria.dropTable(s);
         digitalLibrary.dropTable(s);
     }
 
@@ -214,7 +217,6 @@ public class reference {
         Connection conn = ctx.getBean(Connection.class);
         conn.setAutoCommit(false);
         Statement s = conn.createStatement();
-
         article.importar(path, idDL, s);
         conn.commit();
     }
@@ -227,10 +229,7 @@ public class reference {
         try {
             ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
             conn = ctx.getBean(Connection.class);
-            conn.setAutoCommit(false);
-
             s = conn.createStatement();
-
             referenceDTO NewRef = find(idR,s);
 
             String doiR = NewRef.getDoi();
@@ -296,7 +295,8 @@ public class reference {
         ResultSet rs;
         rs = s.executeQuery("SELECT * FROM referencias where idRef=" + idR);
         rs.next();
-        referenceDTO r = new referenceDTO(rs.getInt(1),rs.getString(2),rs.getInt(3), rs.getString(4));
+        referenceDTO r = new referenceDTO(rs.getInt(1),rs.getString(2),rs.getInt(3),
+                rs.getString(4), rs.getString(5));
         return r;
     }
 
@@ -310,6 +310,29 @@ public class reference {
                 + "' and r.idDL = dl.idDL and dl.priority > "+ priorityImportado);
     }
     static void updateEstateReferences(Statement s, String doi) throws SQLException {
-        s.execute("update referencias set estate = 'duplicated' where doi = '" + doi + "' and estate is null ");
+        s.execute("update referencias set state = 'duplicated' where doi = '" + doi + "' and state is null ");
+    }
+
+    public static void update(int idRef, String estado, String applCriteria) {
+        try{
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Connection conn = ctx.getBean(Connection.class);
+        Statement s = conn.createStatement();
+        if (!estado.equals("") && !applCriteria.equals("")) {
+            s.execute("update referencias set state = '" + estado + "' , applCriteria = '" + applCriteria +
+                    "' where idRef = " + idRef );
+        }
+        else if (!estado.equals("")) s.execute("update referencias set state = '" + estado + "' where idRef = " + idRef );
+        else if (!applCriteria.equals("")) s.execute("update referencias set applCriteria = '" + applCriteria + "' where idRef = " + idRef);
+        } catch (SQLException e) {
+            System.out.println("Error en update estado y criteria de una reference");
+            while (e != null) {
+                System.err.println("\n----- SQLException -----");
+                System.err.println("  SQL State:  " + e.getSQLState());
+                System.err.println("  Error Code: " + e.getErrorCode());
+                System.err.println("  Message:    " + e.getMessage());
+                e = e.getNextException();
+            }
+        }
     }
 }

@@ -86,8 +86,13 @@ public class digitalLibrary {
     }
 
     public static void dropTable(Statement s) throws SQLException {
+        try{
         s.execute("drop table digitalLibraries");
         System.out.println("Dropped table digitalLibraries");
+        }
+        catch (SQLException sqlException) {
+            System.out.println("Tabla digitalLibraries not exist");
+        }
     }
 
     static ResultSet getdigitalLibrary(Statement s, int idDL) throws SQLException {

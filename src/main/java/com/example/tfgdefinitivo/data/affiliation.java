@@ -20,8 +20,13 @@ public class affiliation {
         }
     }
     public static void dropTable(Statement s) throws SQLException {
+        try{
         s.execute("drop table affiliations");
         System.out.println("Dropped table affiliations");
+        }
+        catch (SQLException sqlException) {
+            System.out.println("Tabla affiliations not exist");
+        }
     }
 
 

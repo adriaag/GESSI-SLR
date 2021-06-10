@@ -36,8 +36,13 @@ public class author {
     }
 
     public static void dropTable(Statement s) throws SQLException {
+        try{
         s.execute("drop table authors");
         System.out.println("Dropped table authors");
+        }
+        catch (SQLException sqlException) {
+            System.out.println("Tabla authors not exist");
+        }
     }
 
 }

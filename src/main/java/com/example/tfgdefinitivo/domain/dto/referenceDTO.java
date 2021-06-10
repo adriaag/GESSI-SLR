@@ -11,15 +11,17 @@ public class referenceDTO implements Serializable {
     private String doi;
     private int idDL;
     private String estado;
+    private String applCriteria;
     private articleDTO art;
     private digitalLibraryDTO dl;
 
 
-    public referenceDTO(int aux, String aux2, int aux3, String estado) {
+    public referenceDTO(int aux, String aux2, int aux3, String estado, String applCriteria) {
         this.idRef = aux;
         this.doi = aux2;
         this.idDL = aux3;
         this.estado = estado;
+        this.applCriteria = applCriteria;
     }
 
     public int getIdRef() {
@@ -68,5 +70,13 @@ public class referenceDTO implements Serializable {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public String getApplCriteria() {
+        return applCriteria;
+    }
+
+    public void setApplCriteria(String applCriteria) {
+        this.applCriteria = applCriteria;
     }
 }

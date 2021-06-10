@@ -8,13 +8,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 @RestController
 @RequestMapping("/references")
 public class ReferenceController {
-
 
     @GetMapping(value = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public static List<referenceDTO> getReferences() { return reference.getAllReferences(); }
@@ -28,6 +26,15 @@ public class ReferenceController {
     public static void addReference(String path, String nameDL)
             throws ParseException, SQLException, IOException {
         reference.importar(path, nameDL);
+    }
+
+    public static void reset() {
+        reference.delete();
+        reference.create();
+    }
+
+    public static void updateReference(int idRef, String estado, String applCriteria) {
+        reference.update(idRef,estado, applCriteria);
     }
 
     @RequestMapping(value = "/createTables")

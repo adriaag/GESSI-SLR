@@ -20,8 +20,12 @@ public class importationLogError {
     }
 
     public static void dropTable(Statement s) throws SQLException {
+        try{
         s.execute("drop table ImportationLogError");
-        System.out.println("Dropped table importationLogError");
+        System.out.println("Dropped table importationLogError");        }
+        catch (SQLException sqlException) {
+        System.out.println("Tabla ImportationLogError not exist");
+    }
     }
 
     public static boolean ifExistsDOI(Statement s, String key) throws SQLException {
@@ -55,4 +59,9 @@ public class importationLogError {
             }
         }
     }
+    /*
+    INSERT INTO IMPORTATIONLOGERROR (IDLOGERR ,TIME) VALUES (100,TIMESTAMP('1960-01-01 23:03:20'));ç
+
+SELECT * FROM IMPORTATIONLOGERROR WHERE time=TIMESTAMP('1960-01-01 23:03:20');
+*/
 }

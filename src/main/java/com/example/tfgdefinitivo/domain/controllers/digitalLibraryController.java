@@ -15,23 +15,25 @@ import java.util.Properties;
 @RestController
 @RequestMapping("/dls")
 public class digitalLibraryController {
-    private static Statement iniConnection() throws SQLException {
+    private static Connection iniConnection() throws SQLException {
         String url = "jdbc:derby:derbyDB;create=true";
         Properties props = new Properties();
         props.put("user", "user1");
         props.put("password", "user1");
         Connection conn = DriverManager.getConnection(url, props);
         conn.setAutoCommit(false);
-        return conn.createStatement();
+        return conn;
     }
 
     @RequestMapping(path = "/names", method = RequestMethod.GET)
     public static ArrayList<String> getNames() throws SQLException {
-        Statement s = iniConnection();
+        Connection con = iniConnection();
+        Statement s = con.createStatement();
         ArrayList<String> DLs = digitalLibrary.getNames(s);
         ArrayList<String> ret = new ArrayList<>();
         for (int i = 0; i < DLs.size(); i++)
             ret.add(i+1 + ". " + DLs.get(i));
+        con.commit();
         return ret;
     }
 }

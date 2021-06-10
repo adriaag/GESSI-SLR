@@ -1,10 +1,12 @@
 package com.example.tfgdefinitivo.presentation;
 
 import com.example.tfgdefinitivo.domain.controllers.ReferenceController;
+import com.example.tfgdefinitivo.domain.controllers.criteriaController;
 import com.example.tfgdefinitivo.domain.controllers.digitalLibraryController;
-import com.example.tfgdefinitivo.presentation.creationExcel;
+import com.example.tfgdefinitivo.domain.dto.criteriaDTO;
 import com.example.tfgdefinitivo.domain.dto.referenceDTO;
 import com.example.tfgdefinitivo.domain.dto.formDTO;
+import com.example.tfgdefinitivo.domain.dto.referenceDTOupdate;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jbibtex.ParseException;
 import org.springframework.core.io.InputStreamResource;
@@ -42,6 +44,9 @@ public class ClientController {
     public String getReferences(Model model){
         List<referenceDTO> list = ReferenceController.getReferences();
         model.addAttribute("referencesList", list);
+
+        model.addAttribute("f", new referenceDTOupdate());
+        model.addAttribute("allCriteria", criteriaController.getAllCriteria());
         return "allReferences";
     }
 
@@ -61,7 +66,6 @@ public class ClientController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }
-    //curl http://localhost:8080/all/?name=Enric
 
     @GetMapping(value = "/newReference")
     public String askInformation(Model model) throws SQLException {
@@ -72,14 +76,44 @@ public class ClientController {
     }
 
     @PostMapping(value = "/newReference")
-    public String submit( @ModelAttribute("f") formDTO f, Model model, @ModelAttribute("myfile") File myfile)
+    public String submit( @ModelAttribute("f") formDTO f, Model model)
             throws ParseException, SQLException, IOException {
         ReferenceController.addReference(f.getPath(),f.getdlNum());
-        System.out.println(myfile.getAbsolutePath());
-
         model.addAttribute("path", f.getPath());
         model.addAttribute("dlNum", f.getdlNum());
         return "NewReference";
+    }
+
+    @GetMapping(value = "/editCriteria")
+    public String askInformationCriteria(Model model){
+        List<criteriaDTO> lIC = criteriaController.getCriteriasIC();
+        List<criteriaDTO> lEC = criteriaController.getCriteriasEC();
+        model.addAttribute("listIC", lIC);
+        model.addAttribute("listEC", lEC);
+        model.addAttribute("f", new criteriaDTO());
+        return "editCriteria";
+    }
+    @PostMapping(value=("/editCriteria"))
+    public String editCriteria(@ModelAttribute("f") criteriaDTO f){
+        criteriaController.addCriteria(f.getIdICEC(),f.getText(),f.getType());
+        return "redirect:/editCriteria";
+    }
+
+    @PostMapping(value=("/editReference"))
+    public String editReference(@ModelAttribute("f") referenceDTOupdate f){
+        ReferenceController.updateReference(f.getIdRef(),f.getEstado(),f.getApplCriteria());
+        return "redirect:/getAllReferences";
+    }
+
+    @RequestMapping(value=("/resetView"))
+    public String reset(){
+        return "resetBD";
+    }
+
+    @RequestMapping(value=("/reset"))
+    public String resetBD(){
+        ReferenceController.reset();
+        return "resetBD";
     }
 /*
     @RequestMapping(value = "/newReference", method = RequestMethod.POST)

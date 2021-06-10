@@ -3,6 +3,7 @@ package com.example.tfgdefinitivo;
 import com.example.tfgdefinitivo.data.*;
 import org.jbibtex.ParseException;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.Properties;

@@ -284,13 +284,18 @@ public class article {
             s.execute(query);
             System.out.println("Inserted row with author, doi, ....");
         } catch (SQLException e) {
-            System.out.println("Error");
-            while (e != null) {
-                System.err.println("\n----- SQLException -----");
-                System.err.println("  SQL State:  " + e.getSQLState());
-                System.err.println("  Error Code: " + e.getErrorCode());
-                System.err.println("  Message:    " + e.getMessage());
-                e = e.getNextException();
+            if (e.getSQLState().equals("X0Y32")) {
+                System.out.println("El article ya existe");
+            }
+            else {
+                System.out.println("Error");
+                while (e != null) {
+                    System.err.println("\n----- SQLException -----");
+                    System.err.println("  SQL State:  " + e.getSQLState());
+                    System.err.println("  Error Code: " + e.getErrorCode());
+                    System.err.println("  Message:    " + e.getMessage());
+                    e = e.getNextException();
+                }
             }
         }
     }
@@ -430,8 +435,13 @@ public class article {
     }
 
     public static void dropTable(Statement s) throws SQLException {
+        try{
         s.execute("drop table articles");
         System.out.println("Dropped table articles");
+        }
+        catch (SQLException sqlException) {
+            System.out.println("Tabla articles not exist");
+        }
     }
 
 }

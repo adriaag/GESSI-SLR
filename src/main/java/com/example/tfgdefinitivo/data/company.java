@@ -18,8 +18,13 @@ public class company {
     }
 
     public static void dropTable(Statement s) throws SQLException {
+        try{
         s.execute("drop table companies");
         System.out.println("Dropped table companies");
+        }
+        catch (SQLException sqlException) {
+            System.out.println("Tabla companies not exist");
+        }
     }
 
 

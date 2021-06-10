@@ -22,8 +22,13 @@ public class researcher implements Serializable {
     }
 
     public static void dropTable(Statement s) throws SQLException {
+        try{
         s.execute("drop table researchers");
         System.out.println("Dropped table researchers");
+        }
+        catch (SQLException sqlException) {
+            System.out.println("Tabla researchers not exist");
+        }
     }
 
     public static ArrayList<String> getNames(Statement s) throws SQLException {

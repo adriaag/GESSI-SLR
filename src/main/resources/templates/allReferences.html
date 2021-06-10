@@ -3,101 +3,142 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
-          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-    <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    <script language="javascript" type="text/javascript">
-        $(document).ready( function () {
-            $('#dataTable').DataTable();
-        } );
-    </script>
     <title>All references</title>
     <style>
-        .mar {
-            padding: 0 15px 10px;
-        }
-        .hide {
-            display: none;
-        }
-
-        .myDIV:hover + .hide {
-            display: block;
-            color: #aeffa0;
-        }
+        .mar {padding: 0 15px 10px;}
     </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" language="javascript" src="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"></script>
+
 </head>
 <body>
+<header th:replace="index::header"></header>
 <div >
-    <!--    Creates a big gray field  -->
-<div class="jumbotron">
-    <!-- Big words -->
-    <h1 class="display-4"> GESSI - REFERENCES MANAGEMENT</h1>
-    <h4> Download all references information <a href="/download">here</a></h4>
-</div>
     <div class="mar" >
-<table class="table table-striped " id="dataTable" data-page-length='50' data-order='[[1, "desc"]]'>
-    <thead >
-    <tr>
-        <th scope="col">DOI</th>
-        <th scope="col">#ref</th>
-        <th scope="col">DLName</th>
-        <th scope="col">Year</th>
-        <th scope="col">Authors</th>
-        <th scope="col">Title</th>
-        <th scope="col">Venue</th>
-        <th scope="col">Estate</th>
-        <th scope="col">...</th>
-    </tr>
-    </thead>
+        <table class="table table-striped " id="dataTable" data-page-length='50' data-order='[[1, "desc"]]'>
+            <thead >
+            <tr>
+                <th scope="col">DOI</th>
+                <th scope="col">#ref</th>
+                <th scope="col">DL</th>
+                <th scope="col">Year</th>
+                <th scope="col">Authors</th>
+                <th scope="col">Title</th>
+                <th scope="col">Venue</th>
+                <th scope="col">State</th>
+                <th scope="col">Info</th>
+                <th scope="col">Classify</th>
+            </tr>
+            </thead>
 
-    <tbody>
-    <tr th:each="i,iterStat : ${referencesList}"
-        th:style="${i.getEstado()} == 'duplicated' ? 'background-color:  #FFEBEE' : 'background-color: #E1F5FE'">
-        <td th:text="${i.getArt().getDoi()}"></td>
-        <td th:text="${i.getIdRef()}"></td>
-        <td th:text="${i.getDl().getName()}"></td>
-        <td th:text="${i.getArt().getAny()}"></td>
-        <td>
-            <span th:each="j,iterStatj : ${i.getArt().getResearchers()}">
-                <span th:if="${iterStatj.index} < 2" th:text="!${iterStatj.last}?${j.getName()}+';':${j.getName()}"></span>
-                <span th:if="${iterStatj.index} == 2"
-                      th:text="'...'">
-                  <!---span class="hide" th:text="!${iterStatj.last}?${j.getName()}+'; ':${j.getName()}"></span--->
-                </span>
-            </span>
-        </td>
+            <tbody>
+            <tr th:each="i,iterStat : ${referencesList}"
+                th:style="${i.getEstado()} == 'duplicated' ? 'background-color:  #FFEBEE' : 'background-color: #E1F5FE'">
+                <td th:text="${i.getArt().getDoi()}"></td>
+                <td th:text="${i.getIdRef()}"></td>
+                <td th:text="${i.getDl().getName()}"></td>
+                <td th:text="${i.getArt().getAny()}"></td>
+                <td>
+                    <span th:each="j,iterStatj : ${i.getArt().getResearchers()}">
+                        <span th:if="${iterStatj.index} < 2" th:text="!${iterStatj.last}?${j.getName()}+';':${j.getName()}"></span>
+                        <span th:if="${iterStatj.index} == 2" th:text="'...'">
+                          <!---span class="hide" th:text="!${iterStatj.last}?${j.getName()}+'; ':${j.getName()}"></span--->
+                        </span>
+                    </span>
+                </td>
 
-        <td >
-            <th:block th:with="name = ${i.getArt().getTitle()}">
-                <div th:if="${#strings.length(name)}>=65" th:text="${#strings.substring(name,0,65)}+'...'" />
-                <div th:unless="${#strings.length(name)}>=65" th:text="${name}" />
-            </th:block>
-        </td>
+                <td >
+                    <th:block th:with="name = ${i.getArt().getTitle()}">
+                        <div th:if="${#strings.length(name)}>=65" th:text="${#strings.substring(name,0,65)}+'...'" />
+                        <div th:unless="${#strings.length(name)}>=65" th:text="${name}" />
+                    </th:block>
+                </td>
 
-        <td th:if="${i.getArt().getVen() != null }" >
-            <th:block th:with="name = ${i.getArt().getVen().getName()}">
-                <div th:if="${#strings.length(name)}>=45" th:text="${#strings.substring(name,0,45)}+'...'" />
-                <div th:unless="${#strings.length(name)}>=45" th:text="${name}" />
-            </th:block>
-        </td>
-        <td th:unless="${i.getArt().getVen() != null }"> <p></p></td>
+                <td th:if="${i.getArt().getVen() != null }" >
+                    <th:block th:with="name = ${i.getArt().getVen().getName()}">
+                        <div th:if="${#strings.length(name)}>=45" th:text="${#strings.substring(name,0,45)}+'...'" />
+                        <div th:unless="${#strings.length(name)}>=45" th:text="${name}" />
+                    </th:block>
+                </td>
+                <td th:unless="${i.getArt().getVen() != null }"> <p></p></td>
+                <td th:text="${i.getEstado()}"></td>
+                <td>
+                    <button class="btn btn-primary" th:data-url="@{/getReference?id={id}(id=${i.getIdRef()})}"
+                            onclick="window.open(this.getAttribute('data-url'))" style="font-size:12px"><i class="fa fa-info-circle" aria-hidden="true"></i>
+                    </button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal"
+                            data-target="#exampleModal">
+                        <i class="fa fa-edit"></i>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action='#' id="myForm" method="post" th:action="@{/editReference}" th:object="${f}">
+                            <div class="form-group">
+                                <label for="idRef" >Id reference</label><br>
+                                <input id="idRef" class="form-control" placeholder="Enter identifier reference" required type="text" th:field="*{idRef}"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="state">State</label>
+                                <select id="state" required th:field="*{estado}" class="form-control">
+                                    <option value="" hidden>Select a type</option>
+                                    <option value="">None</option>
+                                    <option value="in">In</option>
+                                    <option value="out">Out</option>
+                                    <option value="duplicated">Duplicated</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="applCriteria">Application criteria</label>
+                                <select id="applCriteria" required th:field="*{applCriteria}" class="form-control">
+                                    <option value="" hidden>Select a Criteria</option>
+                                    <option value="" >None</option>
+                                    <div th:each="x,iterStatx : ${allCriteria}">
+                                    <option th:value="${x}" th:text="${x}"></option>
+                                    </div>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Update reference</button>
+                            </div>
+                        </form>
+                    </div>
 
-        <td th:text="${i.getEstado()}"> </td>
-        <td>
-            <button class="btn btn-primary" th:data-url="@{/getReference?id={id}(id=${i.getIdRef()})}"
-                    onclick="window.open(this.getAttribute('data-url'))">+
-            </button>
-        </td>
+                </div>
+            </div>
+        </div>
 
-    </tr>
-
-    </tbody>
-</table>
+    </div>
 </div>
-</div>
+
 </body>
+<script language="javascript" type="text/javascript">
+    $(document).ready( function () {
+        $('#dataTable').DataTable();
+        $(".myForm #exampleModal").modal();
+    } );
+</script>
 </html>

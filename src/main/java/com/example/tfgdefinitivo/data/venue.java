@@ -19,8 +19,13 @@ public class venue {
     }
 
     public static void dropTable(Statement s) throws SQLException {
+        try{
         s.execute("drop table venues");
         System.out.println("Dropped table venues");
+        }
+        catch (SQLException sqlException) {
+            System.out.println("Tabla venues not exist");
+        }
     }
 
     public static int insertRow(Statement s, String nameVenue) throws SQLException {
