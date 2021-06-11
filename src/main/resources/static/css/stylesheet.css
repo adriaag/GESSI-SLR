@@ -1,0 +1,20 @@
+* {
+    box-sizing: border-box;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+ul {
+    padding: 0px;
+}
+
+li {
+    float: left;
+    width: auto;
+    list-style: outside none none;
+}

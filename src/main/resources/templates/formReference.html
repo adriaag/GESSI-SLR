@@ -1,17 +1,33 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns:th="http://www.thymeleaf.org" >
-<head>
-    <title>Form</title>
-</head>
+<head th:replace="index::head"></head>
+<head><title>Add reference</title></head>
 <body>
-<p th:text="${formDTO}"/>
-<form action="#" th:action="@{/NewReference}" th:object="${formDTO}" method="POST">
-    Path <input type="text" name="Path" th:field="*{path}"/><br/>
 
-    <button name="submit" type="submit" value="0"> Submit</button>
-</form>
+<header th:replace="index::header"></header>
 
-</p>
+    <form action="#" method="post" th:action="@{/newReference}" th:object="${f}">
+        <div class="form-group">
+        <label for="myfile">Find absolute path of a file:</label>
+        <input type="file" id="myfile" name="myfile">
+        </div>
+        <div class="form-group">
+            <label for="path">Absolute path</label>
+        <input id="path" placeholder="Enter absolute path" type="text" th:field="*{path}" class="form-control"/>
+            <label for="dlNum">Digital Library</label>
+            <select id="dlNum" required th:field="*{dlNum}" class="form-control">
+            <option value="" hidden>Select a digital library</option>
+            <option value="1" th:text="${DLnames[0]}" ></option>
+            <option value="2" th:text="${DLnames[1]}" ></option>
+            <option value="3" th:text="${DLnames[2]}" ></option>
+            <option value="4" th:text="${DLnames[3]}" ></option>
+            <option value="5" th:text="${DLnames[4]}" ></option>
+            <option value="6" th:text="${DLnames[5]}" ></option>
+            </select>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Create reference">
+        <input type="reset" class="btn btn-primary"  value="Reset">
+    </form>
 </body>
 </html>
