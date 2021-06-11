@@ -47,35 +47,36 @@
 <head><title>Home</title></head>
 <body>
     <header th:fragment="header">
-        <nav class="navbar navbar-default navbar-fixed-top">
-            <!--style="background-color: #356ac3;"-->
+        <nav class="navbar navbar-expand-lg py-3 navbar-dark shadow-sm navbar-fixed-top" style="background-color: #153053;">
+            <div class="container"><!--style="background-color: #356ac3;"-->
+            <!-- GESSi logo -->
+
+                <a id="logo" href="#" class="navbar-brand">
+                    <!-- Logo Image -->
+                    <img src='' th:src="@{images/favicon.ico}" class="rounded-circle z-depth-0" alt="" height="35"/>
+                    <!-- Logo Text -->
+                    <span class="text-uppercase font-weight-bold" th:text="  GESSI-refman"/>
+                </a>
             <div class="container-fluid">
-                <div class="navbar-header">
-                    <!-- GESSi logo -->
-                    <ul class="nav nav-tabs " >
-                        <li  class="nav-item">
-                            <div class="navbar-brand justify-content">
-                                <img src='' th:src="@{images/favicon.ico}" class="rounded-circle z-depth-0" alt="" height="35"><p class="text z-depth-0"><br>GESSI-refman</p>
-                            </div>
-                        </li>
+                    <ul class="nav nav-tabs justify-content-center" >
                         <li  class="nav-item" >
                             <a  class="nav-link active" href="/">Home</a>
                         </li>
                         <li class="nav-item" >
-                            <a  class="nav-link"  href="/newReference">Import</a>
+                            <a  class="nav-link" href="/newReference">Import reference</a>
                         </li>
                         <li  class="nav-item">
-                            <a  class="nav-link"  href="/editCriteria">Edit ICEC</a>
+                            <a  class="nav-link" href="/editCriteria">Edit ICEC</a>
                         </li>
                         <li class="nav-item">
-                            <a  class="nav-link"   href="/getAllReferences">Show table references</a>
+                            <a  class="nav-link" href="/getAllReferences">Table references</a>
                         </li>
                         <li  class="nav-item">
-                            <a  class="nav-link"  href="/resetView">Reset database </a>
+                            <a  class="nav-link" data-toggle="tab" href="/resetView">Reset database </a>
                         </li>
                     </ul>
 
-                </div>
+            </div>
             </div>
         </nav>
     </header>
