@@ -4,19 +4,18 @@
 <head th:replace="index::head"></head>
 <head>
     <title>Reset</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script type="text/javascript" language="javascript" src="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"></script>
-
 </head>
 <body>
 
 <header th:replace="index::header"></header>
-
-<button class="btn btn-primary" href="/reset" style="font-size:12px">
-    <i class="fa fa-info-refresh" ></i>
-
-    <!---Aviso de que se vaciara la bd-->
-</button>
-
+<div class="container mb-5">
+    <h4> Note that if you press the reset button the content of the database will be completely removed. </h4>
+    <button class="btn btn-primary " style="font-size:12px"  >
+        <i class="fa fa-refresh" > <a th:href="@{/reset}" class="text-white">Reset</a></i>
+        <!---Aviso de que se vaciara la bd-->
+    </button>
+</div>
+<script src="https://code.jquery.com/jquery-latest.js" type=""></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js" type=""></script>
 </body>
 </html>

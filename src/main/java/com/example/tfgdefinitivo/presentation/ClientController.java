@@ -110,7 +110,7 @@ public class ClientController {
         return "resetBD";
     }
 
-    @RequestMapping(value=("/reset"))
+    @GetMapping(value=("/reset"))
     public String resetBD(){
         ReferenceController.reset();
         return "resetBD";

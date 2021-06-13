@@ -25,19 +25,24 @@ public class DBConnection {
     @Value("${spring.datasource.password}")
     private String password;
 
-    public  String getURL() {
-        return url;
-    }
-    public  String getUser() {
-        return username;
-    }
-    public  String getPass() { return password; }
 
     @Bean
     public Connection getConnection() throws ClassNotFoundException, SQLException {
         Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
         // We use a configuration file for customise the connection to the URL
-        return DriverManager.getConnection(getURL(), getUser(), getPass());
+        return DriverManager.getConnection(getUrl(), getUsername(), getPassword());
 
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

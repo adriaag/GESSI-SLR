@@ -1,6 +1,9 @@
 package com.example.tfgdefinitivo.domain.controllers;
 
+import com.example.tfgdefinitivo.config.DBConnection;
 import com.example.tfgdefinitivo.data.digitalLibrary;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,11 +19,8 @@ import java.util.Properties;
 @RequestMapping("/dls")
 public class digitalLibraryController {
     private static Connection iniConnection() throws SQLException {
-        String url = "jdbc:derby:derbyDB;create=true";
-        Properties props = new Properties();
-        props.put("user", "user1");
-        props.put("password", "user1");
-        Connection conn = DriverManager.getConnection(url, props);
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Connection conn = ctx.getBean(Connection.class);
         conn.setAutoCommit(false);
         return conn;
     }

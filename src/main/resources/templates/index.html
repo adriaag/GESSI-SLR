@@ -10,13 +10,16 @@
 
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
     <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    <title>All references</title>
     <style>
         .mar {padding: 0 15px 10px;}
     </style>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script type="text/javascript" language="javascript" src="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"></script>
+
+
+    <script src="https://code.jquery.com/jquery-latest.js" type=""></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js" type=""></script>
 
     <style>
         /* Este es para los elementos en general */
@@ -60,19 +63,22 @@
             <div class="container-fluid">
                     <ul class="nav nav-tabs justify-content-center" >
                         <li  class="nav-item" >
-                            <a  class="nav-link active" href="/">Home</a>
+                            <a  class="nav-link active" th:href="@{/}">Home</a>
                         </li>
                         <li class="nav-item" >
-                            <a  class="nav-link" href="/newReference">Import reference</a>
+                            <a  class="nav-link" th:href="@{/newReference}">Import reference</a>
                         </li>
                         <li  class="nav-item">
-                            <a  class="nav-link" href="/editCriteria">Edit ICEC</a>
+                            <a  class="nav-link" th:href="@{/editCriteria}">Edit ICEC</a>
                         </li>
                         <li class="nav-item">
-                            <a  class="nav-link" href="/getAllReferences">Table references</a>
+                            <a  class="nav-link" th:href="@{/getAllReferences}">Table references</a>
+                        </li>
+                        <li class="nav-item">
+                            <a  class="nav-link" href="#">Import errors</a>
                         </li>
                         <li  class="nav-item">
-                            <a  class="nav-link" data-toggle="tab" href="/resetView">Reset database </a>
+                            <a  class="nav-link" th:href="@{/resetView}">Reset database </a>
                         </li>
                     </ul>
 
@@ -81,7 +87,6 @@
         </nav>
     </header>
 
-<script src="https://code.jquery.com/jquery-latest.js" type=""></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js" type=""></script>
+
 </body>
 </html>
