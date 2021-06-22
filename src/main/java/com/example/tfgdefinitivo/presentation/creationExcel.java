@@ -12,7 +12,7 @@ import java.util.List;
 
 public class creationExcel {
     private static String[] columnHeadings = {"#ref", /*dl*/ "DL-Name", "Year", /*article*/ "DOI" ,   /*researchers*/
-            "Estate" , "Authors" , "Title" , "Venue" , "Type" ,  /*companies*/ "Affiliations", "Volume", "Pages",
+            "Estate" , "Criteria", "Authors" , "Title" , "Venue" , "Type" ,  /*companies*/ "Affiliations", "Volume", "Pages",
             "Number","Numpages","Cite key", "Keywords"  , /*idVen*/ "Abstract"};
 
     public static Workbook create(List<referenceDTO> p) throws IOException {
@@ -62,7 +62,7 @@ public class creationExcel {
 
             String auxEst = ref.getEstado();
             CellStyle stRow = style;
-            if (auxEst != null && auxEst.equals("duplicated")) stRow = styleD;
+            if (auxEst != null && (auxEst.equals("duplicated") || auxEst.equals("out"))) stRow = styleD;
 
             Cell cell = row.createCell(0);
             cell.setCellValue(ref.getIdRef());
@@ -85,6 +85,10 @@ public class creationExcel {
             cell.setCellValue(auxEst);
             cell.setCellStyle(stRow);
 
+            cell = row.createCell(5);
+            cell.setCellValue(ref.getApplCriteria());
+            cell.setCellStyle(stRow);
+
             researcherDTO[] authorsList = art.getResearchers();
             StringBuilder authors = new StringBuilder();
             for (int l = 0; l < authorsList.length - 1; l++) {
@@ -92,20 +96,21 @@ public class creationExcel {
             }
             if(authorsList.length > 0)
                 authors.append(authorsList[authorsList.length - 1].getName());
-            cell = row.createCell(5);
+            cell = row.createCell(6);
             cell.setCellValue(authors.toString());
             cell.setCellStyle(stRow);
 
-            cell = row.createCell(6);
+            cell = row.createCell(7);
             cell.setCellValue(art.getTitle());
             cell.setCellStyle(stRow);
 
             if(art.getVen() != null) {
-                cell = row.createCell(7);
+                cell = row.createCell(8);
                 cell.setCellValue(art.getVen().getName());
                 cell.setCellStyle(stRow);
             }
-            cell = row.createCell(8);
+
+            cell = row.createCell(9);
             cell.setCellValue(art.getType());
             cell.setCellStyle(stRow);
 
@@ -117,47 +122,48 @@ public class creationExcel {
             if(affiList.length > 0)
                 affils.append(affiList[affiList.length - 1].getName());
 
-            cell = row.createCell(9);
+            cell = row.createCell(10);
             cell.setCellValue(affils.toString());
             cell.setCellStyle(stRow);
 
-            cell = row.createCell(10);
+            cell = row.createCell(11);
             cell.setCellValue(art.getVolume());
             cell.setCellStyle(stRow);
 
-            cell = row.createCell(11);
+            cell = row.createCell(12);
             cell.setCellValue(art.getPages());
             cell.setCellStyle(stRow);
 
-            cell = row.createCell(12);
+            cell = row.createCell(13);
             cell.setCellValue(art.getNumber());
             cell.setCellStyle(stRow);
 
             if (art.getNumpages()==0) {
-                cell = row.createCell(13);
+                cell = row.createCell(14);
                 cell.setCellValue("-");
                 cell.setCellStyle(stRow);
             }
             else {
-                cell = row.createCell(13);
+                cell = row.createCell(14);
                 cell.setCellValue(art.getNumpages());
                 cell.setCellStyle(stRow);
             }
-            cell = row.createCell(14);
+            cell = row.createCell(15);
             cell.setCellValue(art.getCiteKey());
             cell.setCellStyle(stRow);
-            cell = row.createCell(15);
+            cell = row.createCell(16);
             cell.setCellValue(art.getKeywords());
             cell.setCellStyle(stRow);
 
-            cell = row.createCell(16);
+            cell = row.createCell(17);
             cell.setCellValue(art.getAbstractA());
             cell.setCellStyle(stRow);
         }
         // Resize all columns to fit the content size
         for (int i = 0; i < columnHeadings.length; i++) {
-            //venue, authors, title, afiliatons , keywords, abstract - 20 caracteres
-            sheet.autoSizeColumn(i);
+            if(i==6 || i==8 || i== 7 || i ==10 || i== 16 || i==17){
+                //DO NOTHING
+            } else sheet.autoSizeColumn(i);
         }
         //FileOutputStream fileOut = new FileOutputStream("references.xlsx");
         //workbook.write(fileOut);

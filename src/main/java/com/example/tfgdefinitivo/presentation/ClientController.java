@@ -3,10 +3,8 @@ package com.example.tfgdefinitivo.presentation;
 import com.example.tfgdefinitivo.domain.controllers.ReferenceController;
 import com.example.tfgdefinitivo.domain.controllers.criteriaController;
 import com.example.tfgdefinitivo.domain.controllers.digitalLibraryController;
-import com.example.tfgdefinitivo.domain.dto.criteriaDTO;
-import com.example.tfgdefinitivo.domain.dto.referenceDTO;
-import com.example.tfgdefinitivo.domain.dto.formDTO;
-import com.example.tfgdefinitivo.domain.dto.referenceDTOupdate;
+import com.example.tfgdefinitivo.domain.dto.*;
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jbibtex.ParseException;
 import org.springframework.core.io.InputStreamResource;
@@ -15,18 +13,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.RedirectView;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.List;
 
 @Controller
 public class ClientController {
-    public String type;
+    private static final String PATH_PATTERN = "^([A-z]\\:)\\\\([A-z0-9-_+.]+\\\\)*([A-z0-9-_+\\.]+.(bib))$";
 
     @RequestMapping(value=("/"))
     public String index(){
@@ -61,7 +59,7 @@ public class ClientController {
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
 
         return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=" + "new_excel.xlsx")
+                .header("Content-Disposition", "attachment; filename=" + "references_refman.xlsx")
                 .contentLength(file.length())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
@@ -71,17 +69,42 @@ public class ClientController {
     public String askInformation(Model model) throws SQLException {
         model.addAttribute("DLnames", digitalLibraryController.getNames());
         model.addAttribute("f", new formDTO());
-
-        return "formReference";
+        model.addAttribute("messageError", "0");
+        return "newReference";
     }
 
-    @PostMapping(value = "/newReference")
+    @PostMapping(value = "/new")
     public String submit( @ModelAttribute("f") formDTO f, Model model)
             throws ParseException, SQLException, IOException {
-        ReferenceController.addReference(f.getPath(),f.getdlNum());
-        model.addAttribute("path", f.getPath());
-        model.addAttribute("dlNum", f.getdlNum());
-        return "NewReference";
+        List<String> names = digitalLibraryController.getNames();
+        List<importErrorDTO> errors;
+
+            errors = ReferenceController.addReference(f.getdlNum(), f.getFile());
+            int num = Integer.parseInt(f.getdlNum());
+            System.out.println(num);
+            System.out.println(names.get(num-1));
+            model.addAttribute("newDL", f.getdlNum());
+            model.addAttribute("newName",StringUtils.cleanPath(f.getFile().getOriginalFilename()));
+            if(!errors.isEmpty()) model.addAttribute("errors",errors);
+            if(ReferenceController.getReferencesImport()>0) {
+                model.addAttribute("refsImp",ReferenceController.getReferencesImport());
+                ReferenceController.resetReferencesImport();
+            }
+            model.addAttribute("importBool",true);
+            model.addAttribute("DLnew", names.get(num-1));
+            model.addAttribute("messageError", "0");
+
+            ByteArrayInputStream stream = new ByteArrayInputStream(f.getFile().getBytes());
+            String myString = IOUtils.toString(stream, "UTF-8");
+            System.out.println(myString);
+        model.addAttribute("DLnames", names);
+        model.addAttribute("f", new formDTO());
+        return "newReference";
+    }
+    @GetMapping(value = "/errors")
+    public String importErrors(Model model) throws SQLException, IOException, ParseException {
+        model.addAttribute("errorsList", ReferenceController.getAllErrors());
+        return "importErrors";
     }
 
     @GetMapping(value = "/editCriteria")
@@ -91,17 +114,41 @@ public class ClientController {
         model.addAttribute("listIC", lIC);
         model.addAttribute("listEC", lEC);
         model.addAttribute("f", new criteriaDTO());
+        model.addAttribute("modalf", new criteriaDTO());
+
+        model.addAttribute("errorM", "");
         return "editCriteria";
     }
-    @PostMapping(value=("/editCriteria"))
-    public String editCriteria(@ModelAttribute("f") criteriaDTO f){
-        criteriaController.addCriteria(f.getIdICEC(),f.getText(),f.getType());
+
+    @PostMapping(value = "/updateCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public static String updateCriteria(@PathVariable("id") String oldIdICEC,  @ModelAttribute("modalf")  criteriaDTO f) {
+        System.out.println(oldIdICEC);
+        criteriaController.updateCriteria(oldIdICEC,f);
         return "redirect:/editCriteria";
     }
 
-    @PostMapping(value=("/editReference"))
-    public String editReference(@ModelAttribute("f") referenceDTOupdate f){
-        ReferenceController.updateReference(f.getIdRef(),f.getEstado(),f.getApplCriteria());
+    @PostMapping(value = "/deleteCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public static String deleteCriteria(@PathVariable("id") String idICEC) {
+        criteriaController.deleteCriteria(idICEC);
+        return "redirect:/editCriteria";
+    }
+
+    @PostMapping(value=("/editCriteria"))
+    public String editCriteria(@ModelAttribute("f") criteriaDTO f, Model model){
+        String messageError = criteriaController.addCriteria(f.getIdICEC(),f.getText(),f.getType());
+        List<criteriaDTO> lIC = criteriaController.getCriteriasIC();
+        List<criteriaDTO> lEC = criteriaController.getCriteriasEC();
+        model.addAttribute("listIC", lIC);
+        model.addAttribute("listEC", lEC);
+        model.addAttribute("f", new criteriaDTO());
+        model.addAttribute("modalf", new criteriaDTO());
+        model.addAttribute("errorM", messageError);
+        return "editCriteria";
+    }
+
+    @PostMapping(value=("/editReference/{id}"))
+    public String editReference(@PathVariable("id") int id, @ModelAttribute("f") referenceDTOupdate f){
+        ReferenceController.updateReference(id,f.getEstado(),f.getApplCriteria());
         return "redirect:/getAllReferences";
     }
 
@@ -111,24 +158,11 @@ public class ClientController {
     }
 
     @GetMapping(value=("/reset"))
-    public String resetBD(){
+    public String resetBD(Model model){
         ReferenceController.reset();
+        model.addAttribute("mes","The database has been reset!");
         return "resetBD";
     }
-/*
-    @RequestMapping(value = "/newReference", method = RequestMethod.POST)
-    public String addReference( Model model, @ModelAttribute formDTO formdto ) throws SQLException {
-        model.addAttribute("path", formdto.getPath());
-        model.addAttribute("nameDL", formdto.getDl());
-        return "NewReference";
-    }
 
-    //@RequestParam(name= "path", required=false, defaultValue="path no") String path
-    @RequestMapping(value = "/showNewReference")
-    public String showNewReference(formDTO form, Model model ) throws SQLException {
-        model.addAttribute("path", form.getPath());
-        model.addAttribute("nameDL", form.getDl());
-        return "NewReference";
-    }*/
 }
 

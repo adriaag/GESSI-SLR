@@ -1,14 +1,20 @@
 package com.example.tfgdefinitivo.domain.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class formDTO  {
-    private String path;
+    private MultipartFile file;
     private String dlNum;
 
     public String getdlNum() { return dlNum; }
 
     public void setdlNum(String dlNum) { this.dlNum = dlNum;}
 
-    public String getPath() { return path; }
+    public MultipartFile getFile() {
+        return file;
+    }
 
-    public void setPath(String path) { this.path = path; }
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
 }

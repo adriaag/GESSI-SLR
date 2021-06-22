@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <div th:replace="allReferences::head"></div>
+    <title>Import errors</title>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg py-3 navbar-dark shadow-sm navbar-fixed-top" style="background-color: #153053;">
+            <div class="container"><!--style="background-color: #356ac3;"-->
+                <!-- GESSi logo -->
+
+                <a id="logo" href="#" class="navbar-brand">
+                    <!-- Logo Image -->
+                    <img src='' th:src="@{images/favicon.ico}" class="rounded-circle z-depth-0" alt="" height="35"/>
+                    <!-- Logo Text -->
+                    <span class="text-uppercase font-weight-bold" th:text="  GESSI-refman"/>
+                </a>
+                <div class="container-fluid">
+                    <ul class="nav nav-tabs justify-content-center" >
+                        <li  class="nav-item" >
+                            <a  class="nav-link " th:href="@{/}">Home</a>
+                        </li>
+                        <li class="nav-item" >
+                            <a  class="nav-link" th:href="@{/newReference}">Import reference</a>
+                        </li>
+                        <li  class="nav-item">
+                            <a  class="nav-link" th:href="@{/editCriteria}">Edit ICEC</a>
+                        </li>
+                        <li class="nav-item">
+                            <a  class="nav-link" th:href="@{/getAllReferences}">Table references</a>
+                        </li>
+                        <li class="nav-item">
+                            <a  class="nav-link active" th:href="@{/errors}">Import errors</a>
+                        </li>
+                        <li  class="nav-item">
+                            <a  class="nav-link " th:href="@{/resetView}">Reset database </a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+<br>
+
+<div class="m-3">
+    <h2>Importation errors</h2>
+    <table class="table table-striped " id="dataTable" data-page-length='50' data-order='[[0, "desc"]]' >
+        <thead >
+        <tr class="btn-info" style="background: #1c4c96 ">
+            <th scope="col">Date&Time</th>
+            <th scope="col">#DOI</th>
+            <th scope="col">#DL</th>
+            <th scope="col">Reference's information</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="i,iterStat : ${errorsList}">
+            <td th:text="${i.getDatetime()}"></td>
+            <td th:text="${i.getDoi()}"></td>
+            <td th:text="${i.getIdDL()}"></td>
+            <td th:text="${i.getBibTex()}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+<script language="javascript" type="text/javascript">
+    $(document).ready( function () {
+        $('#dataTable').DataTable();
+    });
+</script>
+</html>

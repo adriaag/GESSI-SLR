@@ -1,21 +1,83 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="index::head"></head>
 <head>
     <title>Reset</title>
+    <div th:replace="allReferences::head"> </div>
 </head>
 <body>
+<header>
+    <nav class="navbar navbar-expand-lg py-3 navbar-dark shadow-sm navbar-fixed-top" style="background-color: #153053;">
+        <div class="container"><!--style="background-color: #356ac3;"-->
+            <!-- GESSi logo -->
+            <a id="logo" href="#" class="navbar-brand">
+                <!-- Logo Image -->
+                <img src='' th:src="@{images/favicon.ico}" class="rounded-circle z-depth-0" alt="" height="35"/>
+                <!-- Logo Text -->
+                <span class="text-uppercase font-weight-bold" th:text="  GESSI-refman"/>
+            </a>
+            <div class="container-fluid">
+                <ul class="nav nav-tabs justify-content-center" >
+                    <li  class="nav-item" >
+                        <a  class="nav-link " th:href="@{/}">Home</a>
+                    </li>
+                    <li class="nav-item" >
+                        <a  class="nav-link" th:href="@{/newReference}">Import reference</a>
+                    </li>
+                    <li  class="nav-item">
+                        <a  class="nav-link" th:href="@{/editCriteria}">Edit ICEC</a>
+                    </li>
+                    <li class="nav-item">
+                        <a  class="nav-link" th:href="@{/getAllReferences}">Table references</a>
+                    </li>
+                    <li class="nav-item">
+                        <a  class="nav-link " th:href="@{/errors}">Import errors</a>
+                    </li>
+                    <li  class="nav-item">
+                        <a  class="nav-link active" th:href="@{/resetView}">Reset database </a>
+                    </li>
+                </ul>
 
-<header th:replace="index::header"></header>
-<div class="container mb-5">
-    <h4> Note that if you press the reset button the content of the database will be completely removed. </h4>
-    <button class="btn btn-primary " style="font-size:12px"  >
-        <i class="fa fa-refresh" > <a th:href="@{/reset}" class="text-white">Reset</a></i>
-        <!---Aviso de que se vaciara la bd-->
-    </button>
+            </div>
+        </div>
+    </nav>
+</header>
+<br>
+<div class="container">
+    <h2> Reset</h2>
+    <span > Note that if you press the reset button the content of the database will be completely removed.
+    <button class="btn btn-primary eBtn" type="button" style="font-size:14px" data-toggle="modal"
+            data-target="#exampleModal">
+        <i class="fa fa-refresh">Reset</i>
+    </button></span>
+    <br>
+    <div th:if="${!#strings.isEmpty(mes)}">
+        <p class="alert alert-primary" role="alert" th:text="${mes}"></p>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Reset database</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action='#' id="myForm" method="get" th:action="@{/reset}">
+                        <label><i class="fa fa-warning"> Are you sure you wanna reset database?</i></label>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button id="buttonConf" type="submit" class="btn btn-primary">Confirm</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<script src="https://code.jquery.com/jquery-latest.js" type=""></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js" type=""></script>
+
 </body>
 </html>

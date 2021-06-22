@@ -1,6 +1,9 @@
 package com.example.tfgdefinitivo.data;
 
+import org.apache.commons.io.IOUtils;
+import org.bouncycastle.util.Times;
 import org.jbibtex.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.sql.*;
@@ -19,6 +22,7 @@ public class article {
 
     private static String authorsToInsert = null;
     private static String affiliationToInsert = null;
+    private static int referencesImported = 0;
 
     static Key abstractKey = new Key("abstract");
     static Key keywordsKey = new Key("keywords");
@@ -51,20 +55,24 @@ public class article {
         return new String[] {path, idDL};
     }
 
-    public static void importar(String path, String idDL, Statement s) throws IOException,ParseException,SQLException {
-        Reader reader = new FileReader(path);
+    public static Timestamp importar( String idDL, Statement s, MultipartFile file) throws IOException,ParseException,SQLException {
+
+        //Reader reader = new FileReader(path);
+        ByteArrayInputStream stream = new ByteArrayInputStream(file.getBytes());
+        Reader reader = new InputStreamReader(stream);
         BibTeXParser bibtexParser = new BibTeXParser(); //add Exception
         BibTeXDatabase database = bibtexParser.parse(reader);
         Map<Key, BibTeXEntry> entryMap = database.getEntries();
         Collection<BibTeXEntry> entries = entryMap.values();
-        iniCheck(path,s,idDL);
+        Timestamp time = iniCheck(s,idDL,file);
         // add rows of file
         //Buscar prioridad de la idDL de la que estoy importando al inicio de la importacion
         int entriesPriority = getPriority(s,idDL);
+        if(!entries.isEmpty()) referencesImported = entries.size();
         for(BibTeXEntry entry : entries){
             System.out.println(entry.getKey());
             String doi = addArticle(idDL, s, entry, entriesPriority);
-            if (doi != null) {
+            if (!doi.contains("ERROR")) {
                 if (authorsToInsert != null) {
                     Integer[] idsResearchers = researcher.insertRows(authorsToInsert, s);
                     s.getConnection().commit();
@@ -76,15 +84,17 @@ public class article {
                     affiliation.insertRows(s, idsComps, doi);
                 }
             }
+            else System.out.println(doi);;
         }
-
         reader.close();
+        return time;
     }
 
     //Guarda las referencias que no se pueden guardar en la BD
-    public static void iniCheck(String path, Statement sta, String idDL) throws FileNotFoundException, SQLException {
-        File file = new File(path);
-        Scanner sc = new Scanner(file);
+    public static Timestamp iniCheck(Statement sta, String idDL, MultipartFile file) throws IOException, SQLException {
+        ByteArrayInputStream stream = new ByteArrayInputStream(file.getBytes());
+
+        Scanner sc = new Scanner(stream);
         sc.useDelimiter("\\@");
         ArrayList<String> list = new ArrayList<>();
 
@@ -127,6 +137,7 @@ public class article {
                 list.add(citeKey);
             }
         }
+        return timesql;
     }
 
     public static ResultSet getAllData(Statement s) throws SQLException {
@@ -167,16 +178,14 @@ public class article {
             doi = doi.replaceAll("[{-}]", "").replaceAll("'", "''");
             ResultSet rs = getArticle(s, doi);
             String estado = null;
+            String apCriteria = null;
             if (rs.next()) {
                 System.out.println("El article se actualiza.");
-                updateRow(rs,entry,s,doi, idDL); //añadir informacion en los valores null
+                updateRow(rs,entry,s,doi); //añadir informacion en los valores null del article
 
-                //Check estado de la referencia
-                int idDLArtFound = reference.getDL(doi,s);
-                int priorityArtFound = getPriority(s,String.valueOf(idDLArtFound));
-
-                if(isDuplicate(s,priorityArtFound,doi).next()) {
-                    estado = "duplicated";
+                if(isDuplicate(s,entriesPriority,doi).next()) {
+                    estado = "out";
+                    apCriteria = "EC1";
                 }
                 else {
                     updateEstateReferences(s,doi);
@@ -186,12 +195,12 @@ public class article {
                 System.out.println("El article se añade.");
                 insertRow(s, entry, doi);//create article nuevo
             }
-            reference.insertRow(s,doi,idDL,estado);
+            int aux = reference.insertRow(s,doi,idDL,estado,apCriteria);
+            if(aux==-1) return "ERROR: This reference already exists";
             return doi;
         }
         else {
-            System.out.println("ERROR: Este article no contiene doi ni citeKey");
-            return null;
+            return "ERROR: The article does not contain doi or citeKey";
         }
     }
 
@@ -300,7 +309,7 @@ public class article {
         }
     }
 
-    private static void updateRow(ResultSet rs, BibTeXEntry entry, Statement s, String doi1, String doi)  {
+    private static void updateRow(ResultSet rs, BibTeXEntry entry, Statement s, String doi)  {
         try {
             /*UPDATE Articles
             SET  keywords= 'computer science, software', volume= 15
@@ -444,4 +453,11 @@ public class article {
         }
     }
 
+    public static int getReferencesImported() {
+        return referencesImported;
+    }
+
+    public static void setReferencesImported(int i) {
+        referencesImported = i;
+    }
 }

@@ -1,6 +1,10 @@
 package com.example.tfgdefinitivo.data;
 
+import com.example.tfgdefinitivo.domain.dto.importErrorDTO;
+
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class importationLogError {
     public static boolean createTable(Statement s) {
@@ -59,8 +63,29 @@ public class importationLogError {
             }
         }
     }
+
+    public static List<importErrorDTO> getErrors(Statement s, Timestamp timesql) throws SQLException {
+        ResultSet rs;
+        rs = s.executeQuery("SELECT time, idDL,doi,BibTex FROM IMPORTATIONLOGERROR WHERE time=TIMESTAMP('"+ timesql.toString()+"')");
+        ArrayList<importErrorDTO> ret = new ArrayList<>();
+        while (rs.next()) {
+            ret.add(new importErrorDTO(rs.getTimestamp(1),rs.getInt(2),rs.getString(3),rs.getString(4)));
+        }
+        return ret;
+    }
+
+    public static List<importErrorDTO> getAllErrors(Statement s) throws SQLException {
+        ResultSet rs;
+        rs = s.executeQuery("SELECT time, idDL,doi,BibTex FROM IMPORTATIONLOGERROR");
+        ArrayList<importErrorDTO> ret = new ArrayList<>();
+        while (rs.next()) {
+            ret.add(new importErrorDTO(rs.getTimestamp(1),rs.getInt(2),rs.getString(3),rs.getString(4)));
+        }
+        return ret;
+    }
+
     /*
-    INSERT INTO IMPORTATIONLOGERROR (IDLOGERR ,TIME) VALUES (100,TIMESTAMP('1960-01-01 23:03:20'));ç
+    INSERT INTO IMPORTATIONLOGERROR (IDLOGERR ,TIME) VALUES (100,TIMESTAMP('1960-01-01 23:03:20'));
 
 SELECT * FROM IMPORTATIONLOGERROR WHERE time=TIMESTAMP('1960-01-01 23:03:20');
 */

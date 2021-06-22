@@ -5,6 +5,7 @@ import com.example.tfgdefinitivo.domain.dto.*;
 import org.jbibtex.ParseException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.*;
@@ -13,20 +14,29 @@ import java.util.List;
 
 public class reference {
 
-    public static int insertRow(Statement s, String doi, String idDL, String estado)
+    public static int insertRow(Statement s, String doi, String idDL, String estado, String apCriteria)
             throws SQLException {
         try {
             String query;
-            if (estado!=null)
-                query = "INSERT INTO referencias(doi,idDL,state) VALUES (\'" + doi
-                    + "\', " + idDL + ",'" + estado+"')";
-            else query = "INSERT INTO referencias(doi,idDL,state) VALUES (\'" + doi
-                    + "\', " + idDL + "," + estado+")";
+            if (estado!=null && apCriteria != null)
+                query = "INSERT INTO referencias(doi,idDL,state,applCriteria) VALUES (\'" + doi
+                        + "\', " + idDL + ",'" + estado+"', '"+apCriteria+"')";
+            else if (estado!=null)
+                query = "INSERT INTO referencias(doi,idDL,state,applCriteria) VALUES (\'" + doi
+                    + "\', " + idDL + ",'" + estado+"', null)";
+            else if (apCriteria!=null)
+                query = "INSERT INTO referencias(doi,idDL,state,applCriteria) VALUES (\'" + doi
+                        + "\', " + idDL + ",null,'" + apCriteria+"')";
+            else query = "INSERT INTO referencias(doi,idDL,state,applCriteria) VALUES (\'" + doi
+                    + "\', " + idDL + ", "+estado+ ", "+apCriteria+")";
             System.out.println(query);
             s.execute(query);
-            System.out.println("Inserted row with doi, idDL in referencias");
+            System.out.println("Inserted row with doi, idDL.. in referencias");
             s.getConnection().commit();
         } catch (SQLException e) {
+            if(e.getSQLState().equals(23505)){
+                return -1;
+            }
             while (e != null) {
                 System.err.println("\n----- SQLException -----");
                 System.err.println("  SQL State:  " + e.getSQLState());
@@ -47,7 +57,7 @@ public class reference {
                     "PRIMARY KEY(idRef), unique(doi,idDL), CONSTRAINT DL_FK_R FOREIGN KEY (idDL) " +
                     "REFERENCES digitalLibraries (idDL),CONSTRAINT AR_FK_R FOREIGN KEY (doi) REFERENCES articles (doi),"+
                     "CONSTRAINT state_chk CHECK (state IN ( 'pending', 'in', 'duplicated','out')), " +
-                    "CONSTRAINT CRI_FK_R FOREIGN KEY (applCriteria) REFERENCES criteria(idICEC))");
+                    "CONSTRAINT CRI_FK_R FOREIGN KEY (applCriteria) REFERENCES criteria(idICEC) on delete set null)");
             System.out.println("Created table referencias");
         } catch (SQLException e) {
             if (e.getSQLState().equals("X0Y32"))
@@ -191,7 +201,9 @@ public class reference {
         venue.createTable(s);
         article.createTable(s);
         researcher.createTable(s);
-        criteria.createTable(s);
+        if (criteria.createTable(s))
+            //insert duplicate exclusion
+            criteria.insertRowIni(conn,statements);
         reference.createTable(s);
         author.createTable(s);
         company.createTable(s);
@@ -212,13 +224,25 @@ public class reference {
         digitalLibrary.dropTable(s);
     }
 
-    public static void importar(String path, String idDL) throws SQLException, IOException, ParseException {
+    public static List<importErrorDTO> importar( String idDL, String em, MultipartFile file) throws SQLException, IOException, ParseException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         conn.setAutoCommit(false);
         Statement s = conn.createStatement();
-        article.importar(path, idDL, s);
+        Timestamp t = article.importar( idDL, s, file);
+        List<importErrorDTO> r =  importationLogError.getErrors(s,t);
         conn.commit();
+        return r;
+    }
+
+    public static List<importErrorDTO> getAllErrors() throws SQLException, IOException, ParseException {
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Connection conn = ctx.getBean(Connection.class);
+        conn.setAutoCommit(false);
+        Statement s = conn.createStatement();
+        List<importErrorDTO> r = importationLogError.getAllErrors(s);
+        conn.commit();
+        return r;
     }
 
     public static referenceDTO getReference(int idR) {
@@ -306,11 +330,13 @@ public class reference {
         return r.getInt(1);
     }
     static ResultSet isDuplicate(Statement s, int priorityImportado, String doi) throws SQLException {
+        //exists (select * from references r, digitalLibraries dl
+        //	where r.doi=varDoi and r.idDL = dl.idDL and dl.priority > varPriorityDLimportando)
         return s.executeQuery("select * from REFERENCIAS r, DIGITALLIBRARIES dl where r.doi='" + doi
-                + "' and r.idDL = dl.idDL and dl.priority > "+ priorityImportado);
+                + "' and r.idDL = dl.idDL and dl.priority < "+ priorityImportado);
     }
     static void updateEstateReferences(Statement s, String doi) throws SQLException {
-        s.execute("update referencias set state = 'duplicated' where doi = '" + doi + "' and state is null ");
+        s.execute("update referencias set state = 'out', applCriteria='EC1' where doi = '" + doi + "' and state is null ");
     }
 
     public static void update(int idRef, String estado, String applCriteria) {
@@ -326,6 +352,74 @@ public class reference {
         else if (!applCriteria.equals("")) s.execute("update referencias set applCriteria = '" + applCriteria + "' where idRef = " + idRef);
         } catch (SQLException e) {
             System.out.println("Error en update estado y criteria de una reference");
+            while (e != null) {
+                System.err.println("\n----- SQLException -----");
+                System.err.println("  SQL State:  " + e.getSQLState());
+                System.err.println("  Error Code: " + e.getErrorCode());
+                System.err.println("  Message:    " + e.getMessage());
+                e = e.getNextException();
+            }
+        }
+    }
+    public static List<Integer> getReferenceOfCriteria(String oldIdICEC) {
+        try {
+            ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+            Connection conn = ctx.getBean(Connection.class);
+            Statement s;
+            s = conn.createStatement();
+            ResultSet rs;
+            List<Integer> r = new ArrayList<>();
+            rs = s.executeQuery("SELECT idRef FROM referencias where applcriteria='" + oldIdICEC + "'");
+            while (rs.next()) r.add(rs.getInt(1));
+            s.close();
+            return r;
+        }
+        catch (SQLException e) {
+            while (e != null) {
+                System.err.println("\n----- SQLException -----");
+                System.err.println("  SQL State:  " + e.getSQLState());
+                System.err.println("  Error Code: " + e.getErrorCode());
+                System.err.println("  Message:    " + e.getMessage());
+                e = e.getNextException();
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    public static void setNullCriteria(int idRef) {
+        try{
+            ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+            Connection conn = ctx.getBean(Connection.class);
+            Statement s;
+            String query = "UPDATE referencias SET applcriteria=null WHERE idRef = " + idRef;
+            System.out.println(query);
+            s = conn.createStatement();
+            s.execute(query);
+            System.out.println("Inserted row in criteria");
+            s.close();
+        }catch (SQLException e) {
+            while (e != null) {
+                System.err.println("\n----- SQLException -----");
+                System.err.println("  SQL State:  " + e.getSQLState());
+                System.err.println("  Error Code: " + e.getErrorCode());
+                System.err.println("  Message:    " + e.getMessage());
+                e = e.getNextException();
+            }
+        }
+    }
+
+    public static void setCriteria(int idRef, String idICEC) {
+        try{
+            ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+            Connection conn = ctx.getBean(Connection.class);
+            Statement s;
+            String query = "UPDATE referencias SET applcriteria='"+ idICEC +"' WHERE idRef = " + idRef;
+            System.out.println(query);
+            s = conn.createStatement();
+            s.execute(query);
+            System.out.println("Inserted row in criteria");
+            s.close();
+        }catch (SQLException e) {
             while (e != null) {
                 System.err.println("\n----- SQLException -----");
                 System.err.println("  SQL State:  " + e.getSQLState());

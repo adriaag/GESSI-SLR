@@ -1,13 +1,18 @@
 package com.example.tfgdefinitivo.domain.controllers;
 
+import com.example.tfgdefinitivo.data.article;
 import com.example.tfgdefinitivo.data.reference;
+import com.example.tfgdefinitivo.domain.dto.importErrorDTO;
 import com.example.tfgdefinitivo.domain.dto.referenceDTO;
+import org.aspectj.bridge.IMessage;
 import org.jbibtex.ParseException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,9 +28,18 @@ public class ReferenceController {
     }
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static void addReference(String path, String nameDL)
+    public static List<importErrorDTO> addReference( String nameDL, MultipartFile file)
             throws ParseException, SQLException, IOException {
-        reference.importar(path, nameDL);
+        String ErrorMessage = "";
+        return reference.importar( nameDL,ErrorMessage,file);
+    }
+
+    public static int getReferencesImport(){
+        return article.getReferencesImported();
+    }
+
+    public static void resetReferencesImport(){
+        article.setReferencesImported(0);
     }
 
     public static void reset() {
@@ -35,6 +49,21 @@ public class ReferenceController {
 
     public static void updateReference(int idRef, String estado, String applCriteria) {
         reference.update(idRef,estado, applCriteria);
+    }
+
+    public static List<importErrorDTO> getAllErrors() throws ParseException, SQLException, IOException {
+        return reference.getAllErrors();
+    }
+
+    public static List<Integer> setNullCriteria(String oldIdICEC) {
+        List<Integer> refs = reference.getReferenceOfCriteria(oldIdICEC);
+        for (int r : refs)
+            reference.setNullCriteria(r);
+        return refs;
+    }
+
+    public static void setCriteria(int idRef, String idICEC) {
+        reference.setCriteria( idRef,  idICEC);
     }
 
     @RequestMapping(value = "/createTables")
