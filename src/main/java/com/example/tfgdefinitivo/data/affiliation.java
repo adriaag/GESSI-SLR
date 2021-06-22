@@ -35,7 +35,7 @@ public class affiliation {
             String queryRow = "INSERT INTO affiliations(idCom, idA) VALUES (";
             String query;
             query = queryRow + idCom + ", '" + idA + "')";
-            System.out.println(query);
+            //System.out.println(query);
             s.execute(query);
             System.out.println("Inserted row with idCom and idA in affiliations");
             s.getConnection().commit();

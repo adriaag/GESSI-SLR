@@ -29,7 +29,7 @@ public class reference {
                         + "\', " + idDL + ",null,'" + apCriteria+"')";
             else query = "INSERT INTO referencias(doi,idDL,state,applCriteria) VALUES (\'" + doi
                     + "\', " + idDL + ", "+estado+ ", "+apCriteria+")";
-            System.out.println(query);
+            //System.out.println(query);
             s.execute(query);
             System.out.println("Inserted row with doi, idDL.. in referencias");
             s.getConnection().commit();
@@ -86,13 +86,6 @@ public class reference {
         }
     }
 
-    public static int getLastID(Statement s) throws SQLException {
-        ResultSet rs;
-        rs = s.executeQuery("SELECT idRef FROM referencias ORDER BY idref DESC");
-        rs.next();
-        return rs.getInt(1);
-    }
-
     public static ResultSet getAll(Statement s) throws SQLException {
         ResultSet rs;
         rs = s.executeQuery("SELECT * FROM referencias ");
@@ -118,7 +111,7 @@ public class reference {
                 int dlR = rs.getInt(3);
                 String estado = rs.getString(4);
                 String applCriteria = rs.getString(5);
-                System.out.println(idR + " " + doiR + " " + dlR + " "+ estado + " " + applCriteria);
+                //System.out.println(idR + " " + doiR + " " + dlR + " "+ estado + " " + applCriteria);
 
                 referenceDTO NewRef = new referenceDTO(idR,doiR,dlR,estado,applCriteria);
                 obtainReferenceDTO(conn, NewRef, doiR, dlR);
@@ -259,7 +252,7 @@ public class reference {
             String doiR = NewRef.getDoi();
             int dlR = NewRef.getidDL();
             String estado = NewRef.getEstado();
-            System.out.println(idR + " " + doiR + " " + dlR + " " + estado);
+            //System.out.println(idR + " " + doiR + " " + dlR + " " + estado);
 
             obtainReferenceDTO(conn, NewRef, doiR,dlR);
             r=NewRef;
@@ -392,7 +385,7 @@ public class reference {
             Connection conn = ctx.getBean(Connection.class);
             Statement s;
             String query = "UPDATE referencias SET applcriteria=null WHERE idRef = " + idRef;
-            System.out.println(query);
+            //System.out.println(query);
             s = conn.createStatement();
             s.execute(query);
             System.out.println("Inserted row in criteria");
@@ -414,7 +407,7 @@ public class reference {
             Connection conn = ctx.getBean(Connection.class);
             Statement s;
             String query = "UPDATE referencias SET applcriteria='"+ idICEC +"' WHERE idRef = " + idRef;
-            System.out.println(query);
+            //System.out.println(query);
             s = conn.createStatement();
             s.execute(query);
             System.out.println("Inserted row in criteria");

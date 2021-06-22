@@ -139,7 +139,7 @@ public class criteria {
             }else if (!text.isEmpty()) {
                 query = "UPDATE criteria SET  text= '" + text + "' WHERE idICEC = '" + oldIdICEC + "' ";
             }
-            System.out.println(query);
+            //System.out.println(query);
             s = conn.createStatement();
             if (!query.isEmpty()) s.execute(query);
             System.out.println("Inserted row in criteria");
@@ -161,7 +161,7 @@ public class criteria {
             Connection conn = ctx.getBean(Connection.class);
             Statement s;
             String query = "DELETE FROM criteria WHERE idICEC = '"+ idICEC+"'";
-            System.out.println(query);
+            //System.out.println(query);
             s = conn.createStatement();
             s.execute(query);
             System.out.println("Inserted row in criteria");

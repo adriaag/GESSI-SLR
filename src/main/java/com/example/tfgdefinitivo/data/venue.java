@@ -31,7 +31,7 @@ public class venue {
     public static int insertRow(Statement s, String nameVenue) throws SQLException {
         try{
             String query = "INSERT INTO venues(name) VALUES (\'" + nameVenue + "\')";
-            System.out.println(query);
+            //System.out.println(query);
             s.execute(query);
             System.out.println("Inserted row with idVenue, name, acr in venues");
             s.getConnection().commit();

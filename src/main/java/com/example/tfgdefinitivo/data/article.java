@@ -30,31 +30,6 @@ public class article {
     static Key articleKey = new Key("article");
     static Key affiliationKey = new Key("affiliation");
 
-    public static String[] askInfo(Statement s) throws SQLException {
-        System.out.println("Escribir el path absoluto donde se encuentra el fichero a exportar: ");
-        Scanner entrada=new Scanner(System.in);
-        String path = entrada.nextLine();
-        System.out.println("Path escogido: " + path);
-        System.out.println("Escoger el número de la biblioteca de donde se exporta el archivo:");
-
-        ArrayList<String> DLs = digitalLibrary.getNames(s);
-        String idDL = null;
-        for (int i = 0; i < DLs.size(); i++)
-            System.out.println(i+1 + ". " + DLs.get(i));
-        try {
-            int num=entrada.nextInt() - 1;
-            if (num >= 0 & num < DLs.size()) {
-                idDL = digitalLibrary.getIDs(s).get(num);
-                System.out.println("Se ha escogido " + idDL + ". " + DLs.get(num));
-            } else {
-                System.out.println("El numero no esta entre el 1 y el 6");
-            }
-        } catch (Exception e) {
-            System.out.println("No se ha escrito un número.");
-        }
-        return new String[] {path, idDL};
-    }
-
     public static Timestamp importar( String idDL, Statement s, MultipartFile file) throws IOException,ParseException,SQLException {
 
         //Reader reader = new FileReader(path);
@@ -70,7 +45,7 @@ public class article {
         int entriesPriority = getPriority(s,idDL);
         if(!entries.isEmpty()) referencesImported = entries.size();
         for(BibTeXEntry entry : entries){
-            System.out.println(entry.getKey());
+            //System.out.println(entry.getKey());
             String doi = addArticle(idDL, s, entry, entriesPriority);
             if (!doi.contains("ERROR")) {
                 if (authorsToInsert != null) {
@@ -104,7 +79,6 @@ public class article {
         Pattern patternDOI3 = Pattern.compile("DOI =(.*)\\}");
 
         Timestamp timesql = new Timestamp(new java.util.Date().getTime());
-        System.out.println(timesql);
         while(sc.hasNext()) {
             String data = sc.next();
             String doi = null;
@@ -126,12 +100,10 @@ public class article {
             if(bibM.find()) {
                 String citeKey = bibM.group(1).replaceAll("\\{", "").replaceAll(",", "");
                 //Comprobar si hay citekey duplicada
-                System.out.println(citeKey);
                 if (list.contains(citeKey)) {
-                    if (doi != null ) System.out.println("DOI es: " +doi);
                     importationLogError.insertRow(sta, doi, data, idDL, timesql);
                     //clave primaria timestamp(fecha y hora , el mismo para 1 importacion)
-                    System.out.println("insert row bc duplicated cite key: " + citeKey);
+                    //System.out.println("insert row bc duplicated cite key: " + citeKey);
                     //Podria devolver este error?
                 }
                 list.add(citeKey);
@@ -180,7 +152,7 @@ public class article {
             String estado = null;
             String apCriteria = null;
             if (rs.next()) {
-                System.out.println("El article se actualiza.");
+                //System.out.println("El article se actualiza.");
                 updateRow(rs,entry,s,doi); //añadir informacion en los valores null del article
 
                 if(isDuplicate(s,entriesPriority,doi).next()) {
@@ -192,7 +164,7 @@ public class article {
                 }
             }
             else {
-                System.out.println("El article se añade.");
+                //System.out.println("El article se añade.");
                 insertRow(s, entry, doi);//create article nuevo
             }
             int aux = reference.insertRow(s,doi,idDL,estado,apCriteria);
@@ -288,7 +260,7 @@ public class article {
                 affiliationToInsert = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "").replaceAll("'", "''");
             }
             query = atributsOfRow.toString() + valuesOfRow.append(") ");
-            System.out.println(query);
+            //System.out.println(query);
 
             s.execute(query);
             System.out.println("Inserted row with author, doi, ....");
@@ -403,7 +375,7 @@ public class article {
             query = queryIni.toString() + queryEnd;
 
             if (!first) {
-                System.out.println(query );
+                //System.out.println(query );
                 s.execute(query);
             }
             System.out.println("Inserted row with author, doi, ....");

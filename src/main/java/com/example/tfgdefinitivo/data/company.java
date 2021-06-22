@@ -32,7 +32,7 @@ public class company {
         try {
 
             String query = "INSERT INTO companies(name) VALUES (\'" + name + "\')";
-            System.out.println(query);
+            //System.out.println(query);
             s.execute(query);
             System.out.println("Inserted row with idCom, name in companies");
             s.getConnection().commit();
