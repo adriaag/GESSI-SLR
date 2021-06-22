@@ -17,7 +17,7 @@
                 <!-- Logo Image -->
                 <img src='' th:src="@{images/favicon.ico}" class="rounded-circle z-depth-0" alt="" height="35"/>
                 <!-- Logo Text -->
-                <span class="text-uppercase font-weight-bold" th:text="  GESSI-refman"/>
+                <span class="text-uppercase font-weight-bold" th:text="  GESSI-refman"></span>
             </a>
             <div class="container-fluid">
                 <ul class="nav nav-tabs justify-content-center" >
@@ -70,22 +70,16 @@
         <input type="reset" class="btn btn-secondary"  value="Clear">
     </form>
     <br>
-    <div th:if="${messageError.length()>1}"> <p th:text="${messageError}" style="color:#ff0000"></p> </div>
-
-    <div class="m-3" th:if="${importBool}">
-        <br>
-        <label for="pathNEW"><b>Imported file:</b></label>
-        <p id="pathNEW" th:text="${newName}"></p>
-        <label for="numRNEW"><b>Number of references imported:</b></label>
-        <p id="numRNEW" th:text="${refsImp}"></p>
-        <label for="DLNEW"><b>Digital library of imported file:</b></label>
-        <p id="DLNEW" th:text="${DLnew}"></p>
+    <div th:if="${importBool}">
+        <div ><b>Imported file name: </b><span id="pathNEW" th:text="${newName}"></span></div>
+        <div ><b>Number of references imported: </b><span id="numRNEW" th:text="${refsImp}"></span></div>
+        <div ><b>Digital library of imported file: </b><span id="DLNEW" th:text="${DLnew}"></span></div>
         <div th:if="${#lists.isEmpty(errors)}">
             <b>Import process successfully.</b>
         </div>
         <div th:if="not ${#lists.isEmpty(errors)}">
             <table class="table table-bordered  table-striped ">
-                <tr colspan="4"><b>Import process errors</b></tr>
+                <tr colspan="4"><b>Import process errors:</b></tr>
                 <tr class="btn-info" style="background: #1c4c96 ">
                     <th>DOI</th>
                     <th>DL</th>

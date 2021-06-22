@@ -4,7 +4,6 @@ import com.example.tfgdefinitivo.domain.controllers.ReferenceController;
 import com.example.tfgdefinitivo.domain.controllers.criteriaController;
 import com.example.tfgdefinitivo.domain.controllers.digitalLibraryController;
 import com.example.tfgdefinitivo.domain.dto.*;
-import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jbibtex.ParseException;
 import org.springframework.core.io.InputStreamResource;
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.*;
 import java.sql.SQLException;
@@ -69,7 +66,6 @@ public class ClientController {
     public String askInformation(Model model) throws SQLException {
         model.addAttribute("DLnames", digitalLibraryController.getNames());
         model.addAttribute("f", new formDTO());
-        model.addAttribute("messageError", "0");
         return "newReference";
     }
 
@@ -79,24 +75,23 @@ public class ClientController {
         List<String> names = digitalLibraryController.getNames();
         List<importErrorDTO> errors;
 
-            errors = ReferenceController.addReference(f.getdlNum(), f.getFile());
-            int num = Integer.parseInt(f.getdlNum());
-            System.out.println(num);
-            System.out.println(names.get(num-1));
-            model.addAttribute("newDL", f.getdlNum());
-            model.addAttribute("newName",StringUtils.cleanPath(f.getFile().getOriginalFilename()));
-            if(!errors.isEmpty()) model.addAttribute("errors",errors);
-            if(ReferenceController.getReferencesImport()>0) {
-                model.addAttribute("refsImp",ReferenceController.getReferencesImport());
-                ReferenceController.resetReferencesImport();
-            }
-            model.addAttribute("importBool",true);
-            model.addAttribute("DLnew", names.get(num-1));
-            model.addAttribute("messageError", "0");
+        errors = ReferenceController.addReference(f.getdlNum(), f.getFile());
+        int num = Integer.parseInt(f.getdlNum());
+        System.out.println(num);
+        System.out.println(names.get(num-1));
+        model.addAttribute("newDL", f.getdlNum());
+        model.addAttribute("newName",StringUtils.cleanPath(f.getFile().getOriginalFilename()));
+        model.addAttribute("errors",errors);
+        if(ReferenceController.getReferencesImport()>0) {
+            model.addAttribute("refsImp",ReferenceController.getReferencesImport());
+            ReferenceController.resetReferencesImport();
+        }
+        model.addAttribute("importBool",true);
+        model.addAttribute("DLnew", names.get(num-1));
 
-            ByteArrayInputStream stream = new ByteArrayInputStream(f.getFile().getBytes());
-            String myString = IOUtils.toString(stream, "UTF-8");
-            System.out.println(myString);
+//        ByteArrayInputStream stream = new ByteArrayInputStream(f.getFile().getBytes());
+//        String myString = IOUtils.toString(stream, "UTF-8");
+//        System.out.println(myString);
         model.addAttribute("DLnames", names);
         model.addAttribute("f", new formDTO());
         return "newReference";

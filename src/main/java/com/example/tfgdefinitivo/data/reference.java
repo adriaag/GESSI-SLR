@@ -224,7 +224,7 @@ public class reference {
         digitalLibrary.dropTable(s);
     }
 
-    public static List<importErrorDTO> importar( String idDL, String em, MultipartFile file) throws SQLException, IOException, ParseException {
+    public static List<importErrorDTO> importar( String idDL, MultipartFile file) throws SQLException, IOException, ParseException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         conn.setAutoCommit(false);

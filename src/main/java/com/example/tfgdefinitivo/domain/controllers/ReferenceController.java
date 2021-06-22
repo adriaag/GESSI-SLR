@@ -30,8 +30,7 @@ public class ReferenceController {
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
     public static List<importErrorDTO> addReference( String nameDL, MultipartFile file)
             throws ParseException, SQLException, IOException {
-        String ErrorMessage = "";
-        return reference.importar( nameDL,ErrorMessage,file);
+        return reference.importar( nameDL,file);
     }
 
     public static int getReferencesImport(){
