@@ -21,7 +21,7 @@ import java.util.List;
 
 @Controller
 public class ClientController {
-    private static final String PATH_PATTERN = "^([A-z]\\:)\\\\([A-z0-9-_+.]+\\\\)*([A-z0-9-_+\\.]+.(bib))$";
+    private static final String PATH_PATTERN = "^([A-z0-9-_+\\.]+.(bib))$";
 
     @RequestMapping(value=("/"))
     public String index(){
@@ -46,13 +46,13 @@ public class ClientController {
     }
 
     @RequestMapping(path = "/download", method = RequestMethod.GET)
-    public ResponseEntity<Resource> download(String param) throws IOException {
+    public ResponseEntity<Resource> download() throws IOException {
         List<referenceDTO> p = ReferenceController.getReferences();
         Workbook workbook = creationExcel.create(p);
-        FileOutputStream fileOut = new FileOutputStream("references.xlsx");
+        FileOutputStream fileOut = new FileOutputStream("../webapps/references.xlsx");
         workbook.write(fileOut);
         fileOut.close();
-        File file = new File("references.xlsx");
+        File file = new File("../webapps/references.xlsx");
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
 
         return ResponseEntity.ok()
@@ -66,6 +66,7 @@ public class ClientController {
     public String askInformation(Model model) throws SQLException {
         model.addAttribute("DLnames", digitalLibraryController.getNames());
         model.addAttribute("f", new formDTO());
+        model.addAttribute("importBool", null);
         return "newReference";
     }
 
@@ -74,24 +75,25 @@ public class ClientController {
             throws ParseException, SQLException, IOException {
         List<String> names = digitalLibraryController.getNames();
         List<importErrorDTO> errors;
-
-        errors = ReferenceController.addReference(f.getdlNum(), f.getFile());
-        int num = Integer.parseInt(f.getdlNum());
-        System.out.println(num);
-        System.out.println(names.get(num-1));
-        model.addAttribute("newDL", f.getdlNum());
-        model.addAttribute("newName",StringUtils.cleanPath(f.getFile().getOriginalFilename()));
-        model.addAttribute("errors",errors);
-        if(ReferenceController.getReferencesImport()>0) {
-            model.addAttribute("refsImp",ReferenceController.getReferencesImport());
-            ReferenceController.resetReferencesImport();
+        String nameFile = f.getFile().getOriginalFilename();
+        if(!nameFile.matches(PATH_PATTERN)) {
+            model.addAttribute("errorFile", "The file selected has to be a BIB file.");
+            model.addAttribute("importBool", false);
         }
-        model.addAttribute("importBool",true);
-        model.addAttribute("DLnew", names.get(num-1));
-
-//        ByteArrayInputStream stream = new ByteArrayInputStream(f.getFile().getBytes());
-//        String myString = IOUtils.toString(stream, "UTF-8");
-//        System.out.println(myString);
+        else {
+            errors = ReferenceController.addReference(f.getdlNum(), f.getFile());
+            int num = Integer.parseInt(f.getdlNum());
+            model.addAttribute("newDL", f.getdlNum());
+            model.addAttribute("newName", StringUtils.cleanPath(nameFile));
+            model.addAttribute("errors", errors);
+            if (ReferenceController.getReferencesImport() > 0) {
+                model.addAttribute("refsImp", ReferenceController.getReferencesImport());
+                ReferenceController.resetReferencesImport();
+            }
+            model.addAttribute("importBool", true);
+            model.addAttribute("errorFile", "");
+            model.addAttribute("DLnew", names.get(num - 1));
+        }
         model.addAttribute("DLnames", names);
         model.addAttribute("f", new formDTO());
         return "newReference";

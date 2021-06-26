@@ -32,7 +32,7 @@
                 <!-- Logo Image -->
                 <img src='' th:src="@{images/favicon.ico}" class="rounded-circle z-depth-0" alt="" height="35"/>
                 <!-- Logo Text -->
-                <span class="text-uppercase font-weight-bold" th:text="  GESSI-refman"/>
+                <span class="text-uppercase font-weight-bold" th:text=" GESSI-SLR"/>
             </a>
             <div class="container-fluid">
                 <ul class="nav nav-tabs justify-content-center" >
@@ -64,7 +64,7 @@
 <div class="m-3" >
 
     <h2> All references </h2>
-    <p>Download all references <a href="/download">here.</a></p>
+    <p>Download all references <a th:href="@{/download}">here.</a></p>
     <table class="table table-striped " id="dataTable" data-page-length='50'  data-order='[[0, "asc"]]'>
         <thead >
             <tr>
@@ -130,7 +130,7 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                                <h5 class="modal-title" id="exampleModalLongTitle">Classify</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -144,7 +144,6 @@
                                             <option value="">None</option>
                                             <option value="in">In</option>
                                             <option value="out">Out</option>
-                                            <option value="duplicated">Duplicated</option>
                                         </select>
                                     </div>
                                     <div class="form-group">

@@ -1,8 +1,12 @@
 package com.example.tfgdefinitivo.data;
 
 import org.apache.commons.io.IOUtils;
-import org.bouncycastle.util.Times;
-import org.jbibtex.*;
+import org.jbibtex.BibTeXDatabase;
+import org.jbibtex.BibTeXParser;
+import org.jbibtex.Key;
+import org.jbibtex.ParseException;
+import org.jbibtex.BibTeXEntry;
+import org.jbibtex.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -30,10 +34,14 @@ public class article {
     static Key articleKey = new Key("article");
     static Key affiliationKey = new Key("affiliation");
 
-    public static Timestamp importar( String idDL, Statement s, MultipartFile file) throws IOException,ParseException,SQLException {
+    public static Timestamp importar( String idDL, Statement s, MultipartFile file) throws IOException, ParseException,SQLException {
 
         //Reader reader = new FileReader(path);
-        ByteArrayInputStream stream = new ByteArrayInputStream(file.getBytes());
+        //Parametro MultipartFile file
+        ByteArrayInputStream stream0 = new ByteArrayInputStream(file.getBytes());
+        String myString = IOUtils.toString(stream0, "UTF-8");
+        System.out.println(myString);
+        ByteArrayInputStream stream = new ByteArrayInputStream(myString.getBytes("UTF-8"));
         Reader reader = new InputStreamReader(stream);
         BibTeXParser bibtexParser = new BibTeXParser(); //add Exception
         BibTeXDatabase database = bibtexParser.parse(reader);
@@ -45,7 +53,7 @@ public class article {
         int entriesPriority = getPriority(s,idDL);
         if(!entries.isEmpty()) referencesImported = entries.size();
         for(BibTeXEntry entry : entries){
-            //System.out.println(entry.getKey());
+            System.out.println("Cite key:" + entry.getKey());
             String doi = addArticle(idDL, s, entry, entriesPriority);
             if (!doi.contains("ERROR")) {
                 if (authorsToInsert != null) {
@@ -67,7 +75,10 @@ public class article {
 
     //Guarda las referencias que no se pueden guardar en la BD
     public static Timestamp iniCheck(Statement sta, String idDL, MultipartFile file) throws IOException, SQLException {
-        ByteArrayInputStream stream = new ByteArrayInputStream(file.getBytes());
+        ByteArrayInputStream stream0 = new ByteArrayInputStream(file.getBytes());
+        String myString = IOUtils.toString(stream0, "UTF-8");
+        System.out.println(myString);
+        ByteArrayInputStream stream = new ByteArrayInputStream(myString.getBytes("UTF-8"));
 
         Scanner sc = new Scanner(stream);
         sc.useDelimiter("\\@");

@@ -14,7 +14,7 @@
                 <!-- Logo Image -->
                 <img src='' th:src="@{images/favicon.ico}" class="rounded-circle z-depth-0" alt="" height="35"/>
                 <!-- Logo Text -->
-                <span class="text-uppercase font-weight-bold" th:text="  GESSI-refman"/>
+                <span class="text-uppercase font-weight-bold" th:text=" GESSI-SLR"/>
             </a>
             <div class="container-fluid">
                 <ul class="nav nav-tabs justify-content-center" >
@@ -54,7 +54,7 @@
         </div>
         <div class="form-group">
             <label for="text">Description</label>
-            <textarea rows="4" cols="50" id="text" placeholder="Enter description"
+            <textarea rows="4" cols="50" id="text" placeholder="Enter description" required
                       type="text" th:field="*{text}" class="form-control"></textarea>
         </div>
         <div class="form-group">

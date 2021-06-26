@@ -18,7 +18,7 @@
                 <!-- Logo Image -->
                 <img src='' th:src="@{images/favicon.ico}" class="rounded-circle z-depth-0" alt="" height="35"/>
                 <!-- Logo Text -->
-                <span class="text-uppercase font-weight-bold" th:text="  GESSI-refman"></span>
+                    <span class="text-uppercase font-weight-bold" th:text=" GESSI-SLR"></span>
             </a>
             <div class="container-fluid">
                 <ul class="nav nav-tabs justify-content-center" >
@@ -71,7 +71,9 @@
         <input type="reset" class="btn btn-secondary"  value="Clear">
     </form>
     <br>
-    <div th:if="${importBool}">
+
+    <div th:if="${importBool == false}"> <p th:text="${errorFile}" style="color:#ff0000"></p> </div>
+    <div th:if="${importBool == true}">
         <div ><b>Imported file name: </b><span id="pathNEW" th:text="${newName}"></span></div>
         <div ><b>Number of references imported: </b><span id="numRNEW" th:text="${refsImp}"></span></div>
         <div ><b>Digital library of imported file: </b><span id="DLNEW" th:text="${DLnew}"></span></div>

@@ -4,7 +4,6 @@ import com.example.tfgdefinitivo.data.article;
 import com.example.tfgdefinitivo.data.reference;
 import com.example.tfgdefinitivo.domain.dto.importErrorDTO;
 import com.example.tfgdefinitivo.domain.dto.referenceDTO;
-import org.aspectj.bridge.IMessage;
 import org.jbibtex.ParseException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +46,7 @@ public class ReferenceController {
     }
 
     public static void updateReference(int idRef, String estado, String applCriteria) {
+        //TODO si estado o applcriteria = "" añadir null a la bd!!!
         reference.update(idRef,estado, applCriteria);
     }
 

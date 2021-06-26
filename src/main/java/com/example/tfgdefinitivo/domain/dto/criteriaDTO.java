@@ -1,9 +1,8 @@
 package com.example.tfgdefinitivo.domain.dto;
 
-import com.sun.istack.NotNull;
 
 public class criteriaDTO {
-    @NotNull
+
     private String idICEC;
     private String text;
     private String type;
