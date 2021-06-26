@@ -326,7 +326,7 @@ public class reference {
         //exists (select * from references r, digitalLibraries dl
         //	where r.doi=varDoi and r.idDL = dl.idDL and dl.priority > varPriorityDLimportando)
         return s.executeQuery("select * from REFERENCIAS r, DIGITALLIBRARIES dl where r.doi='" + doi
-                + "' and r.idDL = dl.idDL and dl.priority < "+ priorityImportado);
+                + "' and r.idDL = dl.idDL and dl.priority <= "+ priorityImportado);
     }
     static void updateEstateReferences(Statement s, String doi) throws SQLException {
         s.execute("update referencias set state = 'out', applCriteria='EC1' where doi = '" + doi + "' and state is null ");

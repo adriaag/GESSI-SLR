@@ -1,95 +1,59 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:fragment="head">
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    <style>
-        .mar {padding: 0 15px 10px;}
-    </style>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script type="text/javascript" language="javascript" src="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"></script>
-
-
-    <script src="https://code.jquery.com/jquery-latest.js" type=""></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js" type=""></script>
-
-    <style>
-        /* Este es para los elementos en general */
-        .navbar-light .navbar-nav .nav-link {
-            color: #9d9999;
-        }
-        /*  Este es para el elemento activo lo puedes omitir si asi deseas */
-        .navbar-light .navbar-nav .active>.nav-link  {
-            color: #ffffff;
-        }
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .text{
-            font-size: 20px;
-            padding-left: 20px;
-        }
-        img {
-            max-width: 100%
-        }
-        .image {
-            flex-basis: 40%
-        }
-    </style>
+<head>
+    <title>Home</title>
+    <div th:replace="allReferences::head"></div>
 </head>
-<head><title>Home</title></head>
 <body>
     <header th:fragment="header">
-        <nav class="navbar navbar-expand-lg py-3 navbar-dark shadow-sm navbar-fixed-top" style="background-color: #153053;">
-            <div class="container"><!--style="background-color: #356ac3;"-->
-            <!-- GESSi logo -->
+            <nav class="navbar navbar-expand-lg py-3 navbar-dark shadow-sm navbar-fixed-top" style="background-color: #153053;">
+                <div class="container"><!--style="background-color: #356ac3;"-->
+                    <!-- GESSi logo -->
 
-                <a id="logo" href="#" class="navbar-brand">
-                    <!-- Logo Image -->
-                    <img src='' th:src="@{images/favicon.ico}" class="rounded-circle z-depth-0" alt="" height="35"/>
-                    <!-- Logo Text -->
-                    <span class="text-uppercase font-weight-bold" th:text=" GESSI-SLR"/>
-                </a>
-            <div class="container-fluid">
-                    <ul class="nav nav-tabs justify-content-center" >
-                        <li  class="nav-item" >
-                            <a  class="nav-link active" th:href="@{/}">Home</a>
-                        </li>
-                        <li class="nav-item" >
-                            <a  class="nav-link" th:href="@{/newReference}">Import reference</a>
-                        </li>
-                        <li  class="nav-item">
-                            <a  class="nav-link" th:href="@{/editCriteria}">Edit ICEC</a>
-                        </li>
-                        <li class="nav-item">
-                            <a  class="nav-link" th:href="@{/getAllReferences}">Table references</a>
-                        </li>
-                        <li class="nav-item">
-                            <a  class="nav-link " th:href="@{/errors}">Import errors</a>
-                        </li>
-                        <li  class="nav-item">
-                            <a  class="nav-link" th:href="@{/resetView}">Reset database </a>
-                        </li>
-                    </ul>
+                    <a id="logo" href="#" class="navbar-brand">
+                        <!-- Logo Image -->
+                        <img src="images/favicon.ico" class="rounded-circle z-depth-0" alt="" height="35">
+                        <!-- Logo Text -->
+                        <span class="text-uppercase font-weight-bold">GESSI-SLR</span>
+                    </a>
+                    <div class="container-fluid">
+                        <ul class="nav nav-tabs justify-content-center">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="/gessi-slr/">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/gessi-slr/newReference">Import reference</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/gessi-slr/editCriteria">Edit ICEC</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/gessi-slr/getAllReferences">Table references</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link " href="/gessi-slr/errors">Import errors</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/gessi-slr/resetView">Reset database </a>
+                            </li>
+                        </ul>
 
-            </div>
-            </div>
-        </nav>
-    </header>
+                    </div>
+                </div>
+            </nav>
+        </header>
     <br>
-<div class="container">
-    <h2>GESSI-REFMAN - version 1</h2>
-    <p>The main functionalities of the tool are to import and integrate the result of searches performed in different digital libraries, identifies duplicates, and allows to select relevant publications for a systematic literature review.</p>
-</div>
+    <div class="container">
+        <div class="row"></div>
+        <div class="row ml-5">
+            <div class="col-5 ml-5">
+                <img src="images/favicon.ico" class="img-rounded ml-5" height="200"> </div>
+            <div class="col-5 mr-5">
+                <h1>GESSI-SLR- 1.0</h1>
+                <h3>GESSI Tool for helping research group members to conduct Sytematic Literature reviews.</h3></div>
+        </div>
+    </div>
+    <div class="col-md-5"></div>
 </body>
 </html>
