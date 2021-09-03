@@ -127,7 +127,7 @@ public class reference {
 
     public static void create() {
         Connection conn;
-        ArrayList<Statement> statements = new ArrayList<>(); // list of Statements, PreparedStatements
+        ArrayList<Statement> statements = new ArrayList<Statement>(); // list of Statements, PreparedStatements
         Statement s = null;
         try {
             ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
@@ -158,7 +158,7 @@ public class reference {
 
     public static void delete() {
         Connection conn;
-        ArrayList<Statement> statements = new ArrayList<>(); // list of Statements, PreparedStatements
+        ArrayList<Statement> statements = new ArrayList<Statement>(); // list of Statements, PreparedStatements
         Statement s = null;
         try {
             ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
@@ -361,7 +361,7 @@ public class reference {
             Statement s;
             s = conn.createStatement();
             ResultSet rs;
-            List<Integer> r = new ArrayList<>();
+            List<Integer> r = new ArrayList<Integer>();
             rs = s.executeQuery("SELECT idRef FROM referencias where applcriteria='" + oldIdICEC + "'");
             while (rs.next()) r.add(rs.getInt(1));
             s.close();
@@ -376,7 +376,7 @@ public class reference {
                 e = e.getNextException();
             }
         }
-        return new ArrayList<>();
+        return new ArrayList<Integer>();
     }
 
     public static void setNullCriteria(int idRef) {

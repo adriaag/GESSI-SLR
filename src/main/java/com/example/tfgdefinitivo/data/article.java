@@ -10,6 +10,7 @@ import org.jbibtex.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,9 +41,8 @@ public class article {
         //Parametro MultipartFile file
         ByteArrayInputStream stream0 = new ByteArrayInputStream(file.getBytes());
         String myString = IOUtils.toString(stream0, "UTF-8");
-        System.out.println(myString);
-        ByteArrayInputStream stream = new ByteArrayInputStream(myString.getBytes("UTF-8"));
-        Reader reader = new InputStreamReader(stream);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(myString.getBytes(StandardCharsets.UTF_8)), "utf-8"));
+
         BibTeXParser bibtexParser = new BibTeXParser(); //add Exception
         BibTeXDatabase database = bibtexParser.parse(reader);
         Map<Key, BibTeXEntry> entryMap = database.getEntries();
@@ -77,12 +77,11 @@ public class article {
     public static Timestamp iniCheck(Statement sta, String idDL, MultipartFile file) throws IOException, SQLException {
         ByteArrayInputStream stream0 = new ByteArrayInputStream(file.getBytes());
         String myString = IOUtils.toString(stream0, "UTF-8");
-        System.out.println(myString);
-        ByteArrayInputStream stream = new ByteArrayInputStream(myString.getBytes("UTF-8"));
+        ByteArrayInputStream stream = new ByteArrayInputStream(myString.getBytes(StandardCharsets.UTF_8));
 
         Scanner sc = new Scanner(stream);
         sc.useDelimiter("\\@");
-        ArrayList<String> list = new ArrayList<>();
+        ArrayList<String> list = new ArrayList<String>();
 
         Pattern patternKey = Pattern.compile("\\{(.*),");
         Pattern patternDOI = Pattern.compile("doi=(.*)\\}");

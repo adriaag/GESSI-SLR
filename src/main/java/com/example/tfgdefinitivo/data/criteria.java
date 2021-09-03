@@ -73,7 +73,7 @@ public class criteria {
             else if (t.equals("EC")) rs = getAllEC(s);
             else rs = getAll(s);
             int number = 1;
-            criList = new ArrayList<>();
+            criList = new ArrayList<criteriaDTO>();
             while(rs.next()) {
                 System.out.println(number++);
                 System.out.println(rs.getFetchSize());

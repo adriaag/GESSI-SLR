@@ -28,14 +28,14 @@ public class ClientController {
         return "index";
     }
 
-    @GetMapping(value = "/getReference", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/getReference", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public String getReference(@RequestParam(name= "id") int idR , Model model){
         referenceDTO r = ReferenceController.getReference(idR);
         model.addAttribute("ref", r);
         return "oneReference";
     }
 
-    @GetMapping(value = "/getAllReferences", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/getAllReferences", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public String getReferences(Model model){
         List<referenceDTO> list = ReferenceController.getReferences();
         model.addAttribute("referencesList", list);
@@ -46,7 +46,7 @@ public class ClientController {
     }
 
     @RequestMapping(path = "/download", method = RequestMethod.GET)
-    public ResponseEntity<Resource> download() throws IOException {
+    public ResponseEntity<InputStreamResource> download() throws IOException {
         List<referenceDTO> p = ReferenceController.getReferences();
         Workbook workbook = creationExcel.create(p);
         FileOutputStream fileOut = new FileOutputStream("../webapps/references.xlsx");
@@ -117,14 +117,14 @@ public class ClientController {
         return "editCriteria";
     }
 
-    @PostMapping(value = "/updateCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/updateCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public static String updateCriteria(@PathVariable("id") String oldIdICEC,  @ModelAttribute("modalf")  criteriaDTO f) {
         System.out.println(oldIdICEC);
         criteriaController.updateCriteria(oldIdICEC,f);
         return "redirect:/editCriteria";
     }
 
-    @PostMapping(value = "/deleteCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/deleteCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public static String deleteCriteria(@PathVariable("id") String idICEC) {
         criteriaController.deleteCriteria(idICEC);
         return "redirect:/editCriteria";

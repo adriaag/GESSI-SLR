@@ -30,7 +30,7 @@ public class digitalLibraryController {
         Connection con = iniConnection();
         Statement s = con.createStatement();
         ArrayList<String> DLs = digitalLibrary.getNames(s);
-        ArrayList<String> ret = new ArrayList<>();
+        ArrayList<String> ret = new ArrayList<String>();
         for (int i = 0; i < DLs.size(); i++)
             ret.add(i+1 + ". " + DLs.get(i));
         con.commit();

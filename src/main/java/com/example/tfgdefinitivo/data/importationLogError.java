@@ -67,7 +67,7 @@ public class importationLogError {
     public static List<importErrorDTO> getErrors(Statement s, Timestamp timesql) throws SQLException {
         ResultSet rs;
         rs = s.executeQuery("SELECT time, idDL,doi,BibTex FROM IMPORTATIONLOGERROR WHERE time=TIMESTAMP('"+ timesql.toString()+"')");
-        ArrayList<importErrorDTO> ret = new ArrayList<>();
+        ArrayList<importErrorDTO> ret = new ArrayList<importErrorDTO>();
         while (rs.next()) {
             ret.add(new importErrorDTO(rs.getTimestamp(1),rs.getInt(2),rs.getString(3),rs.getString(4)));
         }
@@ -77,7 +77,7 @@ public class importationLogError {
     public static List<importErrorDTO> getAllErrors(Statement s) throws SQLException {
         ResultSet rs;
         rs = s.executeQuery("SELECT time, idDL,doi,BibTex FROM IMPORTATIONLOGERROR");
-        ArrayList<importErrorDTO> ret = new ArrayList<>();
+        ArrayList<importErrorDTO> ret = new ArrayList<importErrorDTO>();
         while (rs.next()) {
             ret.add(new importErrorDTO(rs.getTimestamp(1),rs.getInt(2),rs.getString(3),rs.getString(4)));
         }

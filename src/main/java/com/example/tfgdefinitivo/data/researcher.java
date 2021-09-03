@@ -32,7 +32,7 @@ public class researcher implements Serializable {
     }
 
     public static ArrayList<String> getNames(Statement s) throws SQLException {
-        ArrayList<String> ret = new ArrayList<>();
+        ArrayList<String> ret = new ArrayList<String>();
         ResultSet rs = s.executeQuery("SELECT name FROM researchers");
         while(rs.next()) {
             ret.add(rs.getString("name"));

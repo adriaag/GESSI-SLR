@@ -19,23 +19,23 @@
                     </a>
                     <div class="container-fluid">
                         <ul class="nav nav-tabs justify-content-center">
-                            <li class="nav-item">
-                                <a class="nav-link active" href="/gessi-slr/">Home</a>
+                            <li  class="nav-item" >
+                                <a  class="nav-link active" th:href="@{/}">Home</a>
+                            </li>
+                            <li class="nav-item" >
+                                <a  class="nav-link" th:href="@{/newReference}">Import reference</a>
+                            </li>
+                            <li  class="nav-item">
+                                <a  class="nav-link" th:href="@{/editCriteria}">Edit ICEC</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/gessi-slr/newReference">Import reference</a>
+                                <a  class="nav-link " th:href="@{/getAllReferences}">Table references</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/gessi-slr/editCriteria">Edit ICEC</a>
+                                <a  class="nav-link " th:href="@{/errors}">Import errors</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/gessi-slr/getAllReferences">Table references</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link " href="/gessi-slr/errors">Import errors</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/gessi-slr/resetView">Reset database </a>
+                            <li  class="nav-item">
+                                <a  class="nav-link" th:href="@{/resetView}">Reset database </a>
                             </li>
                         </ul>
 

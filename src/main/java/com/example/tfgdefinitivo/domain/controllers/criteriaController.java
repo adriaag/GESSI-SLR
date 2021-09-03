@@ -47,7 +47,7 @@ public class criteriaController {
     public static List<criteriaDTO> getCriteriasEC() { return criteria.getAllCriteria("EC"); }
 
     public static List<String> getAllCriteria() {
-        ArrayList<String> r = new ArrayList<>();
+        ArrayList<String> r = new ArrayList<String>();
         List<criteriaDTO> list = criteria.getAllCriteria("");
         for (criteriaDTO i : list) {
             r.add(i.getIdICEC());
