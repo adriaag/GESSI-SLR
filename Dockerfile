@@ -1,6 +1,5 @@
 FROM maven:3.6.3 as maven
-LABEL COMPANY="ShuttleOps"
-LABEL MAINTAINER="support@shuttleops.com"
+LABEL MAINTAINER="marc.almirall@estudiantat.upc.edu"
 LABEL APPLICATION="Sample Application"
 
 WORKDIR /usr/src/app

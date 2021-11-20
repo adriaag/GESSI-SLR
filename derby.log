@@ -1,10 +1,10 @@
 ----------------------------------------------------------------
-Wed Nov 10 17:33:21 UTC 2021:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.15.2.0 - (1873585): instance a816c00e-017d-0ae9-4ca1-000007509b90 
-on database directory C:\Users\marc0\IdeaProjects\webapps\SLRDatabase with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@7aec35a 
-Loaded from file:/C:/Users/marc0/AppData/Roaming/JetBrains/IntelliJIdea2021.2/jdbc-drivers/Apache%20Derby/10.15.2.0/derby-10.15.2.0.jar
-java.vendor=JetBrains s.r.o.
-java.runtime.version=11.0.12+7-b1504.28
+Sat Nov 20 19:29:10 CET 2021:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-017d-3e9b-fd7e-000001d1b088 
+on database directory C:\Users\marc0\IdeaProjects\webapps\SLRDatabase with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@1d44bcfa 
+Loaded from file:/C:/Users/marc0/.m2/repository/org/apache/derby/derby/10.14.2.0/derby-10.14.2.0.jar
+java.vendor=Oracle Corporation
+java.runtime.version=17+35-2724
 user.dir=C:\Users\marc0\IdeaProjects\tfg-definitivo
 os.name=Windows 10
 os.arch=amd64
