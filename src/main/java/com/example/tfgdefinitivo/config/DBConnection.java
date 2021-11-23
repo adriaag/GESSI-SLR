@@ -27,8 +27,8 @@ public class DBConnection {
 
 
     @Bean
-    public Connection getConnection() throws ClassNotFoundException, SQLException {
-        Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+    public Connection getConnection() throws SQLException, ClassNotFoundException {
+        Class.forName("org.apache.derby.jdbc.ClientDriver");
         // We use a configuration file for customise the connection to the URL
         return DriverManager.getConnection(getUrl(), getUsername(), getPassword());
 

@@ -1,13 +1,13 @@
 ----------------------------------------------------------------
-Sat Nov 20 19:29:10 CET 2021:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-017d-3e9b-fd7e-000001d1b088 
-on database directory C:\Users\marc0\IdeaProjects\webapps\SLRDatabase with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@1d44bcfa 
-Loaded from file:/C:/Users/marc0/.m2/repository/org/apache/derby/derby/10.14.2.0/derby-10.14.2.0.jar
-java.vendor=Oracle Corporation
-java.runtime.version=17+35-2724
-user.dir=C:\Users\marc0\IdeaProjects\tfg-definitivo
-os.name=Windows 10
+Sun Nov 21 18:02:41 UTC 2021:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.15.2.0 - (1873585): instance a816c00e-017d-43aa-1ba5-00000757ba98 
+on database directory /home/usuario/Documentos/Projectes/webapps/SLRDatabase with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@5c29bfd 
+Loaded from file:/home/usuario/.config/JetBrains/IntelliJIdea2021.2/jdbc-drivers/Apache%20Derby/10.15.2.0/derby-10.15.2.0.jar
+java.vendor=JetBrains s.r.o.
+java.runtime.version=11.0.12+7-b1504.40
+user.dir=/home/usuario/Documentos/Projectes/tfg-definitivo
+os.name=Linux
 os.arch=amd64
-os.version=10.0
+os.version=5.11.0-40-generic
 derby.system.home=null
 Database Class Loader started - derby.database.classpath=''

@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+  derby:
+    image: opavlova/db-derby
+    ports:
+      - "1527:1527"
+    volumes:
+      - /opt/gessi-slr/data/derby/db:/dbs/SLRDatabase
+    restart: unless-stopped
+
+  tomcat:
+    image: com.example.tfgdefinitivo/gessi-slr:1.0.0-SNAPSHOT
+    depends_on:
+      - derby
+    ports:
+      - "1031:8080"
+
+networks:
+  default:

@@ -1,13 +1,13 @@
 include makefile.env
-PROJECT=$(DOCKER_CONTAINER_NAME)
+PROJECT=$(DOCKER_IMAGE_NAME)
 DOCKER_NAME_FULL=$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)
 DOCKER_LOCALHOST=$(shell /sbin/ifconfig docker0 | pcregrep 'inet addr:' | cut -d: -f2 | awk '{ print $$1}')
 
 up:
-	@docker run --name $(PROJECT) --mount source=gessi-slr,target=/var/lib/gessi-slr -p 1031:8080
+	@docker-compose -p $(DOCKER_CONTAINER_NAME) up -d
 
 down:
-	@docker-compose -p $(PROJECT) down
+	@docker-compose -p $(DOCKER_CONTAINER_NAME) down
 
 ver:
 	echo version: ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
@@ -15,9 +15,9 @@ ver:
 build:
 	mvn -Dversioning.disable=true clean install
 	# build docker image
-	@docker build --build-arg APP_VERSION=${APP_VERSION} -t $(DOCKER_NAME_FULL) .
-	# build docker volume
-	@docker volume create --d local-persist --opt mountpoint=/d/DockerVolumes/$(PROJECT) --name $(PROJECT)
+	@docker build -t $(DOCKER_NAME_FULL) .
 
 save-image:
-	@docker save $(DOCKER_IMAGE_NAME):${DOCKER_IMAGE_TAG} | gzip > "../deployment/docker-images/${DOCKER_CONTAINER_NAME}_${DOCKER_IMAGE_TAG}.tar.gz"
+	@mkdir -p docker-images
+	@docker save com.example.tfgdefinitivo/gessi-slr:1.0.0-SNAPSHOT | gzip > "./docker-images/gessi-slr.tar.gz"
+	@docker save opavlova/db-derby:latest | gzip > "./docker-images/db-derby.tar.gz"

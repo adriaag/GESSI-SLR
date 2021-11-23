@@ -1,17 +1,13 @@
-FROM maven:3.6.3 as maven
+FROM maven:3.8 as maven
 LABEL MAINTAINER="marc.almirall@estudiantat.upc.edu"
 LABEL APPLICATION="Sample Application"
 
 WORKDIR /usr/src/app
 COPY . /usr/src/app
+
 RUN mvn package
 
-FROM tomcat:8.5-jdk15-openjdk-oracle
-ARG TOMCAT_FILE_PATH=/docker
-
-#Data & Config - Persistent Mount Point
-ENV APP_DATA_FOLDER=/var/lib/SampleApp
-ENV SAMPLE_APP_CONFIG=${APP_DATA_FOLDER}/config/
+FROM tomcat:9.0
 
 ENV CATALINA_OPTS="-Xms1024m -Xmx4096m -XX:MetaspaceSize=512m -XX:MaxMetaspaceSize=512m -Xss512k"
 
@@ -19,9 +15,4 @@ ENV CATALINA_OPTS="-Xms1024m -Xmx4096m -XX:MetaspaceSize=512m -XX:MaxMetaspaceSi
 WORKDIR /usr/local/tomcat/webapps/
 COPY --from=maven /usr/src/app/target/gessi-slr.war /usr/local/tomcat/webapps/
 
-COPY /* ${CATALINA_HOME}/conf/
-
-WORKDIR $APP_DATA_FOLDER
-
-EXPOSE 8080
 ENTRYPOINT ["catalina.sh", "run"]
