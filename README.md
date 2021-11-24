@@ -13,9 +13,14 @@ make build-volume
 make build
 ```
 
-3. Running it locally on
+3. Running it
 ```shell
 make up
+```
+
+4. Delete containers
+```shell
+make down
 ```
 
 ### Without Makefile
@@ -30,9 +35,15 @@ docker build -t com.example.tfgdefinitivo/gessi-slr:1.0.0-SNAPSHOT .
 ```
 
 3. Running it
+**This can fail because it use the name of the derby container in the datasource.url you have to check the name and replace it**
 ```shell
 docker-compose -p gessi-slr up -d
 ```
+
+4. Delete containers
+```shell
+docker-compose -p gessi-slr down
+``` 
 
 ## Check result
 - [Tomcat Webapp](http://localhost:1031/gessi-slr)
