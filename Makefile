@@ -22,5 +22,5 @@ build:
 
 save-image:
 	@mkdir -p docker-images
-	@docker save com.example.tfgdefinitivo/gessi-slr:1.0.0-SNAPSHOT | gzip > "./docker-images/gessi-slr.tar.gz"
+	@docker save com.webapp.gessi/gessi-slr:1.0.0-SNAPSHOT | gzip > "./docker-images/gessi-slr.tar.gz"
 	@docker save opavlova/db-derby:latest | gzip > "./docker-images/db-derby.tar.gz"

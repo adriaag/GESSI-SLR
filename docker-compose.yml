@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
 
   tomcat:
-    image: com.example.tfgdefinitivo/gessi-slr:1.0.0-SNAPSHOT
+    image: com.webapp.gessi/gessi-slr:1.0.0-SNAPSHOT
     depends_on:
       - derby
     ports:

@@ -31,7 +31,7 @@ docker volume create -d local-persist --opt mountpoint=/d/DockerVolumes/db-volum
 
 2. Create docker image:
 ```shell
-docker build -t com.example.tfgdefinitivo/gessi-slr:1.0.0-SNAPSHOT .
+docker build -t com.webapp.gessi/gessi-slr:1.0.0-SNAPSHOT .
 ```
 
 3. Running it
