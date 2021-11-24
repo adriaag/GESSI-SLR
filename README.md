@@ -3,27 +3,38 @@
 ## Developers cheat sheet
 
 ### Makefile
+1. Create docker volume:
+```shell
+make build-volume
+```
 
-1. Create docker image:
+2. Create docker image:
 ```shell
 make build
 ```
 
-2. Running it locally on `http://localhost:1031/gessi-slr`
+3. Running it locally on
 ```shell
 make up
 ```
 
 ### Without Makefile
-
-1. Create docker image:
+1. Create docker volume:
 ```shell
-mvn -Dversioning.disable=true clean install
-# build docker image
+docker volume create -d local-persist --opt mountpoint=/d/DockerVolumes/db-volume --name db-volume
+```
+
+2. Create docker image:
+```shell
 docker build -t com.example.tfgdefinitivo/gessi-slr:1.0.0-SNAPSHOT .
 ```
 
-2. Running it locally on `http://localhost:1031/gessi-slr`
+3. Running it
 ```shell
 docker-compose -p gessi-slr up -d
 ```
+
+## Check result
+- [Tomcat Webapp](http://localhost:1031/gessi-slr)
+- [Derby DB](http://localhost:1527/DOCKERDB)
+- Connect to DB: `jdbc:derby://localhost:1527/DOCKERDB`

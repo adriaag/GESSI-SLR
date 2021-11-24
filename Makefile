@@ -12,8 +12,11 @@ down:
 ver:
 	echo version: ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
 
+build-volume:
+	# build docker volume
+	@docker volume create -d local-persist --opt mountpoint=/d/DockerVolumes/db-volume --name db-volume
+
 build:
-	mvn -Dversioning.disable=true clean install
 	# build docker image
 	@docker build -t $(DOCKER_NAME_FULL) .
 

@@ -1,8 +1,8 @@
 ----------------------------------------------------------------
-Sun Nov 21 18:02:41 UTC 2021:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.15.2.0 - (1873585): instance a816c00e-017d-43aa-1ba5-00000757ba98 
-on database directory /home/usuario/Documentos/Projectes/webapps/SLRDatabase with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@5c29bfd 
-Loaded from file:/home/usuario/.config/JetBrains/IntelliJIdea2021.2/jdbc-drivers/Apache%20Derby/10.15.2.0/derby-10.15.2.0.jar
+Wed Nov 24 16:52:02 UTC 2021:
+Booting Derby (version The Apache Software Foundation - Apache Derby - 10.15.2.0 - (1873585)) instance a816c00e-017d-52dc-7f83-000007583a88 
+on database directory /d/DockerVolumes/db-volume in READ ONLY mode with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@7aec35a. 
+Loaded from file:/home/usuario/.config/JetBrains/IntelliJIdea2021.2/jdbc-drivers/Apache%20Derby/10.15.2.0/derby-10.15.2.0.jar.
 java.vendor=JetBrains s.r.o.
 java.runtime.version=11.0.12+7-b1504.40
 user.dir=/home/usuario/Documentos/Projectes/tfg-definitivo

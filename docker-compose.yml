@@ -5,7 +5,7 @@ services:
     ports:
       - "1527:1527"
     volumes:
-      - /opt/gessi-slr/data/derby/db:/dbs/SLRDatabase
+      - db-volume:/dbs/DOCKERDB
     restart: unless-stopped
 
   tomcat:
@@ -17,3 +17,7 @@ services:
 
 networks:
   default:
+
+volumes:
+  db-volume:
+    external: true
