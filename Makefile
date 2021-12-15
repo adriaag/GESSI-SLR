@@ -14,7 +14,7 @@ ver:
 
 build-volume:
 	# build docker volume
-	@docker volume create -d local-persist --opt mountpoint=/d/DockerVolumes/db-volume --name db-volume
+	@docker volume create --name db-volume --opt type=local --opt device=/home/usuario/slrgessi/db-volume --opt o=bind
 
 build:
 	# build docker image
@@ -22,5 +22,5 @@ build:
 
 save-image:
 	@mkdir -p docker-images
-	@docker save com.webapp.gessi/gessi-slr:1.0.0-SNAPSHOT | gzip > "./docker-images/gessi-slr.tar.gz"
+	@docker save com.webapp.gessi/gessi-slr:1.0.1 | gzip > "./docker-images/gessi-slr.tar.gz"
 	@docker save opavlova/db-derby:latest | gzip > "./docker-images/db-derby.tar.gz"

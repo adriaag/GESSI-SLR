@@ -26,12 +26,12 @@ make down
 ### Without Makefile
 1. Create docker volume:
 ```shell
-docker volume create -d local-persist --opt mountpoint=/d/DockerVolumes/db-volume --name db-volume
+docker volume create --name db-volume --opt type=local --opt device=/home/slrgessi/db-volume --opt o=bind
 ```
 
 2. Create docker image:
 ```shell
-docker build -t com.webapp.gessi/gessi-slr:1.0.0-SNAPSHOT .
+docker build -t com.webapp.gessi/gessi-slr:1.0.1 .
 ```
 
 3. Running it
@@ -46,6 +46,6 @@ docker-compose -p gessi-slr down
 ``` 
 
 ## Check result
-- [Tomcat Webapp](http://localhost:1031/gessi-slr)
-- [Derby DB](http://localhost:1527/DOCKERDB)
-- Connect to DB: `jdbc:derby://localhost:1527/DOCKERDB`
+- [Tomcat Webapp](http://localhost:1025/gessi-slr)
+- [Derby DB](http://localhost:1024/DOCKERDB)
+- Connect to DB: `jdbc:derby://localhost:1024/DOCKERDB`
