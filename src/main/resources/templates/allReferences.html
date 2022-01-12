@@ -83,7 +83,7 @@
         </thead>
         <tbody>
             <tr th:each="i,iterStat : ${referencesList}"
-                th:style="${i.getEstado()} == 'duplicated' ? 'background-color:  #FFEBEE' : (${i.getEstado()} == 'out'?'background-color: #FFEBEE': 'background-color: #E1F5FE')">
+                th:style="${i.getEstado()} == 'in' ? 'background-color:  #BDECD6' : (${i.getEstado()} == 'out'?'background-color: #FFEBEE': 'background-color: #E1F5FE')">
 
                 <td th:text="${i.getArt().getDoi()}"></td>
                 <td th:text="${i.getIdRef()}"></td>
@@ -122,7 +122,7 @@
                 </td>
                 <td>
                     <button type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal"
-                            th:attr="data-target='#exampleModal'+${i.idRef}"><i class="fa fa-edit"></i>
+                            th:attr="data-target='#exampleModal'+${i.idRef}, onclick=|editReference(${i.getIdRef()}, &quot;${i.getEstado()}&quot;, &quot;${i.getApplCriteria()}&quot;)|"><i class="fa fa-edit"></i>
                     </button>
                 </td>
                 <!-- Modal -->
@@ -139,7 +139,7 @@
                                 <form action='#' id="myForm" method="post" th:action="@{/editReference/{id}(id=${i.getIdRef()})}" th:object="${f}">
                                     <div class="form-group">
                                         <label for="state">State</label>
-                                        <select id="state" required th:field="*{estado}" class="form-control">
+                                        <select id="state" th:onchange="|updateEditCriteria(this, ${i.getIdRef()})|" required th:field="*{estado}" class="form-control">
                                             <option value="" hidden>Select a type</option>
                                             <option value="">None</option>
                                             <option value="in">In</option>
@@ -151,7 +151,7 @@
                                         <select id="applCriteria" required th:field="*{applCriteria}" class="form-control">
                                             <option value="" hidden>Select a Criteria</option>
                                             <option value="" >None</option>
-                                            <div th:each="x,iterStatx : ${allCriteria}">
+                                            <div th:each="x,iterStatx : ${ECCriteria}">
                                                 <option th:value="${x}" th:text="${x}"></option>
                                             </div>
                                         </select>
@@ -162,7 +162,6 @@
                                     </div>
                                 </form>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -180,5 +179,33 @@
         });
         $(".myForm #exampleModal").modal();
     } );
+    function updateEditCriteria(component, id) {
+        const selectCriteria =  $('select[id="applCriteria"]');
+        if (component.value === "out") {
+            selectCriteria[id - 1].disabled = false;
+            selectCriteria[id - 1].required = true;
+        }
+        else {
+            selectCriteria[id - 1].disabled = true;
+            selectCriteria[id - 1].required = false;
+            selectCriteria[id - 1].value = "";
+        }
+    }
+    function editReference(id, state, criteria) {
+        const selectState = $('select[id="state"]');
+        const selectCriteria =  $('select[id="applCriteria"]');
+        selectCriteria[id-1].disabled = true;
+        selectCriteria[id-1].required = false;
+        selectCriteria[id-1].value = "";
+        selectState[id - 1].value = "";
+        if (state !== "null") {
+            selectState[id - 1].value = state;
+            if (state === "out") {
+                selectCriteria[id - 1].disabled = false;
+                selectCriteria[id - 1].required = true;
+                selectCriteria[id - 1].value = criteria;
+            }
+        }
+    }
 </script>
 </html>

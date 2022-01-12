@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/criteria")
@@ -45,6 +46,12 @@ public class criteriaController {
         return criteria.getAllCriteria("IC");
     }
     public static List<criteriaDTO> getCriteriasEC() { return criteria.getAllCriteria("EC"); }
+
+
+    public static List<String> getStringListCriteriasEC() {
+        List<criteriaDTO> list = criteria.getAllCriteria("EC");
+        return list.stream().map(criteriaDTO::getIdICEC).collect(Collectors.toList());
+    }
 
     public static List<String> getAllCriteria() {
         ArrayList<String> r = new ArrayList<String>();

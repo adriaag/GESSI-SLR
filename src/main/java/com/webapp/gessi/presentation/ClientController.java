@@ -4,7 +4,6 @@ import com.webapp.gessi.domain.controllers.ReferenceController;
 import com.webapp.gessi.domain.controllers.criteriaController;
 import com.webapp.gessi.domain.controllers.digitalLibraryController;
 import com.webapp.gessi.domain.dto.*;
-import com.webapp.gessi.domain.form.CriteriaForm;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jbibtex.ParseException;
 import org.springframework.core.io.InputStreamResource;
@@ -18,9 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.*;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Controller
 public class ClientController {
@@ -44,7 +40,7 @@ public class ClientController {
         model.addAttribute("referencesList", list);
 
         model.addAttribute("f", new referenceDTOupdate());
-        model.addAttribute("allCriteria", criteriaController.getAllCriteria());
+        model.addAttribute("ECCriteria", criteriaController.getStringListCriteriasEC());
         return "allReferences";
     }
 
@@ -101,6 +97,7 @@ public class ClientController {
         model.addAttribute("f", new formDTO());
         return "newReference";
     }
+
     @GetMapping(value = "/errors")
     public String importErrors(Model model) throws SQLException, IOException, ParseException {
         model.addAttribute("errorsList", ReferenceController.getAllErrors());
@@ -114,30 +111,15 @@ public class ClientController {
         model.addAttribute("listIC", lIC);
         model.addAttribute("listEC", lEC);
         model.addAttribute("f", new criteriaDTO());
-        CriteriaForm formIC = new CriteriaForm();
-        Map<String, criteriaDTO> criteriaDTOMap = lIC.stream().collect(Collectors.toMap(criteriaDTO::getIdICEC, Function.identity()));
-        formIC.setProperties(criteriaDTOMap);
-        model.addAttribute("modalIC", formIC);
-        CriteriaForm formEC = new CriteriaForm();
-        criteriaDTOMap = lEC.stream().collect(Collectors.toMap(criteriaDTO::getIdICEC, Function.identity()));
-        formEC.setProperties(criteriaDTOMap);
-        model.addAttribute("modalEC", formEC);
 
         model.addAttribute("errorM", "");
         return "editCriteria";
     }
 
-    @PostMapping(value = "/updateCriteriaI/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public static String updateCriteriaI(@PathVariable("id") String oldIdICEC,  @ModelAttribute("modalIC")  CriteriaForm f) {
+    @PostMapping(value = "/updateCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
+    public static String updateCriteriaI(@PathVariable("id") String oldIdICEC,  @ModelAttribute("f")  criteriaDTO f) {
         System.out.println(oldIdICEC);
-        criteriaController.updateCriteria(oldIdICEC,f.getProperties().get(oldIdICEC));
-        return "redirect:/editCriteria";
-    }
-
-    @PostMapping(value = "/updateCriteriaE/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public static String updateCriteriaE(@PathVariable("id") String oldIdICEC,  @ModelAttribute("modalEC")  CriteriaForm f) {
-        System.out.println(oldIdICEC);
-        criteriaController.updateCriteria(oldIdICEC,f.getProperties().get(oldIdICEC));
+        criteriaController.updateCriteria(oldIdICEC,f);
         return "redirect:/editCriteria";
     }
 

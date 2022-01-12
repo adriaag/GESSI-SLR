@@ -49,7 +49,7 @@
 <div style="width: 30%; float:left">
     <form action='#' method="post" th:action="@{/editCriteria}" th:object="${f}">
         <div class="form-group">
-            <label for="idICEC">idICEC</label>
+            <label for="idICEC">Criteria identifier</label>
             <input id="idICEC" placeholder="Enter identifier ICEC" required type="text" th:field="*{idICEC}" class="form-control"/>
         </div>
         <div class="form-group">
@@ -90,7 +90,7 @@
             <td th:text="${c.idICEC}"></td>
             <td th:text="${c.text}"></td>
             <td><button type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal"
-                        th:attr="data-target='#editModal'+${c.idICEC}"><i class="fa fa-edit"></i>
+                        th:attr="data-target='#editModal'+${c.idICEC}, onclick=|editCriteriaIC(this, &quot;${c.getIdICEC()}&quot;, &quot;${c.getText}&quot;, &quot;${c.getType()}&quot;)|"><i class="fa fa-edit"></i>
             </button></td>
             <td><button type="button" class="btn btn-danger eBtn" style="font-size:12px" data-toggle="modal"
                         th:attr="data-target='#trashModal'+${c.idICEC}"><i class="fa fa-trash"></i>
@@ -106,29 +106,27 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form action='#' id="myForm" method="post" th:action="@{/updateCriteriaI/{id}(id=${c.idICEC})}" th:object="${modalIC}">
-                                <div th:each="property : ${modalIC.properties.entrySet()}" th:if="${property.key == c.idICEC}">
-                                    <div class="form-group">
-                                        <label for="idCRI">Criteria identifier</label>
-                                        <input id="idCRI" th:field="*{properties['__${property.key}__'].idICEC}" class="form-control"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="textCRI">Description</label>
-                                        <textarea rows="4" cols="50" id="textCRI" placeholder="Enter description"
-                                                  type="text" th:field="*{properties['__${property.key}__'].text}" class="form-control"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="typeCRI">Type</label>
-                                        <select id="typeCRI" th:field="*{properties['__${property.key}__'].type}" class="form-control">
-                                            <option value="" hidden>Select a type</option>
-                                            <option value="inclusion">Inclusion</option>
-                                            <option value="exclusion">Exclusion</option>
-                                        </select>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-primary">Update</button>
-                                    </div>
+                            <form action='#' id="myForm" method="post" th:action="@{/updateCriteria/{id}(id=${c.idICEC})}" th:object="${f}">
+                                <div class="form-group">
+                                    <label for="idCRI">Criteria identifier</label>
+                                    <input id="idCRI" th:field="*{idICEC}" class="form-control"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="textCRI">Description</label>
+                                    <textarea rows="4" cols="50" id="textCRI" placeholder="Enter description"
+                                              type="text" th:field="*{text}" class="form-control"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="typeCRI">Type</label>
+                                    <select id="typeCRI" th:field="*{type}" class="form-control">
+                                        <option value="" hidden>Select a type</option>
+                                        <option value="inclusion">Inclusion</option>
+                                        <option value="exclusion">Exclusion</option>
+                                    </select>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Update</button>
                                 </div>
                             </form>
                         </div>
@@ -180,7 +178,7 @@
             <td th:text="${c.idICEC}"></td>
             <td th:text="${c.text}"></td>
             <td><button type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal"
-                        th:attr="data-target='#editModal2'+${c.idICEC}"><i class="fa fa-edit"></i>
+                        th:attr="data-target='#editModal2'+${c.idICEC}, onclick=|editCriteriaEC(this, &quot;${c.getIdICEC()}&quot;, &quot;${c.getText}&quot;, &quot;${c.getType()}&quot;)|"><i class="fa fa-edit"></i>
             </button></td>
             <td><button type="button" class="btn btn-danger eBtn" style="font-size:12px" data-toggle="modal"
                         th:attr="data-target='#trashModal2'+${c.idICEC}"><i class="fa fa-trash"></i>
@@ -196,29 +194,27 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form action='#' id="myForm3" method="post" th:action="@{/updateCriteriaE/{id}(id=${c.idICEC})}" th:object="${modalEC}">
-                                <div th:each="property : ${modalEC.properties.entrySet()}" th:if="${property.key == c.idICEC}">
-                                    <div class="form-group">
-                                        <label for="idCRI2">Criteria identifier</label>
-                                        <input id="idCRI2" th:field="*{properties['__${property.key}__'].idICEC}" class="form-control"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="textCRI2">Description</label>
-                                        <textarea rows="4" cols="50" id="textCRI2" placeholder="Enter description"
-                                                  type="text" th:field="*{properties['__${property.key}__'].text}" class="form-control"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="typeCRI2">Type</label>
-                                        <select id="typeCRI2" th:field="*{properties['__${property.key}__'].type}" class="form-control">
-                                            <option value="" hidden>Select a type</option>
-                                            <option value="inclusion">Inclusion</option>
-                                            <option value="exclusion">Exclusion</option>
-                                        </select>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-primary">Update</button>
-                                    </div>
+                            <form action='#' id="myForm3" method="post" th:action="@{/updateCriteria/{id}(id=${c.idICEC})}" th:object="${f}">
+                                <div class="form-group">
+                                    <label for="idCRI2">Criteria identifier</label>
+                                    <input id="idCRI2" th:field="*{idICEC}" class="form-control"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="textCRI2">Description</label>
+                                    <textarea rows="4" cols="50" id="textCRI2" placeholder="Enter description"
+                                              type="text" th:field="*{text}" class="form-control"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="typeCRI2">Type</label>
+                                    <select id="typeCRI2" th:field="*{type}" class="form-control">
+                                        <option value="" hidden>Select a type</option>
+                                        <option value="inclusion">Inclusion</option>
+                                        <option value="exclusion">Exclusion</option>
+                                    </select>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Update</button>
                                 </div>
                             </form>
                         </div>
@@ -256,4 +252,24 @@
 </div>
 </div>
 </body>
+<script language="javascript" type="text/javascript">
+    function editCriteriaIC(component, id, text, type) {
+        const index = component.parentElement.parentElement.rowIndex - 2;
+        const selectInput = $('input[id="idCRI"]');
+        const selectTextarea =  $('textarea[id="textCRI"]');
+        const selectType =  $('select[id="typeCRI"]');
+        selectInput[index].value = id;
+        selectTextarea[index].value = text;
+        selectType[index].value = type;
+    }
+    function editCriteriaEC(component, id, text, type) {
+        const index = component.parentElement.parentElement.rowIndex - 2;
+        const selectInput = $('input[id="idCRI2"]');
+        const selectTextarea =  $('textarea[id="textCRI2"]');
+        const selectType =  $('select[id="typeCRI2"]');
+        selectInput[index].value = id;
+        selectTextarea[index].value = text;
+        selectType[index].value = type;
+    }
+</script>
 </html>

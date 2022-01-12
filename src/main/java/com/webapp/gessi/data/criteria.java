@@ -39,7 +39,7 @@ public class criteria {
             ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
             Connection conn = ctx.getBean(Connection.class);
             Statement s;
-            String query = "INSERT INTO criteria(idICEC, text , type ) VALUES ('" + idICEC+ "', \'" + text + "\','"+ type+"')";
+            String query = "INSERT INTO criteria(idICEC, text , type ) VALUES ('" + idICEC+ "', '" + text + "','" + type+"')";
             System.out.println(query);
             s = conn.createStatement();
             s.execute(query);
@@ -73,7 +73,7 @@ public class criteria {
             else if (t.equals("EC")) rs = getAllEC(s);
             else rs = getAll(s);
             int number = 1;
-            criList = new ArrayList<criteriaDTO>();
+            criList = new ArrayList<>();
             while(rs.next()) {
                 System.out.println(number++);
                 System.out.println(rs.getFetchSize());
@@ -160,7 +160,7 @@ public class criteria {
             ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
             Connection conn = ctx.getBean(Connection.class);
             Statement s;
-            String query = "DELETE FROM criteria WHERE idICEC = '"+ idICEC+"'";
+            String query = "DELETE FROM criteria WHERE idICEC = '" + idICEC + "'";
             //System.out.println(query);
             s = conn.createStatement();
             s.execute(query);
