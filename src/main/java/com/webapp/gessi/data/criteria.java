@@ -39,7 +39,8 @@ public class criteria {
             ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
             Connection conn = ctx.getBean(Connection.class);
             Statement s;
-            String query = "INSERT INTO criteria(idICEC, text , type ) VALUES ('" + idICEC+ "', '" + text + "','" + type+"')";
+
+            String query = "INSERT INTO criteria(idICEC, text , type ) VALUES ('" + idICEC + "', '" + text + "','" + type + "')";
             System.out.println(query);
             s = conn.createStatement();
             s.execute(query);
@@ -48,7 +49,7 @@ public class criteria {
             return idICEC;
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) {
-                return "Identifier "+ idICEC+" already exists";
+                return "Identifier "+ idICEC + " already exists";
             }
             else {
                 while (e != null) {

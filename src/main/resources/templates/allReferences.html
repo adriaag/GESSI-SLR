@@ -16,9 +16,6 @@
     </style>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script type="text/javascript" language="javascript" src="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"></script>
-    <script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>
-    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table-locale-all.min.js"></script>
 </div>
     <title>All references</title>
 </head>
@@ -113,7 +110,7 @@
                 </td>
                 <td th:unless="${i.getArt().getVen() != null }"> <p></p></td>
                 <td th:text="${i.getEstado()}"></td>
-                <td th:text="${i.getApplCriteria()}"></td>
+                <td th:text="${i.getApplCriteriaString()}"></td>
                 <td th:unless="${i.getArt().getVen() != null }"> <p></p></td>
                 <td>
                     <button class="btn btn-primary" th:data-url="@{/getReference?id={id}(id=${i.getIdRef()})}"
