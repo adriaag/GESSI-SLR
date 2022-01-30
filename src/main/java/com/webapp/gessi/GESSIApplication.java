@@ -18,4 +18,3 @@ public class GESSIApplication extends SpringBootServletInitializer {
     }
 
 }
-

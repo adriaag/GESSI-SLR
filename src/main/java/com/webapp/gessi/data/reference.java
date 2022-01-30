@@ -12,6 +12,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class reference {
 
@@ -98,11 +99,14 @@ public class reference {
                 String doiR = rs.getString(2);
                 int dlR = rs.getInt(3);
                 String estado = rs.getString(4);
-                List<String> applCriteria = null;
+                List<ExclusionDTO> exclusionDTOList = null;
                 if (Objects.equals(estado, "out")) {
                     Statement s1 = conn.createStatement();
-                    applCriteria = Exclusion.getByIdRef(s1, idR);
+                    exclusionDTOList = Exclusion.getByIdRef(s1, idR);
                 }
+                List<String> applCriteria = null;
+                if (exclusionDTOList != null)
+                    applCriteria = exclusionDTOList.stream().map(ExclusionDTO::getIdICEC).collect(Collectors.toList());
                 referenceDTO NewRef = new referenceDTO( idR, doiR, dlR, estado, applCriteria);
                 obtainReferenceDTO(conn, NewRef, doiR, dlR);
 
@@ -303,8 +307,11 @@ public class reference {
         rs.next();
         referenceDTO referenceDTO = new referenceDTO(rs.getInt(1), rs.getString(2),
                 rs.getInt(3), rs.getString(4), null);
-        List<String> exclusionList = Exclusion.getByIdRef(s, idR);
-        referenceDTO.setApplCriteria(exclusionList);
+        List<ExclusionDTO> exclusionDTOList = Exclusion.getByIdRef(s, idR);
+        List<String> applCriteria = null;
+        if (exclusionDTOList != null && !exclusionDTOList.isEmpty())
+            applCriteria = exclusionDTOList.stream().map(ExclusionDTO::getIdICEC).collect(Collectors.toList());
+        referenceDTO.setApplCriteria(applCriteria);
         return referenceDTO;
     }
 
@@ -325,19 +332,15 @@ public class reference {
         Exclusion.insertRow(s, "EC1", resultSet.getInt(1));
     }
 
-    public static void update(int idRef, String estado, String applCriteria) {
+    public static void update(int idRef, String estado) {
         try{
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         Statement s = conn.createStatement();
-        if ((estado == null || estado.isEmpty()) && (applCriteria == null || applCriteria.isEmpty()))
-            s.execute("update referencias set state = " + null + " , applCriteria = " + null + " where idRef = " + idRef );
-        else if (applCriteria == null || applCriteria.isEmpty())
-            s.execute("update referencias set state = '" + estado + "' , applCriteria = " + null + " where idRef = " + idRef );
-        else if (estado == null || estado.isEmpty())
-            s.execute("update referencias set state = " + null + " , applCriteria = '" + applCriteria + "' where idRef = " + idRef );
+        if ((estado == null || estado.isEmpty()))
+            s.execute("update referencias set state = " + null + " WHERE idRef = " + idRef );
         else
-            s.execute("update referencias set state = '" + estado + "' , applCriteria = '" + applCriteria + "' where idRef = " + idRef );
+            s.execute("update referencias set state = '" + estado + "' WHERE idRef = " + idRef );
         } catch (SQLException e) {
             System.out.println("Error en update estado y criteria de una reference");
             while (e != null) {

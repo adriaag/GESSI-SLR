@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -30,11 +31,15 @@ public class criteriaController {
         return criteria.insert(idICEC, text, type);
     }
 
-    public static void updateCriteria( String oldIdICEC, criteriaDTO f) {
+    public static void updateCriteria(String oldIdICEC, criteriaDTO f) {
         System.out.println("update criteria en controller criteria");
-        List<Integer> refs = ReferenceController.setNullCriteria(oldIdICEC);
+        if (!Objects.equals(oldIdICEC, f.getIdICEC()))
+            ExclusionController.deleteCriteriaFK();
         criteria.update(f.getIdICEC(), f.getText(), f.getType(), oldIdICEC);
-        for(int idR : refs) ReferenceController.setCriteria(idR, f.getIdICEC());
+        if (!Objects.equals(oldIdICEC, f.getIdICEC())) {
+            ExclusionController.UpdateIdICEC(oldIdICEC, f.getIdICEC());
+            ExclusionController.addCriteriaFK();
+        }
     }
 
     public static void deleteCriteria(@PathVariable("id") String idICEC) {
@@ -54,7 +59,7 @@ public class criteriaController {
     }
 
     public static List<String> getAllCriteria() {
-        ArrayList<String> r = new ArrayList<String>();
+        ArrayList<String> r = new ArrayList<>();
         List<criteriaDTO> list = criteria.getAllCriteria("");
         for (criteriaDTO i : list) {
             r.add(i.getIdICEC());
@@ -62,11 +67,4 @@ public class criteriaController {
         }
         return r;
     }
-
-
-    //@PostMapping(value = "/references", produces = MediaType.APPLICATION_JSON_VALUE)
- //   HTTP POST request, used to create a new resource.
-    //public String postReference(@RequestParam String name) {}
-
-
 }

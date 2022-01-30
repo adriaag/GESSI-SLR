@@ -14,7 +14,7 @@ ver:
 
 build-volume:
 	# build docker volume
-	@docker volume create --name db-volume --opt type=local --opt device=/home/usuario/slrgessi/db-volume --opt o=bind
+	@docker volume create --name db-volume --opt type=local --opt device=/home/marc/slrgessi/db-volume --opt o=bind
 
 build:
 	# build docker image
