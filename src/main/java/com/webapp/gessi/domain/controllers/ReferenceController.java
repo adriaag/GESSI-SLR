@@ -79,15 +79,8 @@ public class ReferenceController {
         return reference.getAllErrors();
     }
 
-    public static List<Integer> setNullCriteria(String oldIdICEC) {
-        List<Integer> refs = reference.getReferenceOfCriteria(oldIdICEC);
-        for (int r : refs)
-            reference.setNullCriteria(r);
-        return refs;
-    }
-
-    public static void setCriteria(int idRef, String idICEC) {
-        reference.setCriteria( idRef,  idICEC);
+    public static void updateState(int idRef, String state) {
+        reference.update(idRef, state);
     }
 
     @RequestMapping(value = "/createTables")
@@ -98,10 +91,4 @@ public class ReferenceController {
     public void deleteTables(){
         reference.delete();
     }
-
-    //@PostMapping(value = "/references", produces = MediaType.APPLICATION_JSON_VALUE)
- //   HTTP POST request, used to create a new resource.
-    //public String postReference(@RequestParam String name) {}
-
-
 }

@@ -43,6 +43,13 @@ public class ExclusionController {
         return Exclusion.getByIdRef(s, idRef);
     }
 
+    public static List<ExclusionDTO> getByIdICEC(String idICEC) throws SQLException {
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Connection conn = ctx.getBean(Connection.class);
+        Statement s = conn.createStatement();
+        return Exclusion.getByIdICEC(s, idICEC);
+    }
+
     public static void UpdateIdICEC(String oldIdICEC, String newIdICEC) {
         Exclusion.updateIdICEC(oldIdICEC, newIdICEC);
     }

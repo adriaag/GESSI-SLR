@@ -2,7 +2,9 @@ package com.webapp.gessi.domain.controllers;
 
 import com.webapp.gessi.config.DBConnection;
 import com.webapp.gessi.data.criteria;
+import com.webapp.gessi.domain.dto.ExclusionDTO;
 import com.webapp.gessi.domain.dto.criteriaDTO;
+import com.webapp.gessi.domain.dto.referenceDTO;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.http.MediaType;
@@ -42,9 +44,16 @@ public class criteriaController {
         }
     }
 
-    public static void deleteCriteria(@PathVariable("id") String idICEC) {
+    public static void deleteCriteria(@PathVariable("id") String idICEC) throws SQLException {
         System.out.println("delete criteria en controller criteria");
+        List<ExclusionDTO> exclusionDTOList = ExclusionController.getByIdICEC(idICEC);
+        for (ExclusionDTO exclusionDTO : exclusionDTOList) {
+            referenceDTO referenceDTO = ReferenceController.getReference(exclusionDTO.getIdRef());
+            if (referenceDTO.getApplCriteria().size() <= 1)
+                ReferenceController.updateState(referenceDTO.getIdRef(), null);
+        }
         criteria.delete(idICEC);
+
     }
 
     public static List<criteriaDTO> getCriteriasIC() {

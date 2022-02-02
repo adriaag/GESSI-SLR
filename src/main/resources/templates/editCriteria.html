@@ -178,9 +178,11 @@
             <td th:text="${c.idICEC}"></td>
             <td th:text="${c.text}"></td>
             <td><button type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal"
+                        th:if = "${c.idICEC} != 'EC1'"
                         th:attr="data-target='#editModal2'+${c.idICEC}, onclick=|editCriteriaEC(this, &quot;${c.getIdICEC()}&quot;, &quot;${c.getText}&quot;, &quot;${c.getType()}&quot;)|"><i class="fa fa-edit"></i>
             </button></td>
             <td><button type="button" class="btn btn-danger eBtn" style="font-size:12px" data-toggle="modal"
+                        th:if = "${c.idICEC} != 'EC1'"
                         th:attr="data-target='#trashModal2'+${c.idICEC}"><i class="fa fa-trash"></i>
             </button></td>
             <!-- Modal Edit-->

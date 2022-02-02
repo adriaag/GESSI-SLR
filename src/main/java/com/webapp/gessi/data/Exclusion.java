@@ -109,9 +109,9 @@ public class Exclusion {
         return null;
     }
 
-    public static List<ExclusionDTO> getByIdICEC(Statement s, int idICEC) {
+    public static List<ExclusionDTO> getByIdICEC(Statement s, String idICEC) {
         try {
-            ResultSet resultSet = s.executeQuery("SELECT * FROM exclusion WHERE idICEC = " + idICEC);
+            ResultSet resultSet = s.executeQuery("SELECT * FROM exclusion WHERE idICEC = '" + idICEC + "'");
             return convertResultSetToExclusionDTO(resultSet);
         } catch (SQLException e) {
             while (e != null) {

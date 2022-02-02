@@ -124,7 +124,7 @@ public class ClientController {
     }
 
     @PostMapping(value = "/deleteCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public static String deleteCriteria(@PathVariable("id") String idICEC) {
+    public static String deleteCriteria(@PathVariable("id") String idICEC) throws SQLException {
         criteriaController.deleteCriteria(idICEC);
         return "redirect:/editCriteria";
     }
