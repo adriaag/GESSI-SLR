@@ -38,14 +38,16 @@ public class reference {
             }
         }
         ResultSet rs = s.executeQuery("SELECT idRef FROM referencias where doi = '" + doi + "' and idDL =" + idDL);
-        rs.next();
-        return rs.getInt(1);
+        if (rs.next())
+            return rs.getInt(1);
+        return -2;
     }
 
     public static void createTable(Statement s) {
         try {
-            s.execute("create table referencias(idRef INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, " +
-                    "INCREMENT BY 1), doi varchar(50), idDL int, state VARCHAR(10), " +
+            s.execute("create table referencias(" +
+                    "idRef INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+                    "doi varchar(50), idDL int, state VARCHAR(10), " +
                     "PRIMARY KEY(idRef), unique(doi,idDL), CONSTRAINT DL_FK_R FOREIGN KEY (idDL) " +
                     "REFERENCES digitalLibraries (idDL),CONSTRAINT AR_FK_R FOREIGN KEY (doi) REFERENCES articles (doi),"+
                     "CONSTRAINT state_chk CHECK (state IN ( 'in', 'out')))");

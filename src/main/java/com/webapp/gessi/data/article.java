@@ -172,7 +172,8 @@ public class article {
             int idRef = reference.insertRow(s, doi, idDL, estado);
             if (apCriteria != null)
                 Exclusion.insertRow(s, apCriteria, idRef);
-            if(idRef == -1) return "ERROR: This reference already exists";
+            if (idRef == -1) return "ERROR: This reference already exists";
+            else if (idRef == -2) return "ERROR: The reference had problems";
             return doi;
         }
         else
