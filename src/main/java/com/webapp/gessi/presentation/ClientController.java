@@ -142,9 +142,10 @@ public class ClientController {
         return "editCriteria";
     }
 
-    @PostMapping(value=("/editReference/{id}"))
-    public String editReference(@PathVariable("id") int id, @ModelAttribute("f") referenceDTOupdate f) throws SQLException {
-        ReferenceController.updateReference(id, f.getEstado(), f.getApplCriteria());
+    @PostMapping(value=("/editReference"))
+    public String editReference(@ModelAttribute("f") referenceDTOupdate f) throws SQLException {
+        if (f.getApplCriteria() == null) f.setApplCriteria("");
+        ReferenceController.updateReference(f.getId(), f.getEstado(), f.getApplCriteria());
         return "redirect:/getAllReferences";
     }
 
