@@ -20,10 +20,10 @@ public class reference {
         try {
             String query;
             if (estado != null) {
-                query = "INSERT INTO referencias(doi,idDL,state) VALUES ('" + doi + "', " + idDL + ",'" + estado + "')";
+                query = "INSERT INTO referencias(doi, idDL, state) VALUES ('" + doi + "', " + idDL + ",'" + estado + "')";
             }
             else
-                query = "INSERT INTO referencias(doi,idDL,state) VALUES ('" + doi + "', " + idDL + ", null)";
+                query = "INSERT INTO referencias(doi, idDL, state) VALUES ('" + doi + "', " + idDL + ", null)";
             //System.out.println(query);
             s.execute(query);
             System.out.println("Inserted row with doi, idDL.. in referencias");
@@ -36,6 +36,7 @@ public class reference {
                 System.err.println("  Message:    " + e.getMessage());
                 e = e.getNextException();
             }
+            return -2;
         }
         ResultSet rs = s.executeQuery("SELECT idRef FROM referencias where doi = '" + doi + "' and idDL =" + idDL);
         if (rs.next())

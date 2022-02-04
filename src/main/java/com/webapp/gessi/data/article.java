@@ -170,10 +170,10 @@ public class article {
             else
                 insertRow(s, entry, doi);                                       //create article nuevo
             int idRef = reference.insertRow(s, doi, idDL, estado);
-            if (apCriteria != null)
-                Exclusion.insertRow(s, apCriteria, idRef);
             if (idRef == -1) return "ERROR: This reference already exists";
             else if (idRef == -2) return "ERROR: The reference had problems";
+            else if (apCriteria != null)
+                Exclusion.insertRow(s, apCriteria, idRef);
             return doi;
         }
         else

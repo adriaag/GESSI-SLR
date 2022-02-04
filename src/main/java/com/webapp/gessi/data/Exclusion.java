@@ -59,7 +59,6 @@ public class Exclusion {
                 query = "INSERT INTO exclusion(idICEC, idRef) VALUES ('" + idICEC + "', " + idRef + ")";
                 s.execute(query);
                 System.out.println("Inserted row " + idICEC + ", " + idRef + " in exclusion");
-                s.getConnection().commit();
             }
             else {
                 if (!criteria)
