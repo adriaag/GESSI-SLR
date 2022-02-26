@@ -172,7 +172,6 @@
 
 </body>
 <script language="javascript" type="text/javascript">
-    var currentId = null;
 
     $(document).ready( function () {
         $('#dataTable').DataTable({
@@ -183,17 +182,16 @@
     function updateEditCriteria(component) {
         const selectCriteria =  $('select[id="applCriteria"]');
         if (component.value === "out") {
-            selectCriteria[currentId - 1].disabled = false;
-            selectCriteria[currentId - 1].required = true;
+            selectCriteria[0].disabled = false;
+            selectCriteria[0].required = true;
         }
         else {
-            selectCriteria[currentId - 1].disabled = true;
-            selectCriteria[currentId - 1].required = false;
-            selectCriteria[currentId - 1].value = "";
+            selectCriteria[0].disabled = true;
+            selectCriteria[0].required = false;
+            selectCriteria[0].value = "";
         }
     }
     function editReference(component, id, state, criteria) {
-        currentId = id;
         const selectState = $('select[id="state"]');
         const selectCriteria =  $('select[id="applCriteria"]');
         const inputId =  $('input[id="id"]');
