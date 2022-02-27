@@ -11,7 +11,9 @@ import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class creationExcel {
     private static String[] columnHeadings = {"#ref", /*dl*/ "DL-Name", "Year", /*article*/ "DOI" ,   /*researchers*/
@@ -89,7 +91,7 @@ public class creationExcel {
             cell.setCellStyle(stRow);
 
             cell = row.createCell(5);
-            cell.setCellValue(ref.getApplCriteria());
+            cell.setCellValue(String.join(", ", ref.getApplCriteria()));
             cell.setCellStyle(stRow);
 
             researcherDTO[] authorsList = art.getResearchers();
@@ -113,7 +115,7 @@ public class creationExcel {
                 cell.setCellStyle(stRow);
             }
 
-            cell = row.createCell(9);
+            cell = row. createCell(9);
             cell.setCellValue(art.getType());
             cell.setCellStyle(stRow);
 

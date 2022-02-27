@@ -42,10 +42,10 @@ public class researcher implements Serializable {
 
     public static int insertRow(Statement s, String name) throws SQLException {
         try{
-            String query = "INSERT INTO researchers(name) VALUES (\'" + name + "\')";
+            String query = "INSERT INTO researchers(name) VALUES ('" + name + "')";
             //System.out.println(query);
             s.execute(query);
-            System.out.println("Inserted row with idRes name in researchers");
+            System.out.println("Inserted row with idRes " + name + " in researchers");
             s.getConnection().commit();
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505"))

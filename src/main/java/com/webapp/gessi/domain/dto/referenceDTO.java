@@ -3,6 +3,7 @@ package com.webapp.gessi.domain.dto;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.List;
 
 @XmlRootElement(name = "reference")
 public class referenceDTO implements Serializable {
@@ -11,12 +12,12 @@ public class referenceDTO implements Serializable {
     private String doi;
     private int idDL;
     private String estado;
-    private String applCriteria;
+    private List<String> applCriteria;
     private articleDTO art;
     private digitalLibraryDTO dl;
 
 
-    public referenceDTO(int aux, String aux2, int aux3, String estado, String applCriteria) {
+    public referenceDTO(int aux, String aux2, int aux3, String estado, List<String> applCriteria) {
         this.idRef = aux;
         this.doi = aux2;
         this.idDL = aux3;
@@ -72,11 +73,17 @@ public class referenceDTO implements Serializable {
         this.estado = estado;
     }
 
-    public String getApplCriteria() {
+    public List<String> getApplCriteria() {
         return applCriteria;
     }
 
-    public void setApplCriteria(String applCriteria) {
+    public String getApplCriteriaString() {
+       if (this.applCriteria != null)
+           return String.join(", ", this.applCriteria);
+       return "";
+    }
+
+    public void setApplCriteria(List<String> applCriteria) {
         this.applCriteria = applCriteria;
     }
 }

@@ -31,7 +31,7 @@ docker volume create --name db-volume --opt type=local --opt device=/home/slrges
 
 2. Create docker image:
 ```shell
-docker build -t com.webapp.gessi/gessi-slr:1.0.1 .
+docker build -t com.webapp.gessi/gessi-slr:1.1.0 .
 ```
 
 3. Running it

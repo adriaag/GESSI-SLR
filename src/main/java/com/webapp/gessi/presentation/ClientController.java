@@ -40,7 +40,7 @@ public class ClientController {
         model.addAttribute("referencesList", list);
 
         model.addAttribute("f", new referenceDTOupdate());
-        model.addAttribute("allCriteria", criteriaController.getAllCriteria());
+        model.addAttribute("ECCriteria", criteriaController.getStringListCriteriasEC());
         return "allReferences";
     }
 
@@ -97,6 +97,7 @@ public class ClientController {
         model.addAttribute("f", new formDTO());
         return "newReference";
     }
+
     @GetMapping(value = "/errors")
     public String importErrors(Model model) throws SQLException, IOException, ParseException {
         model.addAttribute("errorsList", ReferenceController.getAllErrors());
@@ -110,21 +111,20 @@ public class ClientController {
         model.addAttribute("listIC", lIC);
         model.addAttribute("listEC", lEC);
         model.addAttribute("f", new criteriaDTO());
-        model.addAttribute("modalf", new criteriaDTO());
 
         model.addAttribute("errorM", "");
         return "editCriteria";
     }
 
     @PostMapping(value = "/updateCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public static String updateCriteria(@PathVariable("id") String oldIdICEC,  @ModelAttribute("modalf")  criteriaDTO f) {
+    public static String updateCriteriaI(@PathVariable("id") String oldIdICEC,  @ModelAttribute("f")  criteriaDTO f) {
         System.out.println(oldIdICEC);
         criteriaController.updateCriteria(oldIdICEC,f);
         return "redirect:/editCriteria";
     }
 
     @PostMapping(value = "/deleteCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public static String deleteCriteria(@PathVariable("id") String idICEC) {
+    public static String deleteCriteria(@PathVariable("id") String idICEC) throws SQLException {
         criteriaController.deleteCriteria(idICEC);
         return "redirect:/editCriteria";
     }
@@ -142,9 +142,10 @@ public class ClientController {
         return "editCriteria";
     }
 
-    @PostMapping(value=("/editReference/{id}"))
-    public String editReference(@PathVariable("id") int id, @ModelAttribute("f") referenceDTOupdate f){
-        ReferenceController.updateReference(id,f.getEstado(),f.getApplCriteria());
+    @PostMapping(value=("/editReference"))
+    public String editReference(@ModelAttribute("f") referenceDTOupdate f) throws SQLException {
+        if (f.getApplCriteria() == null) f.setApplCriteria("");
+        ReferenceController.updateReference(f.getId(), f.getEstado(), f.getApplCriteria());
         return "redirect:/getAllReferences";
     }
 

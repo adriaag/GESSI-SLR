@@ -158,28 +158,26 @@ public class article {
             String estado = null;
             String apCriteria = null;
             if (rs.next()) {
-                //System.out.println("El article se actualiza.");
-                updateRow(rs,entry,s,doi); //añadir informacion en los valores null del article
-
-                if(reference.isDuplicate(s,entriesPriority,doi).next()) {
+                updateRow(rs, entry, s, doi); //añadir informacion en los valores null del article
+                ResultSet duplicate = reference.isDuplicate(s, entriesPriority, doi);
+                if (duplicate.next()) {
                     estado = "out";
                     apCriteria = "EC1";
                 }
-                else {
-                    reference.updateEstateReferences(s,doi);
-                }
+                else
+                    reference.updateEstateReferences(s, doi);
             }
-            else {
-                //System.out.println("El article se añade.");
-                insertRow(s, entry, doi);//create article nuevo
-            }
-            int aux = reference.insertRow(s,doi,idDL,estado,apCriteria);
-            if(aux==-1) return "ERROR: This reference already exists";
+            else
+                insertRow(s, entry, doi);                                       //create article nuevo
+            int idRef = reference.insertRow(s, doi, idDL, estado);
+            if (idRef == -1) return "ERROR: This reference already exists";
+            else if (idRef == -2) return "ERROR: The reference had problems";
+            else if (apCriteria != null)
+                Exclusion.insertRow(s, apCriteria, idRef);
             return doi;
         }
-        else {
+        else
             return "ERROR: The article does not contain doi or citeKey";
-        }
     }
 
     private static void insertRow(Statement s, BibTeXEntry entry, String doi) {
@@ -422,9 +420,9 @@ public class article {
     }
 
     public static void dropTable(Statement s) throws SQLException {
-        try{
-        s.execute("drop table articles");
-        System.out.println("Dropped table articles");
+        try {
+            s.execute("drop table articles");
+            System.out.println("Dropped table articles");
         }
         catch (SQLException sqlException) {
             System.out.println("Tabla articles not exist");
