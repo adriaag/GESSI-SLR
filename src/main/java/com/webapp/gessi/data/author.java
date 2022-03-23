@@ -9,8 +9,8 @@ public class author {
     public static void createTable(Statement s) {
         try {
             s.execute("CREATE TABLE authors( idRes int , idA varchar(50) , PRIMARY KEY (idRes, idA)," +
-                    "CONSTRAINT RES_FK_AU FOREIGN KEY (idRes) REFERENCES researchers (idRes)," +
-                    "CONSTRAINT ART_FK_AU FOREIGN KEY (idA) REFERENCES articles( doi ))");
+                    "CONSTRAINT RES_FK_AU FOREIGN KEY (idRes) REFERENCES researchers (idRes) ON DELETE CASCADE," +
+                    "CONSTRAINT ART_FK_AU FOREIGN KEY (idA) REFERENCES articles( doi ) ON DELETE CASCADE)");
             System.out.println("Created table authors");
         } catch (SQLException t  ){
             if (t.getSQLState().equals("X0Y32"))

@@ -8,37 +8,47 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-lg py-3 navbar-dark shadow-sm navbar-fixed-top" style="background-color: #153053;">
-            <div class="container"><!--style="background-color: #356ac3;"-->
+            <div class="container-fluid"><!--style="background-color: #356ac3;"-->
                 <!-- GESSi logo -->
 
                 <a id="logo" href="#" class="navbar-brand">
                     <!-- Logo Image -->
-                    <img src='' th:src="@{images/favicon.ico}" class="rounded-circle z-depth-0" alt="" height="35"/>
+                    <img src='' th:src="@{images/favicon.ico}" class="rounded-circle z-depth-0" alt="" height="35">
                     <!-- Logo Text -->
-                    <span class="text-uppercase font-weight-bold" th:text="  GESSI-SLR"/>
+                    <span class="text-uppercase font-weight-bold">GESSI-SLR</span>
                 </a>
-                <div class="container-fluid">
-                    <ul class="nav nav-tabs justify-content-center" >
-                        <li  class="nav-item" >
-                            <a  class="nav-link " th:href="@{/}">Home</a>
-                        </li>
-                        <li class="nav-item" >
-                            <a  class="nav-link" th:href="@{/newReference}">Import reference</a>
-                        </li>
+                <div style="width: 50%">
+                    <ul class="nav nav-tabs justify-content-center">
                         <li  class="nav-item">
-                            <a  class="nav-link" th:href="@{/editCriteria}">Edit ICEC</a>
+                            <a class="nav-link" onclick="onClick(this, '/')" th:href="@{/}">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a  class="nav-link" th:href="@{/getAllReferences}">Table references</a>
-                        </li>
-                        <li class="nav-item">
-                            <a  class="nav-link active" th:href="@{/errors}">Import errors</a>
+                            <a class="nav-link" onclick="onClick(this, '/newReference')" th:href="@{/newReference}">Import reference</a>
                         </li>
                         <li  class="nav-item">
-                            <a  class="nav-link " th:href="@{/resetView}">Reset database </a>
+                            <a class="nav-link" onclick="onClick(this, '/editCriteria')" th:href="@{/editCriteria}">Edit ICEC</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="onClick(this, '/getAllReferences')" th:href="@{/getAllReferences}">Table references</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" onclick="onClick(this, '/errors')" th:href="@{/errors}">Import errors</a>
+                        </li>
+                        <li  class="nav-item">
+                            <a class="nav-link" onclick="onClick(this, '/resetView')" th:href="@{/resetView}">Reset database </a>
                         </li>
                     </ul>
 
+                </div>
+                <div class="d-flex justify-content-between" style="width: 20%">
+                    <label style="display: flex;" for="idProject"></label>
+                    <select required id="idProject" onchange="updateProject(this)" class="form-control">
+                        <option value="-1" hidden="true">Select a Project</option>
+                        <option th:each="x : ${projectList}" th:value="${x.getId()}" th:text="${x.getName()}"></option>
+                    </select>
+                    <button id="modalButton" type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal" data-target="#createProject">
+                        <i class="fa fa-plus"></i>
+                    </button>
                 </div>
             </div>
         </nav>
@@ -67,10 +77,56 @@
     </table>
 </div>
 
+    <div class="modal fade" th:id="createProject" tabindex="-1" role="dialog" aria-labelledby="createProject" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModal">Create Project</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModel()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action='#' id="Form" method="post" th:action="@{/newProject}" th:object="${newProject}">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input id="name" required th:field="*{name}" class="form-control">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 <script language="javascript" type="text/javascript">
     $(document).ready( function () {
         $('#dataTable').DataTable();
     });
+
+    var queryParams = new URLSearchParams(window.location.search);
+    console.log(queryParams.toString());
+    const selectType =  $('select[id="idProject"]');
+    if (queryParams.has("idProject"))
+        selectType[0].value = queryParams.get("idProject");
+
+    function onClick(component, url) {
+        component.href = url + "?" + queryParams.toString();
+        console.log(component.href);
+    }
+
+    function updateProject(component) {
+        queryParams.set("idProject", component.value);
+        history.replaceState(null, null, "?"+queryParams.toString());
+        console.log(queryParams.toString());
+    }
+
+    function closeModel() {
+        projectModal.style.display = "none";
+    }
+
 </script>
 </html>

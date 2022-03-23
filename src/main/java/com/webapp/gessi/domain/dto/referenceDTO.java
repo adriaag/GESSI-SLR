@@ -11,16 +11,18 @@ public class referenceDTO implements Serializable {
     private int idRef;
     private String doi;
     private int idDL;
+    private int idProject;
     private String estado;
     private List<String> applCriteria;
     private articleDTO art;
     private digitalLibraryDTO dl;
 
 
-    public referenceDTO(int aux, String aux2, int aux3, String estado, List<String> applCriteria) {
+    public referenceDTO(int aux, String aux2, int aux3, int idProject, String estado, List<String> applCriteria) {
         this.idRef = aux;
         this.doi = aux2;
         this.idDL = aux3;
+        this.idProject = idProject;
         this.estado = estado;
         this.applCriteria = applCriteria;
     }
@@ -47,6 +49,14 @@ public class referenceDTO implements Serializable {
     @XmlElement
     public void setidDL(int idDL) {
         this.idDL = idDL;
+    }
+
+    public int getIdProject() {
+        return idProject;
+    }
+    @XmlElement
+    public void setIdProject(int idProject) {
+        this.idProject = idProject;
     }
 
     public articleDTO getArt() {

@@ -1,11 +1,13 @@
 package com.webapp.gessi.presentation;
 
+import com.webapp.gessi.domain.controllers.ProjectController;
 import com.webapp.gessi.domain.controllers.ReferenceController;
 import com.webapp.gessi.domain.controllers.criteriaController;
 import com.webapp.gessi.domain.controllers.digitalLibraryController;
 import com.webapp.gessi.domain.dto.*;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jbibtex.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,40 +15,67 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class ClientController {
     private static final String PATH_PATTERN = "^([A-z0-9-_+\\.]+.(bib))$";
+    private String previousURL = "";
 
     @RequestMapping(value=("/"))
-    public String index(){
+    public String index(@RequestParam(value = "idProject", required = false) Optional<Integer> idProject,
+                        RedirectAttributes redirectAttr,
+                        Model model) throws SQLException {
+        model.addAttribute("projectList", ProjectController.getAll());
+        model.addAttribute("idProject", idProject.orElse(-1));
+        model.addAttribute("newProject", new ProjectDTO());
+        redirectAttr.addFlashAttribute("previousURL", "/");
+        this.previousURL = "/";
         return "index";
     }
 
+    @PostMapping(value = "/newProject")
+    public String submitNewProject(@ModelAttribute("newProject") ProjectDTO projectDTO,
+                                   @ModelAttribute("previousURL") String previousURL) throws SQLException {
+        List<ProjectDTO> projectDTOList = new ArrayList<>();
+        projectDTOList.add(projectDTO);
+        ProjectController.insertRows(projectDTOList);
+        int id = ProjectController.getByName(projectDTO.getName()).getId();
+        return "redirect:" + this.previousURL + "?idProject=" + id;
+    }
+
     @GetMapping(value = "/getReference", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public String getReference(@RequestParam(name= "id") int idR , Model model){
+    public String getReference(@RequestParam(name= "id") int idR, Model model){
         referenceDTO r = ReferenceController.getReference(idR);
         model.addAttribute("ref", r);
         return "oneReference";
     }
 
     @GetMapping(value = "/getAllReferences", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public String getReferences(Model model){
-        List<referenceDTO> list = ReferenceController.getReferences();
-        model.addAttribute("referencesList", list);
-
+    public String getReferences(@RequestParam(value = "idProject") Optional<Integer> idProject,
+                                RedirectAttributes redirectAttr,
+                                Model model){
+        model.addAttribute("projectList", ProjectController.getAll());
+        List<referenceDTO> referenceDTOList = ReferenceController.getReferences(idProject.orElse(0));
+        model.addAttribute("referencesList", referenceDTOList);
         model.addAttribute("f", new referenceDTOupdate());
         model.addAttribute("ECCriteria", criteriaController.getStringListCriteriasEC());
+        model.addAttribute("newProject", new ProjectDTO());
+        redirectAttr.addFlashAttribute("previousURL", "/getAllReferences");
+        this.previousURL = "/getAllReferences";
         return "allReferences";
     }
 
     @RequestMapping(path = "/download", method = RequestMethod.GET)
-    public ResponseEntity<InputStreamResource> download() throws IOException {
-        List<referenceDTO> p = ReferenceController.getReferences();
+    public ResponseEntity<InputStreamResource> download(@RequestParam(value = "idProject") Optional<Integer> idProject) throws IOException {
+        List<referenceDTO> p = ReferenceController.getReferences(idProject.orElse(0));
         Workbook workbook = creationExcel.create(p);
         FileOutputStream fileOut = new FileOutputStream("../webapps/references.xlsx");
         workbook.write(fileOut);
@@ -61,58 +90,83 @@ public class ClientController {
                 .body(resource);
     }
 
-    @GetMapping(value = "/newReference")
-    public String askInformation(Model model) throws SQLException {
-        model.addAttribute("DLnames", digitalLibraryController.getNames());
+    @RequestMapping(value = "/newReference")
+    public String askInformation(@RequestParam(value = "idProject", required = false) Optional<Integer> idProject,
+                                 @ModelAttribute("errorFile") String errorFile,
+                                 @ModelAttribute("importBool") String importBool,
+                                 @ModelAttribute("newDL") String newDL,
+                                 @ModelAttribute("newName") String newName,
+                                 @ModelAttribute("errors") importErrorDTO errors,
+                                 @ModelAttribute("refsImp") String refsImp,
+                                 @ModelAttribute("DLnew") String DLnew,
+                                 RedirectAttributes redirectAttr,
+                                 Model model) throws SQLException {
+        model.addAttribute("projectList", ProjectController.getAll());
+        model.addAttribute("idProject", idProject.orElse(-1));
         model.addAttribute("f", new formDTO());
-        model.addAttribute("importBool", null);
+        model.addAttribute("DLnames", digitalLibraryController.getNames());
+        model.addAttribute("newProject", new ProjectDTO());
+        redirectAttr.addFlashAttribute("previousURL", "/newReference");
+        this.previousURL = "/newReference";
         return "newReference";
     }
 
     @PostMapping(value = "/new")
-    public String submit( @ModelAttribute("f") formDTO f, Model model)
+    public String submit(@ModelAttribute("f") formDTO f, RedirectAttributes redirectAttr)
             throws ParseException, SQLException, IOException {
         List<String> names = digitalLibraryController.getNames();
         List<importErrorDTO> errors;
         String nameFile = f.getFile().getOriginalFilename();
         if(!nameFile.matches(PATH_PATTERN)) {
-            model.addAttribute("errorFile", "The file selected has to be a BIB file.");
-            model.addAttribute("importBool", false);
+            redirectAttr.addFlashAttribute("errorFile", "The file selected has to be a BIB file.");
+            redirectAttr.addFlashAttribute("importBool", false);
         }
         else {
-            errors = ReferenceController.addReference(f.getdlNum(), f.getFile());
+            errors = ReferenceController.addReference(f.getdlNum(), f.getIdProject(), f.getFile());
             int num = Integer.parseInt(f.getdlNum());
-            model.addAttribute("newDL", f.getdlNum());
-            model.addAttribute("newName", StringUtils.cleanPath(nameFile));
-            model.addAttribute("errors", errors);
+            redirectAttr.addFlashAttribute("newDL", f.getdlNum());
+            redirectAttr.addFlashAttribute("newName", StringUtils.cleanPath(nameFile));
+            redirectAttr.addFlashAttribute("errors", errors);
             if (ReferenceController.getReferencesImport() > 0) {
-                model.addAttribute("refsImp", ReferenceController.getReferencesImport());
+                redirectAttr.addFlashAttribute("refsImp", ReferenceController.getReferencesImport());
                 ReferenceController.resetReferencesImport();
             }
-            model.addAttribute("importBool", true);
-            model.addAttribute("errorFile", "");
-            model.addAttribute("DLnew", names.get(num - 1));
+            redirectAttr.addFlashAttribute("importBool", true);
+            redirectAttr.addFlashAttribute("errorFile", "");
+            redirectAttr.addFlashAttribute("DLnew", names.get(num - 1));
         }
-        model.addAttribute("DLnames", names);
-        model.addAttribute("f", new formDTO());
-        return "newReference";
+        return "redirect:/newReference?idProject=" + f.getIdProject();
     }
 
     @GetMapping(value = "/errors")
-    public String importErrors(Model model) throws SQLException, IOException, ParseException {
+    public String importErrors(@RequestParam(value = "idProject") Optional<Integer> idProject,
+                               RedirectAttributes redirectAttr,
+                               Model model) throws SQLException, IOException, ParseException {
+        model.addAttribute("projectList", ProjectController.getAll());
+        model.addAttribute("idProject", idProject.orElse(-1));
         model.addAttribute("errorsList", ReferenceController.getAllErrors());
+        model.addAttribute("newProject", new ProjectDTO());
+        redirectAttr.addFlashAttribute("previousURL", "/errors");
+        this.previousURL = "/errors";
         return "importErrors";
     }
 
     @GetMapping(value = "/editCriteria")
-    public String askInformationCriteria(Model model){
+    public String askInformationCriteria(@RequestParam(value = "idProject", required = false) Optional<Integer> idProject,
+                                         RedirectAttributes redirectAttr,
+                                         Model model){
+        model.addAttribute("idProject", idProject.orElse(-1));
+        List<ProjectDTO> projectDTOList = ProjectController.getAll();
+        model.addAttribute("projectList", projectDTOList);
         List<criteriaDTO> lIC = criteriaController.getCriteriasIC();
-        List<criteriaDTO> lEC = criteriaController.getCriteriasEC();
         model.addAttribute("listIC", lIC);
+        List<criteriaDTO> lEC = criteriaController.getCriteriasEC();
         model.addAttribute("listEC", lEC);
         model.addAttribute("f", new criteriaDTO());
-
         model.addAttribute("errorM", "");
+        model.addAttribute("newProject", new ProjectDTO());
+        redirectAttr.addFlashAttribute("previousURL", "/editCriteria");
+        this.previousURL = "/editCriteria";
         return "editCriteria";
     }
 
@@ -150,15 +204,23 @@ public class ClientController {
     }
 
     @RequestMapping(value=("/resetView"))
-    public String reset(){
+    public String reset(@RequestParam(value = "idProject") Optional<Integer> idProject,
+                        @ModelAttribute("mes") String mes,
+                        RedirectAttributes redirectAttr,
+                        Model model){
+        model.addAttribute("projectList", ProjectController.getAll());
+        model.addAttribute("idProject", idProject.orElse(-1));
+        model.addAttribute("newProject", new ProjectDTO());
+        redirectAttr.addFlashAttribute("previousURL", "/resetView");
+        this.previousURL = "/resetView";
         return "resetBD";
     }
 
     @GetMapping(value=("/reset"))
-    public String resetBD(Model model){
+    public String resetBD(RedirectAttributes redirectAttr){
         ReferenceController.reset();
-        model.addAttribute("mes","The database has been reset!");
-        return "resetBD";
+        redirectAttr.addFlashAttribute("mes", "The database has been reset!");
+        return "redirect:/resetView";
     }
 
 }

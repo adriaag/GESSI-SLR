@@ -31,13 +31,13 @@ public class article {
     static Key articleKey = new Key("article");
     static Key affiliationKey = new Key("affiliation");
 
-    public static Timestamp importar( String idDL, Statement s, MultipartFile file) throws IOException, ParseException,SQLException {
+    public static Timestamp importar( String idDL, int idProject, Statement s, MultipartFile file) throws IOException, ParseException,SQLException {
 
         //Reader reader = new FileReader(path);
         //Parametro MultipartFile file
         ByteArrayInputStream stream0 = new ByteArrayInputStream(file.getBytes());
-        String myString = IOUtils.toString(stream0, "UTF-8");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(myString.getBytes(StandardCharsets.UTF_8)), "utf-8"));
+        String myString = IOUtils.toString(stream0, StandardCharsets.UTF_8);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(myString.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
 
         BibTeXParser bibtexParser = new BibTeXParser(); //add Exception
         BibTeXDatabase database = bibtexParser.parse(reader);
@@ -50,7 +50,7 @@ public class article {
         if(!entries.isEmpty()) referencesImported = entries.size();
         for(BibTeXEntry entry : entries){
             System.out.println("Cite key:" + entry.getKey());
-            String doi = addArticle(idDL, s, entry, entriesPriority);
+            String doi = addArticle(idDL, idProject, s, entry, entriesPriority);
             if (!doi.contains("ERROR")) {
                 if (authorsToInsert != null) {
                     Integer[] idsResearchers = researcher.insertRows(authorsToInsert, s);
@@ -72,7 +72,7 @@ public class article {
     //Guarda las referencias que no se pueden guardar en la BD
     public static Timestamp iniCheck(Statement sta, String idDL, MultipartFile file) throws IOException, SQLException {
         ByteArrayInputStream stream0 = new ByteArrayInputStream(file.getBytes());
-        String myString = IOUtils.toString(stream0, "UTF-8");
+        String myString = IOUtils.toString(stream0, StandardCharsets.UTF_8);
         ByteArrayInputStream stream = new ByteArrayInputStream(myString.getBytes(StandardCharsets.UTF_8));
 
         Scanner sc = new Scanner(stream);
@@ -129,7 +129,7 @@ public class article {
     }
 
 //Devuelve un string de todos los autores de la referencia
-    static String addArticle(String idDL, Statement s, BibTeXEntry entry, int entriesPriority) throws SQLException {
+    static String addArticle(String idDL, int idProject, Statement s, BibTeXEntry entry, int entriesPriority) throws SQLException {
         String doi;
         if (entry.getField(BibTeXEntry.KEY_DOI) == null) {
             String str = entry.getKey().toString();
@@ -159,17 +159,20 @@ public class article {
             String apCriteria = null;
             if (rs.next()) {
                 updateRow(rs, entry, s, doi); //añadir informacion en los valores null del article
-                ResultSet duplicate = reference.isDuplicate(s, entriesPriority, doi);
-                if (duplicate.next()) {
+                ResultSet duplicate = Reference.isDuplicate(s, entriesPriority, doi);
+                if (duplicate == null)
+                    System.err.println("Error Duplicate");
+                else if (duplicate.next()) {
                     estado = "out";
                     apCriteria = "EC1";
                 }
                 else
-                    reference.updateEstateReferences(s, doi);
+                    Reference.updateEstateReferences(s, doi);
             }
             else
                 insertRow(s, entry, doi);                                       //create article nuevo
-            int idRef = reference.insertRow(s, doi, idDL, estado);
+
+            int idRef = Reference.insertRow(s, doi, idDL, estado, idProject);
             if (idRef == -1) return "ERROR: This reference already exists";
             else if (idRef == -2) return "ERROR: The reference had problems";
             else if (apCriteria != null)
@@ -253,7 +256,7 @@ public class article {
                 String aux1 = abstractE.toUserString().replaceAll("[']", "").replaceAll("'", "''");
                 //El simbolo ' dentro del abstract provoca errores
                 atributsOfRow.append(", abstract");
-                valuesOfRow.append(", \'").append(aux1.replaceAll("[{-}]", "").replaceAll("'", "''")).append("\'");
+                valuesOfRow.append(", '").append(aux1.replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
             }
             authorsToInsert = null;
             if (authors != null)
@@ -401,7 +404,7 @@ public class article {
             s.execute("create table articles( doi varchar(50), type varchar(50), citeKey varchar(50), " +
                     "idVen int, title varchar(200), keywords varchar(1000), " +
                     "number varchar(10), numpages INT, pages varchar(20), volume varchar(20), año INT, abstract varchar(6000), " +
-                    "PRIMARY KEY (doi), CONSTRAINT VEN_FK_R FOREIGN KEY (idVen) REFERENCES venues (idVen))");
+                    "PRIMARY KEY (doi), CONSTRAINT VEN_FK_R FOREIGN KEY (idVen) REFERENCES venues (idVen) ON DELETE CASCADE)");
             //type y citekey not null
             System.out.println("Created table articles");
         } catch (SQLException e  ) {

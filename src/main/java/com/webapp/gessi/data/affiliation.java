@@ -10,8 +10,8 @@ public class affiliation {
     public static void createTable(Statement s) {
         try {
             s.execute("create table affiliations(idCom int, idA varchar(50), PRIMARY KEY (idCom,idA), " +
-                    "CONSTRAINT COM_FK_AF FOREIGN KEY (idCom) REFERENCES companies( idCom )," +
-                    "CONSTRAINT ART_FK_AF FOREIGN KEY (idA) REFERENCES articles( doi ))");
+                    "CONSTRAINT COM_FK_AF FOREIGN KEY (idCom) REFERENCES companies( idCom ) ON DELETE CASCADE," +
+                    "CONSTRAINT ART_FK_AF FOREIGN KEY (idA) REFERENCES articles( doi ) ON DELETE CASCADE)");
             System.out.println("Created table affiliations");
         } catch (SQLException t  ){
             if (t.getSQLState().equals("X0Y32"))

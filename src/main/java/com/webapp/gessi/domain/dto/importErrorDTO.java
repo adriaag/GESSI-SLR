@@ -10,6 +10,8 @@ public class importErrorDTO {
     private String doi;
     private String BibTex;
 
+    public importErrorDTO() {}
+
     public importErrorDTO(Timestamp t, int idDL, String doi, String bibTex) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
         LocalDateTime ldt = t.toLocalDateTime();
@@ -17,6 +19,10 @@ public class importErrorDTO {
         this.idDL = idDL;
         this.doi = doi;
         this.BibTex = bibTex;
+    }
+
+    static importErrorDTO of() {
+        return new importErrorDTO();
     }
 
     public int getIdDL() {
