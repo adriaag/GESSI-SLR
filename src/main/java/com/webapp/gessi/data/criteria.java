@@ -46,7 +46,7 @@ public class criteria {
             s.execute(query);
             System.out.println("Inserted row in criteria");
             s.close();
-            return idICEC;
+            return null;
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) {
                 return "Identifier "+ idICEC + " already exists";

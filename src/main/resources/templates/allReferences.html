@@ -108,15 +108,15 @@
 
                 <td >
                     <th:block th:with="name = ${i.getArt().getTitle()}">
-                        <div th:if="${#strings.length(name)}>=65" th:text="${#strings.substring(name,0,65)}+'...'" />
-                        <div th:unless="${#strings.length(name)}>=65" th:text="${name}" />
+                        <div th:if="${#strings.length(name)}>=65" th:text="${#strings.substring(name,0,65)}+'...'"></div>
+                        <div th:unless="${#strings.length(name)}>=65" th:text="${name}"></div>
                     </th:block>
                 </td>
 
                 <td th:if="${i.getArt().getVen() != null }" >
                     <th:block th:with="name = ${i.getArt().getVen().getName()}">
-                        <div th:if="${#strings.length(name)}>=45" th:text="${#strings.substring(name,0,45)}+'...'" />
-                        <div th:unless="${#strings.length(name)}>=45" th:text="${name}" />
+                        <div th:if="${#strings.length(name)}>=45" th:text="${#strings.substring(name,0,45)}+'...'"></div>
+                        <div th:unless="${#strings.length(name)}>=45" th:text="${name}"></div>
                     </th:block>
                 </td>
                 <td th:unless="${i.getArt().getVen() != null }"> <p></p></td>
@@ -209,10 +209,13 @@
 
     const selectType =  $('select[id="idProject"]');
     const modal = document.getElementById("exampleModal");
+    const editForm = document.getElementById("myForm");
 
     var queryParams = new URLSearchParams(window.location.search);
-    if (queryParams.has("idProject"))
+    if (queryParams.has("idProject")) {
         selectType[0].value = queryParams.get("idProject");
+        editForm.action = editForm.action + "?" + queryParams.toString();
+    }
 
     function onClick(component, url) {
         component.href = url + "?" + queryParams.toString();
@@ -220,7 +223,7 @@
 
     function updateProject(component) {
         queryParams.set("idProject", component.value);
-        history.replaceState(null, null, "?"+queryParams.toString());
+        history.replaceState(null, null, "?" + queryParams.toString());
         location.reload();
     }
 
