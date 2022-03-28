@@ -12,8 +12,12 @@ import java.util.List;
 public class criteria {
     public static boolean createTable(Statement s) {
         try {
-            s.execute("create TABLE criteria( idICEC VARCHAR(5) , text VARCHAR(1000), type VARCHAR(9), " +
-                    "PRIMARY KEY (idICEC), CONSTRAINT type_chk CHECK (type IN ( 'inclusion', 'exclusion')))");
+            s.execute("create TABLE criteria(" +
+                    "id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+                    "idICEC VARCHAR(5), text VARCHAR(1000), " +
+                    "type VARCHAR(9), " +
+                    "PRIMARY KEY (idICEC), " +
+                    "CONSTRAINT type_chk CHECK (type IN ( 'inclusion', 'exclusion')))");
             System.out.println("Created table Criteria");
             return true;
 
@@ -40,7 +44,7 @@ public class criteria {
             Connection conn = ctx.getBean(Connection.class);
             Statement s;
 
-            String query = "INSERT INTO criteria(idICEC, text , type ) VALUES ('" + idICEC + "', '" + text + "','" + type + "')";
+            String query = "INSERT INTO criteria(idICEC, text , type) VALUES ('" + idICEC + "', '" + text + "','" + type + "')";
             System.out.println(query);
             s = conn.createStatement();
             s.execute(query);
@@ -79,9 +83,9 @@ public class criteria {
                 System.out.println(number++);
                 System.out.println(rs.getFetchSize());
 
-                String idICEC = rs.getString(1);
-                String text = rs.getString(2);
-                String type = rs.getString(3);
+                String idICEC = rs.getString(2);
+                String text = rs.getString(3);
+                String type = rs.getString(4);
                 System.out.println(idICEC + " " + text + " " + type);
 
                 criteriaDTO NewCri = new criteriaDTO(idICEC,text,type);
@@ -114,7 +118,7 @@ public class criteria {
 
     private static ResultSet getAllEC(Statement s) throws SQLException {
         ResultSet rs;
-        rs = s.executeQuery("SELECT * FROM criteria where type='exclusion'");
+        rs = s.executeQuery("SELECT * FROM criteria where type = 'exclusion'");
         return rs;
     }
 
@@ -180,7 +184,7 @@ public class criteria {
 
     public static void insertRowIni(Connection conn, ArrayList<Statement> statements) throws SQLException {
         PreparedStatement psInsert;
-        psInsert = conn.prepareStatement("insert into criteria values (?, ?, ?)");
+        psInsert = conn.prepareStatement("insert into criteria(idICEC, text , type) values (?, ?, ?)");
         statements.add(psInsert);
 
         psInsert.setString(1, "EC1");
