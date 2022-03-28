@@ -8,7 +8,10 @@ import com.webapp.gessi.domain.dto.*;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jbibtex.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -77,20 +80,23 @@ public class ClientController {
     }
 
     @RequestMapping(path = "/download", method = RequestMethod.GET)
-    public ResponseEntity<InputStreamResource> download(@RequestParam(value = "idProject") Optional<Integer> idProject) throws IOException {
-        List<referenceDTO> p = ReferenceController.getReferences(idProject.orElse(0));
-        Workbook workbook = creationExcel.create(p);
-        FileOutputStream fileOut = new FileOutputStream("../webapps/references.xlsx");
-        workbook.write(fileOut);
-        fileOut.close();
-        File file = new File("../webapps/references.xlsx");
-        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+    public ResponseEntity<ByteArrayResource> download(@RequestParam(value = "idProject") Optional<Integer> idProject) throws IOException {
+        try {
+            List<referenceDTO> p = ReferenceController.getReferences(idProject.orElse(0));
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            Workbook workbook = creationExcel.create(p);
+            workbook.write(stream);
+            workbook.close();
+            File file = new File("../webapps/references.xlsx");
+            HttpHeaders header = new HttpHeaders();
+            header.setContentType(new MediaType("application", "force-download"));
+            header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ProductTemplate.xlsx");
 
-        return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=" + "references_refman.xlsx")
-                .contentLength(file.length())
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
+            return new ResponseEntity<>(new ByteArrayResource(stream.toByteArray()), header, HttpStatus.CREATED);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @RequestMapping(value = "/newReference")

@@ -91,7 +91,7 @@ public class creationExcel {
             cell.setCellStyle(stRow);
 
             cell = row.createCell(5);
-            cell.setCellValue(String.join(", ", ref.getApplCriteria()));
+            cell.setCellValue(String.join(", ", ref.getApplCriteriaString()));
             cell.setCellStyle(stRow);
 
             researcherDTO[] authorsList = art.getResearchers();
