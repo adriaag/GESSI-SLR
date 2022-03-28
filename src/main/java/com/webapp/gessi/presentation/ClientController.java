@@ -43,12 +43,15 @@ public class ClientController {
 
     @PostMapping(value = "/newProject")
     public String submitNewProject(@ModelAttribute("newProject") ProjectDTO projectDTO,
-                                   @ModelAttribute("previousURL") String previousURL) throws SQLException {
+                                   @ModelAttribute("previousURL") String previousURL,
+                                   HttpServletRequest request) throws SQLException {
         List<ProjectDTO> projectDTOList = new ArrayList<>();
         projectDTOList.add(projectDTO);
         ProjectController.insertRows(projectDTOList);
         int id = ProjectController.getByName(projectDTO.getName()).getId();
-        return "redirect:" + this.previousURL + "?idProject=" + id;
+        String[] uriParts = request.getHeader("Referer").split("/");
+        String url = uriParts[uriParts.length - 1].split("\\?")[0];
+        return "redirect:" + url + "?idProject=" + id;
     }
 
     @GetMapping(value = "/getReference", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
@@ -211,14 +214,23 @@ public class ClientController {
         model.addAttribute("projectList", ProjectController.getAll());
         model.addAttribute("idProject", idProject.orElse(-1));
         model.addAttribute("newProject", new ProjectDTO());
+        ProjectDTO projectDTO = new ProjectDTO(idProject.orElse(-1), null);
+        model.addAttribute("projectDTO", projectDTO);
         redirectAttr.addFlashAttribute("previousURL", "/resetView");
         this.previousURL = "/resetView";
         return "resetBD";
     }
 
-    @GetMapping(value=("/reset"))
-    public String resetBD(RedirectAttributes redirectAttr){
-        ReferenceController.reset();
+    @PostMapping(value=("/reset"))
+    public String resetBD(@ModelAttribute("projectDTO") ProjectDTO projectDTO,
+                          RedirectAttributes redirectAttr) throws SQLException {
+        if (projectDTO.getId() < 1)
+            ReferenceController.reset();
+        else {
+            List<ProjectDTO> projectDTOList = new ArrayList<>();
+            projectDTOList.add(projectDTO);
+            ProjectController.deleteRows(projectDTOList);
+        }
         redirectAttr.addFlashAttribute("mes", "The database has been reset!");
         return "redirect:/resetView";
     }

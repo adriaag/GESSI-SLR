@@ -27,8 +27,7 @@ public class ProjectController {
     public static void deleteRows(List<ProjectDTO> projectDTOList) throws SQLException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
-        Statement s;
-        s = conn.createStatement();
+        Statement s = conn.createStatement();
         projectDTOList.forEach(value -> Project.deleteRow(s, value.getId()));
         conn.commit();
     }

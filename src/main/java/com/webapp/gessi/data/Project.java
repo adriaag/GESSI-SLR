@@ -64,8 +64,12 @@ public class Project {
     }
 
     public static void deleteRow(Statement s, int id) {
+        String query = "DELETE FROM project where id = ?";
         try {
-            s.execute("DELETE FROM project where id = " + id);
+            Connection conn = s.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, id);
+            preparedStatement.execute();
             System.out.println("Deleted row " + id + " in project");
         } catch (SQLException e) {
             while (e != null) {
