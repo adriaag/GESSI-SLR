@@ -11,9 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class creationExcel {
     private static String[] columnHeadings = {"#ref", /*dl*/ "DL-Name", "Year", /*article*/ "DOI" ,   /*researchers*/
@@ -65,7 +63,7 @@ public class creationExcel {
         for (referenceDTO ref : references) {
             Row row = sheet.createRow(rowNum++);
 
-            String auxEst = ref.getEstado();
+            String auxEst = ref.getState();
             CellStyle stRow = style;
             if (auxEst != null && (auxEst.equals("duplicated") || auxEst.equals("out"))) stRow = styleD;
 

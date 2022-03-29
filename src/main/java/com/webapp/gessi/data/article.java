@@ -156,7 +156,7 @@ public class article {
             doi = doi.replaceAll("[{-}]", "").replaceAll("'", "''");
             ResultSet rs = getArticle(s, doi);
             String estado = null;
-            String apCriteria = null;
+            int apCriteria = 0;
             if (rs.next()) {
                 updateRow(rs, entry, s, doi); //añadir informacion en los valores null del article
                 ResultSet duplicate = Reference.isDuplicate(s, entriesPriority, doi);
@@ -164,7 +164,7 @@ public class article {
                     System.err.println("Error Duplicate");
                 else if (duplicate.next()) {
                     estado = "out";
-                    apCriteria = "EC1";
+                    apCriteria = 1;
                 }
                 else
                     Reference.updateEstateReferences(s, doi);
@@ -175,7 +175,7 @@ public class article {
             int idRef = Reference.insertRow(s, doi, idDL, estado, idProject);
             if (idRef == -1) return "ERROR: This reference already exists";
             else if (idRef == -2) return "ERROR: The reference had problems";
-            else if (apCriteria != null)
+            else if (apCriteria != 0)
                 Exclusion.insertRow(s, apCriteria, idRef);
             return doi;
         }

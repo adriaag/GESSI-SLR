@@ -91,7 +91,7 @@
         </thead>
         <tbody>
             <tr th:each="i, iterStatx : ${referencesList}"
-                th:style="${i.getEstado()} == 'in' ? 'background-color:  #BDECD6' : (${i.getEstado()} == 'out'?'background-color: #FFEBEE': 'background-color: #E1F5FE')">
+                th:style="${i.getState()} == 'in' ? 'background-color:  #BDECD6' : (${i.getState()} == 'out'?'background-color: #FFEBEE': 'background-color: #E1F5FE')">
 
                 <td th:text="${i.getArt().getDoi()}"></td>
                 <td th:text="${i.getIdRef()}"></td>
@@ -120,7 +120,7 @@
                     </th:block>
                 </td>
                 <td th:unless="${i.getArt().getVen() != null }"> <p></p></td>
-                <td th:text="${i.getEstado()}"></td>
+                <td th:text="${i.getState()}"></td>
                 <td th:text="${i.getApplCriteriaString()}"></td>
                 <td th:unless="${i.getArt().getVen() != null }"> <p></p></td>
                 <td>
@@ -130,7 +130,7 @@
                 </td>
                 <td>
                     <button id="modalButton" type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal" data-target="#exampleModal"
-                            th:attr="onclick=|editReference(this, &quot;${i.getIdRef()}&quot;, &quot;${i.getEstado()}&quot;, &quot;${i.getApplCriteriaString()}&quot;)|"><i class="fa fa-edit"></i>
+                            th:attr="onclick=|editReference(this, &quot;${i.getIdRef()}&quot;, &quot;${i.getState()}&quot;, &quot;${i.getApplCriteriaString()}&quot;)|"><i class="fa fa-edit"></i>
                     </button>
                 </td>
             </tr>
@@ -155,7 +155,7 @@
                     </div>
                     <div class="form-group">
                         <label for="state">State</label>
-                        <select id="state" onchange="updateEditCriteria(this)" required th:field="*{estado}" class="form-control">
+                        <select id="state" onchange="updateEditCriteria(this)" required th:field="*{state}" class="form-control">
                             <option value="" hidden>Select a type</option>
                             <option value="">None</option>
                             <option value="in">In</option>
@@ -166,8 +166,8 @@
                         <label for="applCriteria">Application criteria</label>
                         <select multiple required id="applCriteria" th:field="*{applCriteria}" class="form-control">
                             <option value="" hidden>Select a Criteria</option>
-                            <div th:each="x, iterStatx : ${ECCriteria}">
-                                <option th:value="${x}" th:text="${x}"></option>
+                            <div th:each="x : ${ECCriteria}">
+                                <option th:value="${x.getId}" th:text="${x.getName}"></option>
                             </div>
                         </select>
                     </div>

@@ -113,10 +113,7 @@ public class Reference {
                     Statement s1 = conn.createStatement();
                     exclusionDTOList = Exclusion.getByIdRef(s1, idR);
                 }
-                List<String> applCriteria = null;
-                if (exclusionDTOList != null)
-                    applCriteria = exclusionDTOList.stream().map(ExclusionDTO::getIdICEC).collect(Collectors.toList());
-                referenceDTO NewRef = new referenceDTO( idR, doiR, dlR, idProject, estado, applCriteria);
+                referenceDTO NewRef = new referenceDTO( idR, doiR, dlR, idProject, estado, exclusionDTOList);
                 obtainReferenceDTO(conn, NewRef, doiR, dlR);
 
                 refList.add(NewRef);
@@ -197,9 +194,9 @@ public class Reference {
         article.createTable(s);
         researcher.createTable(s);
         Project.createTable(s);
-        if (criteria.createTable(s))
+        if (Criteria.createTable(s))
             //insert duplicate exclusion
-            criteria.insertRowIni(conn,statements);
+            Criteria.insertRowIni(conn,statements);
         Reference.createTable(s);
         Exclusion.createTable(s);
         author.createTable(s);
@@ -218,7 +215,7 @@ public class Reference {
         researcher.dropTable(s);
         article.dropTable(s);
         venue.dropTable(s);
-        criteria.dropTable(s);
+        Criteria.dropTable(s);
         digitalLibrary.dropTable(s);
         Project.dropTable(s);
     }
@@ -316,13 +313,10 @@ public class Reference {
         ResultSet rs;
         rs = s.executeQuery("SELECT * FROM referencias where idRef=" + idR);
         rs.next();
-        referenceDTO referenceDTO = new referenceDTO(rs.getInt(1), rs.getString(2),
-                rs.getInt(3), rs.getInt(4), rs.getString(5), null);
+        referenceDTO referenceDTO = new referenceDTO(rs.getInt("idRef"), rs.getString("doi"),
+                rs.getInt("idDL"), rs.getInt("idProject"), rs.getString("state"), null);
         List<ExclusionDTO> exclusionDTOList = Exclusion.getByIdRef(s, idR);
-        List<String> applCriteria = null;
-        if (exclusionDTOList != null && !exclusionDTOList.isEmpty())
-            applCriteria = exclusionDTOList.stream().map(ExclusionDTO::getIdICEC).collect(Collectors.toList());
-        referenceDTO.setApplCriteria(applCriteria);
+        referenceDTO.setExclusionDTOList(exclusionDTOList);
         return referenceDTO;
     }
 
@@ -365,8 +359,10 @@ public class Reference {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setString(1, doi);
             ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            Exclusion.insertRow(s, "EC1", resultSet.getInt(1));
+            if (resultSet.next())
+                Exclusion.insertRow(s, 1, resultSet.getInt("idRef"));
+            else
+                System.err.println("Hola");
         }
         catch (SQLException e) {
             while (e != null) {

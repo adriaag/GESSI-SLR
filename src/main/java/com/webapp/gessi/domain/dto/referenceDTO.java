@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @XmlRootElement(name = "reference")
 public class referenceDTO implements Serializable {
@@ -12,19 +13,19 @@ public class referenceDTO implements Serializable {
     private String doi;
     private int idDL;
     private int idProject;
-    private String estado;
-    private List<String> applCriteria;
+    private String state;
+    private List<ExclusionDTO> exclusionDTOList;
     private articleDTO art;
     private digitalLibraryDTO dl;
 
 
-    public referenceDTO(int aux, String aux2, int aux3, int idProject, String estado, List<String> applCriteria) {
-        this.idRef = aux;
-        this.doi = aux2;
-        this.idDL = aux3;
+    public referenceDTO(int idRef, String doi, int idDL, int idProject, String state, List<ExclusionDTO> exclusionDTOList) {
+        this.idRef = idRef;
+        this.doi = doi;
+        this.idDL = idDL;
         this.idProject = idProject;
-        this.estado = estado;
-        this.applCriteria = applCriteria;
+        this.state = state;
+        this.exclusionDTOList = exclusionDTOList;
     }
 
     public int getIdRef() {
@@ -75,25 +76,27 @@ public class referenceDTO implements Serializable {
         this.dl = dl;
     }
 
-    public String getEstado() {
-        return estado;
+    public String getState() {
+        return state;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setState(String state) {
+        this.state = state;
     }
 
-    public List<String> getApplCriteria() {
-        return applCriteria;
+    public List<ExclusionDTO> getExclusionDTOList() {
+        return exclusionDTOList;
     }
 
     public String getApplCriteriaString() {
-       if (this.applCriteria != null)
-           return String.join(", ", this.applCriteria);
+       if (this.exclusionDTOList != null) {
+           List<String> exclusionList = this.exclusionDTOList.stream().map(ExclusionDTO::getNameICEC).collect(Collectors.toList());
+           return String.join(", ", exclusionList);
+       }
        return "";
     }
 
-    public void setApplCriteria(List<String> applCriteria) {
-        this.applCriteria = applCriteria;
+    public void setExclusionDTOList(List<ExclusionDTO> exclusionDTOList) {
+        this.exclusionDTOList = exclusionDTOList;
     }
 }

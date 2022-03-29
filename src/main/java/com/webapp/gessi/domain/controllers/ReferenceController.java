@@ -54,23 +54,23 @@ public class ReferenceController {
         Reference.create();
     }
 
-    public static void updateReference(int idRef, String estado, String applCriteria) throws SQLException {
+    public static void updateReference(int idRef, String estado, List<Integer> applCriteria) throws SQLException {
         Reference.update(idRef, estado);
-        List<String> applCriteriaList = new LinkedList<>(Arrays.asList(applCriteria.split(",")));
-        List<String> copyApplCriteriaList = new LinkedList<>(Arrays.asList(applCriteria.split(",")));
+        List<Integer> applCriteriaList = new LinkedList<>(applCriteria);
+        List<Integer> copyApplCriteriaList = new LinkedList<>(applCriteria);
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Statement s = ctx.getBean(Connection.class).createStatement();
-        List<String> currentExclusionDTOList = ExclusionController.getByIdRef(s, idRef).stream().map(ExclusionDTO::getIdICEC).collect(Collectors.toCollection(LinkedList::new));
+        List<Integer> currentExclusionDTOList = ExclusionController.getByIdRef(s, idRef).stream().map(ExclusionDTO::getIdICEC).collect(Collectors.toCollection(LinkedList::new));
         currentExclusionDTOList.forEach(applCriteriaList::remove);
         copyApplCriteriaList.forEach(currentExclusionDTOList::remove);
         if (!applCriteriaList.isEmpty()) {
             List<ExclusionDTO> exclusionDTOList = new ArrayList<>();
-            applCriteriaList.forEach(value -> exclusionDTOList.add(new ExclusionDTO(idRef, value)));
+            applCriteriaList.forEach(value -> exclusionDTOList.add(new ExclusionDTO(idRef, value, null)));
             ExclusionController.insertRows(exclusionDTOList);
         }
         if (!currentExclusionDTOList.isEmpty()) {
             List<ExclusionDTO> exclusionDTOList = new ArrayList<>();
-            currentExclusionDTOList.forEach(value -> exclusionDTOList.add(new ExclusionDTO(idRef, value)));
+            currentExclusionDTOList.forEach(value -> exclusionDTOList.add(new ExclusionDTO(idRef, value, null)));
             ExclusionController.deleteRows(exclusionDTOList);
         }
     }

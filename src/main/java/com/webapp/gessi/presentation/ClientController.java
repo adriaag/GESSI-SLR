@@ -7,9 +7,7 @@ import com.webapp.gessi.domain.controllers.digitalLibraryController;
 import com.webapp.gessi.domain.dto.*;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jbibtex.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -66,7 +64,7 @@ public class ClientController {
         List<referenceDTO> referenceDTOList = ReferenceController.getReferences(idProject.orElse(0));
         model.addAttribute("referencesList", referenceDTOList);
         model.addAttribute("f", new referenceDTOupdate());
-        model.addAttribute("ECCriteria", criteriaController.getStringListCriteriasEC());
+        model.addAttribute("ECCriteria", criteriaController.getCriteriasEC());
         model.addAttribute("newProject", new ProjectDTO());
         return "allReferences";
     }
@@ -152,27 +150,26 @@ public class ClientController {
         model.addAttribute("idProject", idProject.orElse(-1));
         List<ProjectDTO> projectDTOList = ProjectController.getAll();
         model.addAttribute("projectList", projectDTOList);
-        List<criteriaDTO> lIC = criteriaController.getCriteriasIC();
+        List<CriteriaDTO> lIC = criteriaController.getCriteriasIC();
         model.addAttribute("listIC", lIC);
-        List<criteriaDTO> lEC = criteriaController.getCriteriasEC();
+        List<CriteriaDTO> lEC = criteriaController.getCriteriasEC();
         model.addAttribute("listEC", lEC);
-        model.addAttribute("f", new criteriaDTO());
+        model.addAttribute("f", new CriteriaDTO());
         model.addAttribute("newProject", new ProjectDTO());
         return "editCriteria";
     }
 
     @PostMapping(value = "/updateCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public static String updateCriteriaI(@PathVariable("id") String oldIdICEC,
+    public static String updateCriteria(@PathVariable("id") int id,
                                          @RequestParam(value = "idProject", required = false) Optional<Integer> idProject,
-                                         @ModelAttribute("f")  criteriaDTO f) {
-        System.out.println(oldIdICEC);
-        criteriaController.updateCriteria(oldIdICEC, f);
+                                         @ModelAttribute("f") CriteriaDTO f) {
+        criteriaController.updateCriteria(id, f);
         String url = idProject.map(integer -> "/editCriteria?idProject=" + integer).orElse("/editCriteria");
         return "redirect:" + url;
     }
 
     @PostMapping(value = "/deleteCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public static String deleteCriteria(@PathVariable("id") String idICEC,
+    public static String deleteCriteria(@PathVariable("id") int idICEC,
                                         @RequestParam(value = "idProject", required = false) Optional<Integer> idProject) throws SQLException {
         criteriaController.deleteCriteria(idICEC);
         String url = idProject.map(integer -> "/editCriteria?idProject=" + integer).orElse("/editCriteria");
@@ -180,10 +177,10 @@ public class ClientController {
     }
 
     @PostMapping(value=("/editCriteria"))
-    public String editCriteria(@ModelAttribute("f") criteriaDTO f,
+    public String editCriteria(@ModelAttribute("f") CriteriaDTO f,
                                HttpServletRequest request,
                                RedirectAttributes redirectAttr){
-        String messageError = criteriaController.addCriteria(f.getIdICEC(),f.getText(),f.getType());
+        String messageError = criteriaController.addCriteria(f.getName(),f.getText(),f.getType());
         redirectAttr.addFlashAttribute("errorM", messageError);
         String[] uriParts = request.getHeader("Referer").split("/");
         String url = uriParts[uriParts.length - 1];
@@ -193,8 +190,7 @@ public class ClientController {
     @PostMapping(value=("/editReference"))
     public String editReference(@RequestParam(value = "idProject") int idProject,
                                 @ModelAttribute("f") referenceDTOupdate f) throws SQLException {
-        if (f.getApplCriteria() == null) f.setApplCriteria("");
-        ReferenceController.updateReference(f.getId(), f.getEstado(), f.getApplCriteria());
+        ReferenceController.updateReference(f.getId(), f.getState(), f.getApplCriteria());
         return "redirect:/getAllReferences?idProject=" + idProject;
     }
 

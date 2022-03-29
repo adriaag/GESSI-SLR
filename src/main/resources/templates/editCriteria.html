@@ -59,7 +59,7 @@
         <form method="post" id="newCriteriaForm" th:action="@{/editCriteria}" th:object="${f}">
             <div class="form-group">
                 <label for="idICEC">Criteria identifier</label>
-                <input id="idICEC" placeholder="Enter identifier ICEC" required type="text" th:field="*{idICEC}" class="form-control"/>
+                <input id="idICEC" placeholder="Enter identifier ICEC" required type="text" th:field="*{name}" class="form-control"/>
             </div>
             <div class="form-group">
                 <label for="text">Description</label>
@@ -96,7 +96,7 @@
                 <td colspan="5">No Records found of Criteria. Add some...!</td>
             </tr>
             <tr th:each="c : ${listIC}">
-                <td th:text="${c.idICEC}"></td>
+                <td th:text="${c.name}"></td>
                 <td th:text="${c.text}"></td>
                 <td><button type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal" data-target="#editCriteria"
                             th:attr="onclick=|editCriteria(&quot;${c.getIdICEC()}&quot;, &quot;${c.getText}&quot;, &quot;${c.getType()}&quot;)|"><i class="fa fa-edit"></i>
@@ -119,15 +119,15 @@
                 <td colspan="5">No Records found of Criteria. Add some...!</td>
             </tr>
             <tr th:each="c : ${listEC}">
-                <td th:text="${c.idICEC}"></td>
+                <td th:text="${c.name}"></td>
                 <td th:text="${c.text}"></td>
                 <td><button type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal" data-target="#editCriteria"
                             th:attr="onclick=|editCriteria(&quot;${c.getIdICEC()}&quot;, &quot;${c.getText}&quot;, &quot;${c.getType()}&quot;)|"
-                            th:if = "${c.idICEC} != 'EC1'"><i class="fa fa-edit"></i>
+                            th:if = "${c.name} != 'EC1'"><i class="fa fa-edit"></i>
                 </button></td>
                 <td><button type="button" class="btn btn-danger eBtn" style="font-size:12px" data-toggle="modal" data-target='#deleteCriteria'
                             th:attr="onclick=|deleteCriteria(&quot;${c.getIdICEC()}&quot;)|"
-                            th:if = "${c.idICEC} != 'EC1'"><i class="fa fa-trash"></i>
+                            th:if = "${c.name} != 'EC1'"><i class="fa fa-trash"></i>
                 </button></td>
             </tr>
         </table>
@@ -145,7 +145,7 @@
                         <form action='#' id="editCriteriaForm" method="post" th:action="@{/updateCriteria/id}" th:object="${f}">
                             <div class="form-group">
                                 <label for="idCRI">Criteria identifier</label>
-                                <input id="idCRI" th:field="*{idICEC}" class="form-control"/>
+                                <input id="idCRI" th:field="*{name}" class="form-control"/>
                             </div>
                             <div class="form-group">
                                 <label for="textCRI">Description</label>
@@ -154,8 +154,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="typeCRI">Type</label>
-                                <select id="typeCRI" th:field="*{type}" class="form-control">
-                                    <option value="" hidden>Select a type</option>
+                                <select id="typeCRI" disabled th:field="*{type}" class="form-control">
+                                    <option value="" hidden="true">Select a type</option>
                                     <option value="inclusion">Inclusion</option>
                                     <option value="exclusion">Exclusion</option>
                                 </select>
