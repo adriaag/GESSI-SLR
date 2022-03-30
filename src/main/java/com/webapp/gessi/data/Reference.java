@@ -191,9 +191,9 @@ public class Reference {
             //insert rows in table
             digitalLibrary.insertRows(conn, statements);
         venue.createTable(s);
+        Project.createTable(s);
         article.createTable(s);
         researcher.createTable(s);
-        Project.createTable(s);
         if (Criteria.createTable(s))
             //insert duplicate exclusion
             Criteria.insertRowIni(conn,statements);
@@ -310,11 +310,14 @@ public class Reference {
     }
 
     private static referenceDTO find(int idR, Statement s) throws SQLException {
-        ResultSet rs;
-        rs = s.executeQuery("SELECT * FROM referencias where idRef=" + idR);
-        rs.next();
-        referenceDTO referenceDTO = new referenceDTO(rs.getInt("idRef"), rs.getString("doi"),
-                rs.getInt("idDL"), rs.getInt("idProject"), rs.getString("state"), null);
+        String query = "SELECT * FROM referencias where idRef = ?";
+        Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setInt(1, idR);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+        referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
+                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), null);
         List<ExclusionDTO> exclusionDTOList = Exclusion.getByIdRef(s, idR);
         referenceDTO.setExclusionDTOList(exclusionDTOList);
         return referenceDTO;

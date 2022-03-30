@@ -99,10 +99,10 @@
                 <td th:text="${c.name}"></td>
                 <td th:text="${c.text}"></td>
                 <td><button type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal" data-target="#editCriteria"
-                            th:attr="onclick=|editCriteria(&quot;${c.getIdICEC()}&quot;, &quot;${c.getText}&quot;, &quot;${c.getType()}&quot;)|"><i class="fa fa-edit"></i>
+                            th:attr="onclick=|editCriteria(&quot;${c.getId()}&quot;, &quot;${c.getName()}&quot;, &quot;${c.getText}&quot;, &quot;${c.getType()}&quot;)|"><i class="fa fa-edit"></i>
                 </button></td>
                 <td><button type="button" class="btn btn-danger eBtn" style="font-size:12px" data-toggle="modal" data-target='#deleteCriteria'
-                            th:attr="onclick=|deleteCriteria(&quot;${c.getIdICEC()}&quot;)|"><i class="fa fa-trash"></i>
+                            th:attr="onclick=|deleteCriteria(&quot;${c.getId()}&quot;, &quot;${c.getName()}&quot;)|"><i class="fa fa-trash"></i>
                 </button></td>
             </tr>
         </table>
@@ -122,11 +122,11 @@
                 <td th:text="${c.name}"></td>
                 <td th:text="${c.text}"></td>
                 <td><button type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal" data-target="#editCriteria"
-                            th:attr="onclick=|editCriteria(&quot;${c.getIdICEC()}&quot;, &quot;${c.getText}&quot;, &quot;${c.getType()}&quot;)|"
+                            th:attr="onclick=|editCriteria(&quot;${c.getId()}&quot;, &quot;${c.getName()}&quot;, &quot;${c.getText}&quot;, &quot;${c.getType()}&quot;)|"
                             th:if = "${c.name} != 'EC1'"><i class="fa fa-edit"></i>
                 </button></td>
                 <td><button type="button" class="btn btn-danger eBtn" style="font-size:12px" data-toggle="modal" data-target='#deleteCriteria'
-                            th:attr="onclick=|deleteCriteria(&quot;${c.getIdICEC()}&quot;)|"
+                            th:attr="onclick=|deleteCriteria(&quot;${c.getId()}&quot;, &quot;${c.getName()}&quot;)|"
                             th:if = "${c.name} != 'EC1'"><i class="fa fa-trash"></i>
                 </button></td>
             </tr>
@@ -242,21 +242,21 @@
         history.replaceState(null, null, "?"+queryParams.toString());
     }
 
-    function editCriteria(id, text, type) {
+    function editCriteria(id, name, text, type) {
         const selectInput = $('input[id="idCRI"]');
         const selectTextarea =  $('textarea[id="textCRI"]');
         const selectType =  $('select[id="typeCRI"]');
         editCriteriaForm.action = editCriteriaForm.action.replace("id", id);
-        editCriteriaName.textContent = id;
-        selectInput[0].value = id;
+        editCriteriaName.textContent = name;
+        selectInput[0].value = name;
         selectTextarea[0].value = text;
         selectType[0].value = type;
         if (queryParams.has("idProject"))
             editCriteriaForm.action = editCriteriaForm.action + "?" + queryParams.toString();
     }
-    function deleteCriteria(id) {
+    function deleteCriteria(id, name) {
         deleteCriteriaForm.action = deleteCriteriaForm.action.replace("id", id);
-        deleteCriteriaName.textContent = id;
+        deleteCriteriaName.textContent = name;
         if (queryParams.has("idProject"))
             deleteCriteriaForm.action = deleteCriteriaForm.action + "?" + queryParams.toString();
     }

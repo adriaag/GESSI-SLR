@@ -131,7 +131,8 @@ public class Project {
             PreparedStatement preparedStatement = conn.prepareStatement(query);
             preparedStatement.setString(1, name);
             ResultSet resultSet = preparedStatement.executeQuery();
-            return convertResultSetToProjectDTO(resultSet).get(0);
+            List<ProjectDTO> projectDTOList = convertResultSetToProjectDTO(resultSet);
+            return projectDTOList.size() > 0 ? projectDTOList.get(0) : null;
         } catch (SQLException e) {
             while (e != null) {
                 System.err.println("\n----- SQLException -----");

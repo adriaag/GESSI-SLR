@@ -40,14 +40,22 @@ public class ClientController {
 
     @PostMapping(value = "/newProject")
     public String submitNewProject(@ModelAttribute("newProject") ProjectDTO projectDTO,
-                                   HttpServletRequest request) throws SQLException {
+                                   HttpServletRequest request,
+                                   RedirectAttributes redirectAttr) throws SQLException {
         List<ProjectDTO> projectDTOList = new ArrayList<>();
-        projectDTOList.add(projectDTO);
-        ProjectController.insertRows(projectDTOList);
-        int id = ProjectController.getByName(projectDTO.getName()).getId();
+        ProjectDTO exist = ProjectController.getByName(projectDTO.getName());
         String[] uriParts = request.getHeader("Referer").split("/");
-        String url = uriParts[uriParts.length - 1].split("\\?")[0];
-        return "redirect:" + url + "?idProject=" + id;
+        String url = uriParts[uriParts.length - 1].split("\\?")[0].length() > 0 ? uriParts[uriParts.length - 1].split("\\?")[0] : "";
+        if (exist != null) {
+            redirectAttr.addFlashAttribute("projectError", "The project " + projectDTO.getName() + " already exist");
+        }
+        else {
+            projectDTOList.add(projectDTO);
+            ProjectController.insertRows(projectDTOList);
+            int id = ProjectController.getByName(projectDTO.getName()).getId();
+            url = url + "?idProject=" + id;
+        }
+        return "redirect:" + url;
     }
 
     @GetMapping(value = "/getReference", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
@@ -190,6 +198,7 @@ public class ClientController {
     @PostMapping(value=("/editReference"))
     public String editReference(@RequestParam(value = "idProject") int idProject,
                                 @ModelAttribute("f") referenceDTOupdate f) throws SQLException {
+        f.getApplCriteria().remove(null);
         ReferenceController.updateReference(f.getId(), f.getState(), f.getApplCriteria());
         return "redirect:/getAllReferences?idProject=" + idProject;
     }
