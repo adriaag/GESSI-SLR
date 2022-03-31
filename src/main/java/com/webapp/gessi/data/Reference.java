@@ -83,7 +83,7 @@ public class Reference {
     }
 
     public static ResultSet getAll(Statement s, int idProject) throws SQLException {
-        String query = "SELECT * FROM referencias WHERE IDPROJECT = ?";
+        String query = "SELECT * FROM REFERENCIAS WHERE IDPROJECT = ?";
         Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setInt(1, idProject);
@@ -310,17 +310,15 @@ public class Reference {
     }
 
     private static referenceDTO find(int idR, Statement s) throws SQLException {
-        String query = "SELECT * FROM referencias where idRef = ?";
+        String query = "SELECT * " +
+                "FROM REFERENCIAS JOIN EXCLUSION ON REFERENCIAS.IDREF = EXCLUSION.IDREF " +
+                "JOIN CRITERIA ON EXCLUSION.IDICEC = CRITERIA.ID " +
+                "WHERE REFERENCIAS.IDREF = ?";
         Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setInt(1, idR);
         ResultSet resultSet = preparedStatement.executeQuery();
-        resultSet.next();
-        referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
-                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), null);
-        List<ExclusionDTO> exclusionDTOList = Exclusion.getByIdRef(s, idR);
-        referenceDTO.setExclusionDTOList(exclusionDTOList);
-        return referenceDTO;
+        return convertResultSetToReferenceDTO(resultSet);
     }
 
     public static int getDL(String doi,Statement s) throws SQLException {
@@ -397,5 +395,22 @@ public class Reference {
                 e = e.getNextException();
             }
         }
+    }
+
+    private static List<ExclusionDTO> convertResultSetToExclusionDTO(ResultSet resultSet, List<ExclusionDTO> exclusionDTOList) throws SQLException {
+        while (resultSet.next()) {
+            exclusionDTOList.add(new ExclusionDTO(resultSet.getInt("idRef"), resultSet.getInt("idICEC"), resultSet.getString("name")));
+        }
+        return exclusionDTOList;
+    }
+
+    private static referenceDTO convertResultSetToReferenceDTO(ResultSet resultSet) throws SQLException {
+        List<ExclusionDTO> exclusionDTOList = new ArrayList<>();
+        resultSet.next();
+        referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
+                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), null);
+        exclusionDTOList.add(new ExclusionDTO(resultSet.getInt("idRef"), resultSet.getInt("idICEC"), resultSet.getString("name")));
+        referenceDTO.setExclusionDTOList(convertResultSetToExclusionDTO(resultSet, exclusionDTOList));
+        return referenceDTO;
     }
 }

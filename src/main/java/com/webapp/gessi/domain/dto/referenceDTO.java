@@ -3,6 +3,7 @@ package com.webapp.gessi.domain.dto;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,6 +95,14 @@ public class referenceDTO implements Serializable {
            return String.join(", ", exclusionList);
        }
        return "";
+    }
+
+    public String getExclusionDTOIdList() {
+        if (this.exclusionDTOList != null) {
+            List<Integer> exclusionList = this.exclusionDTOList.stream().map(ExclusionDTO::getIdICEC).collect(Collectors.toList());
+            return exclusionList.stream().map(String::valueOf).collect(Collectors.joining(", "));
+        }
+        return "";
     }
 
     public void setExclusionDTOList(List<ExclusionDTO> exclusionDTOList) {
