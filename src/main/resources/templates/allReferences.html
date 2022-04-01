@@ -218,7 +218,7 @@
     }
 
     function onClick(component, url) {
-        component.href = url + "?" + queryParams.toString();
+        component.href = window.location.href.indexOf("gessi-slr") > -1 ?  "/gessi-slr" +  url + "?" + queryParams.toString() : url + "?" + queryParams.toString();
     }
 
     function updateProject(component) {

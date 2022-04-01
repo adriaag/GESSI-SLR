@@ -27,4 +27,4 @@ save-image:
 
 save-image-tomcat:
 	@mkdir -p docker-images
-	@docker save com.webapp.gessi/gessi-slr:1.1.0 | gzip > "./docker-images/gessi-slr.tar.gz"
+	@docker save com.webapp.gessi/gessi-slr:1.1.0-SNAPSHOT | gzip > "./docker-images/gessi-slr.tar.gz"

@@ -46,9 +46,6 @@
                         <option value="-1" hidden="true">Select a Project</option>
                         <option th:each="x : ${projectList}" th:value="${x.getId()}" th:text="${x.getName()}"></option>
                     </select>
-                    <button id="modalButton" type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal" data-target="#createProject">
-                        <i class="fa fa-plus"></i>
-                    </button>
                 </div>
             </div>
         </nav>
@@ -64,29 +61,6 @@
                 <h3>GESSI Tool for helping research group members to conduct Sytematic Literature reviews.</h3></div>
         </div>
     </div>
-    <div class="modal fade" th:id="createProject" tabindex="-1" role="dialog" aria-labelledby="createProject" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Create Project</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModel()">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form action='#' id="myForm" method="post" th:action="@{/newProject}" th:object="${newProject}">
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input id="name" required th:field="*{name}" class="form-control">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 <script language="javascript" type="text/javascript">
 
@@ -99,13 +73,12 @@
         selectType[0].value = queryParams.get("idProject");
 
     function onClick(component, url) {
-        component.href = url + "?" + queryParams.toString();
-        console.log(component.href);
+        component.href = window.location.href.indexOf("gessi-slr") > -1 ?  "/gessi-slr" +  url + "?" + queryParams.toString() : url + "?" + queryParams.toString();
     }
 
     function updateProject(component) {
         queryParams.set("idProject", component.value);
-        history.replaceState(null, null, "?"+queryParams.toString());
+        history.replaceState(null, null, "?" + queryParams.toString());
         console.log(queryParams.toString());
     }
 

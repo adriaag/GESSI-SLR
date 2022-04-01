@@ -114,8 +114,8 @@
         selectType[0].value = queryParams.get("idProject");
 
     function onClick(component, url) {
-        component.href = url + "?" + queryParams.toString();
-        console.log(component.href);
+        component.href = window.location.href.indexOf("gessi-slr") > -1 ?  "/gessi-slr" +  url + "?" + queryParams.toString() : url + "?" + queryParams.toString();
+
     }
 
     function updateProject(component) {

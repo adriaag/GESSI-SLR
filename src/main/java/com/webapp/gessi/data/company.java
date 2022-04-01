@@ -45,9 +45,6 @@ public class company {
                     System.err.println("  SQL State:  " + e.getSQLState());
                     System.err.println("  Error Code: " + e.getErrorCode());
                     System.err.println("  Message:    " + e.getMessage());
-                    // for stack traces, refer to derby.log or uncomment this:
-                    //e.printStackTrace(System.err);
-                    e = e.getNextException();
                 }
             }
         }

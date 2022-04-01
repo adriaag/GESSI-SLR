@@ -168,9 +168,6 @@ public class creationExcel {
                 //DO NOTHING
             } else sheet.autoSizeColumn(i);
         }
-        //FileOutputStream fileOut = new FileOutputStream("references.xlsx");
-        //workbook.write(fileOut);
-        //fileOut.close();
         return workbook;
 
     }
