@@ -310,15 +310,17 @@ public class Reference {
     }
 
     private static referenceDTO find(int idR, Statement s) throws SQLException {
-        String query = "SELECT * " +
-                "FROM REFERENCIAS JOIN EXCLUSION ON REFERENCIAS.IDREF = EXCLUSION.IDREF " +
-                "JOIN CRITERIA ON EXCLUSION.IDICEC = CRITERIA.ID " +
-                "WHERE REFERENCIAS.IDREF = ?";
+        String query = "SELECT * FROM referencias where idRef = ?";
         Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setInt(1, idR);
         ResultSet resultSet = preparedStatement.executeQuery();
-        return convertResultSetToReferenceDTO(resultSet);
+        resultSet.next();
+        referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
+                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), null);
+        List<ExclusionDTO> exclusionDTOList = Exclusion.getByIdRef(s, idR);
+        referenceDTO.setExclusionDTOList(exclusionDTOList);
+        return referenceDTO;
     }
 
     public static int getDL(String doi,Statement s) throws SQLException {
