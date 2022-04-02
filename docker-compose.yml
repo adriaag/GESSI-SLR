@@ -1,15 +1,17 @@
 version: "3.7"
 services:
   derby:
+    container_name: gessi-derby
     image: opavlova/db-derby
     ports:
       - "1024:1527"
-#    volumes:
-#      - db-volume:/dbs/DOCKERDB
+    volumes:
+      - db-volume:/dbs/DOCKERDB
     restart: unless-stopped
 
-  tomcat:
-    image: com.webapp.gessi/gessi-slr:1.1.0-SNAPSHOT
+  webapp:
+    container_name: gessi-webapp
+    image: com.webapp.gessi/gessi-slr:1.1.0
     depends_on:
       - derby
     ports:
