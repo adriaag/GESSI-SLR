@@ -40,7 +40,7 @@ public class Reference {
         }
         ResultSet rs = s.executeQuery("SELECT idRef FROM referencias where doi = '" + doi + "' and idDL =" + idDL);
         if (rs.next())
-            return rs.getInt(1);
+            return rs.getInt("idRef");
         return -2;
     }
 
@@ -49,7 +49,7 @@ public class Reference {
             s.execute("create table referencias(" +
                     "idRef INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
                     "doi varchar(50), idDL INT, state VARCHAR(10), idProject INT, " +
-                    "PRIMARY KEY(idRef), unique(doi,idDL), " +
+                    "PRIMARY KEY(idRef), unique(doi, idDL, idProject), " +
                     "CONSTRAINT DL_FK_R FOREIGN KEY (idDL) REFERENCES digitalLibraries (idDL) ON DELETE CASCADE," +
                     "CONSTRAINT AR_FK_R FOREIGN KEY (doi) REFERENCES articles (doi) ON DELETE CASCADE," +
                     "CONSTRAINT PR_FK_R FOREIGN KEY (idProject) REFERENCES project (id) ON DELETE CASCADE," +
@@ -241,16 +241,11 @@ public class Reference {
         return r;
     }
 
-    public static referenceDTO getReference(int idR) {
+    public static referenceDTO getReference(Connection conn, int idR) {
         referenceDTO r = null;
 
-        Connection conn;
-        Statement s;
         try {
-            ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
-            conn = ctx.getBean(Connection.class);
-            s = conn.createStatement();
-            referenceDTO NewRef = find(idR,s);
+            referenceDTO NewRef = find(idR, conn);
 
             String doiR = NewRef.getDoi();
             int dlR = NewRef.getidDL();
@@ -309,16 +304,15 @@ public class Reference {
         newRef.setArt(ar);
     }
 
-    private static referenceDTO find(int idR, Statement s) throws SQLException {
+    private static referenceDTO find(int idR, Connection conn) throws SQLException {
         String query = "SELECT * FROM referencias where idRef = ?";
-        Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setInt(1, idR);
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.next();
         referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
                 resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), null);
-        List<ExclusionDTO> exclusionDTOList = Exclusion.getByIdRef(s, idR);
+        List<ExclusionDTO> exclusionDTOList = Exclusion.getByIdRef(conn.createStatement(), idR);
         referenceDTO.setExclusionDTOList(exclusionDTOList);
         return referenceDTO;
     }
@@ -329,13 +323,13 @@ public class Reference {
         return r.getInt(1);
     }
 
-    static ResultSet isDuplicate(Statement s, int priorityImportado, String doi) {
-        String query = "select * from REFERENCIAS r, DIGITALLIBRARIES dl where r.doi = ? and r.idDL = dl.idDL and dl.priority <= ?";
+    static ResultSet isDuplicate(Statement s, String doi, int idProject) {
+        String query = "select * from REFERENCIAS r, DIGITALLIBRARIES dl where r.DOI = ? and r.IDDL = dl.IDDL and IDPROJECT = ? and STATE IS NULL";
         try {
             Connection conn = s.getConnection();
             PreparedStatement preparedStatement = conn.prepareStatement(query);
             preparedStatement.setString(1, doi);
-            preparedStatement.setInt(2, priorityImportado);
+            preparedStatement.setInt(2, idProject);
             ResultSet resultSet = preparedStatement.executeQuery();
             conn.commit();
             return resultSet;
@@ -351,21 +345,14 @@ public class Reference {
         }
         return null;
     }
-    static void updateEstateReferences(Statement s, String doi) {
-        String query = "update referencias set state = 'out' where doi = ? and state is null";
+    static void updateEstateReferences(Statement s, int idRef) {
+        String query = "update referencias set state = 'out' where IDREF = ?";
         try {
             Connection conn = s.getConnection();
             PreparedStatement preparedStatement = conn.prepareStatement(query);
-            preparedStatement.setString(1, doi);
+            preparedStatement.setInt(1, idRef);
             preparedStatement.execute();
-            query = "select idRef from referencias where doi = ? and state = 'out'";
-            preparedStatement = conn.prepareStatement(query);
-            preparedStatement.setString(1, doi);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next())
-                Exclusion.insertRow(s, 1, resultSet.getInt("idRef"));
-            else
-                System.err.println("Hola");
+            Exclusion.insertRow(s, 1, idRef);
         }
         catch (SQLException e) {
             while (e != null) {

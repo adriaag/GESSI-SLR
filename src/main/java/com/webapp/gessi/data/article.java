@@ -159,18 +159,20 @@ public class article {
             int apCriteria = 0;
             if (rs.next()) {
                 updateRow(rs, entry, s, doi); //añadir informacion en los valores null del article
-                ResultSet duplicate = Reference.isDuplicate(s, entriesPriority, doi);
+                ResultSet duplicate = Reference.isDuplicate(s, doi, idProject);
                 if (duplicate == null)
                     System.err.println("Error Duplicate");
                 else if (duplicate.next()) {
-                    estado = "out";
-                    apCriteria = 1;
+                    if (entriesPriority > duplicate.getInt("priority")) {
+                        estado = "out";
+                        apCriteria = 1;
+                    }
+                    else
+                        Reference.updateEstateReferences(s, duplicate.getInt("idRef"));
                 }
-                else
-                    Reference.updateEstateReferences(s, doi);
             }
             else
-                insertRow(s, entry, doi, idProject);                                       //create article nuevo
+                insertRow(s, entry, doi);                                       //create article nuevo
 
             int idRef = Reference.insertRow(s, doi, idDL, estado, idProject);
             if (idRef == -1) return "ERROR: This reference already exists";
@@ -183,8 +185,8 @@ public class article {
             return "ERROR: The article does not contain doi or citeKey";
     }
 
-    private static void insertRow(Statement s, BibTeXEntry entry, String doi, int idProject) {
-        String query = "INSERT INTO articles(DOI, TYPE, CITEKEY, IDVEN, TITLE, KEYWORDS, NUMBER, NUMPAGES, PAGES, VOLUME, AÑO, ABSTRACT, IDPROJECT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private static void insertRow(Statement s, BibTeXEntry entry, String doi) {
+        String query = "INSERT INTO articles(DOI, TYPE, CITEKEY, IDVEN, TITLE, KEYWORDS, NUMBER, NUMPAGES, PAGES, VOLUME, AÑO, ABSTRACT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             Connection conn = s.getConnection();
             PreparedStatement preparedStatement = conn.prepareStatement(query);
@@ -206,7 +208,6 @@ public class article {
             preparedStatement.setString(1, doi);
             preparedStatement.setString(2, String.valueOf(type));
             preparedStatement.setString(3, entry.getKey().toString().replaceAll("'", "''"));
-            preparedStatement.setInt(13, idProject);
 
             if (booktitle != null || article != null || journal != null) {
                 String ven;
@@ -411,10 +412,9 @@ public class article {
         try {
             s.execute("create table articles( doi varchar(50), type varchar(50), citeKey varchar(50), " +
                     "idVen int, title varchar(200), keywords varchar(1000), number varchar(10), numpages INT, " +
-                    "pages varchar(20), volume varchar(20), año INT, abstract varchar(6000), idProject INT, " +
+                    "pages varchar(20), volume varchar(20), año INT, abstract varchar(6000)," +
                     "PRIMARY KEY (doi), " +
-                    "CONSTRAINT VEN_FK_R FOREIGN KEY (idVen) REFERENCES venues (idVen) ON DELETE CASCADE," +
-                    "CONSTRAINT PROJECT_FK_R FOREIGN KEY (idProject) REFERENCES PROJECT (id) ON DELETE CASCADE)");
+                    "CONSTRAINT VEN_FK_R FOREIGN KEY (idVen) REFERENCES venues (idVen) ON DELETE CASCADE)");
             //type y citekey not null
             System.out.println("Created table articles");
         } catch (SQLException e  ) {

@@ -32,7 +32,9 @@ public class ReferenceController {
 
     @GetMapping(value = "/get/", produces = MediaType.APPLICATION_JSON_VALUE)
     public static referenceDTO getReference(@RequestParam(name= "id", required=false, defaultValue="1") int id){
-        return Reference.getReference(id);
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Connection conn = ctx.getBean(Connection.class);
+        return Reference.getReference(conn, id);
     }
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
