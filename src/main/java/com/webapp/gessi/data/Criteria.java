@@ -18,31 +18,40 @@ public class Criteria {
                     "name VARCHAR(500), " +
                     "text VARCHAR(1000), " +
                     "type VARCHAR(9), " +
+                    "idProject INT, " +
                     "PRIMARY KEY (id), " +
-                    "UNIQUE (name), " +
+                    "UNIQUE (name, idProject), " +
+                    "CONSTRAINT PROJECT_FK FOREIGN KEY (idProject) REFERENCES project(id) ON DELETE CASCADE, " +
                     "CONSTRAINT type_chk CHECK (type IN ( 'inclusion', 'exclusion')))");
             System.out.println("Created table Criteria");
             return true;
 
         } catch (SQLException t ) {
             if (t.getSQLState().equals("X0Y32")) System.out.println("Table Criteria exists");
-            else System.out.println("Error en create table Criteria");
+            else
+                while (t != null) {
+                    System.err.println("\n----- SQLException -----");
+                    System.err.println("  SQL State:  " + t.getSQLState());
+                    System.err.println("  Error Code: " + t.getErrorCode());
+                    System.err.println("  Message:    " + t.getMessage());
+                    t = t.getNextException();
+                }
             return false;
         }
     }
 
     public static void dropTable(Statement s) {
         try {
-        s.execute("drop table criteria");
-        System.out.println("Dropped table Criteria");
+            s.execute("drop table criteria");
+            System.out.println("Dropped table Criteria");
         }
         catch (SQLException sqlException) {
-            System.out.println("Tabla Criteria not exist");
+            System.out.println("Table Criteria not exist");
         }
     }
 
-    public static String insert(String name, String text, String type) {
-        String query = "INSERT INTO criteria(name, text , type) VALUES (?, ?, ?)";
+    public static String insert(String name, String text, String type, int idProject) {
+        String query = "INSERT INTO criteria(name, text , type, idProject) VALUES (?, ?, ?, ?)";
         try{
             ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
             Connection conn = ctx.getBean(Connection.class);
@@ -50,6 +59,7 @@ public class Criteria {
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, text);
             preparedStatement.setString(3, type);
+            preparedStatement.setInt(4, idProject);
             preparedStatement.execute();
             conn.commit();
             System.out.println("Inserted row in criteria");
@@ -57,6 +67,9 @@ public class Criteria {
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) {
                 return "Identifier "+ name + " already exists";
+            }
+            else if (e.getMessage().contains("PROJECT_FK")) {
+                return "Select a project";
             }
             else {
                 while (e != null) {
@@ -66,7 +79,7 @@ public class Criteria {
                     System.err.println("  Message:    " + e.getMessage());
                     e = e.getNextException();
                 }
-                return "Error in inset criteria";
+                return "Error in insert criteria";
             }
         }
     }
@@ -91,17 +104,41 @@ public class Criteria {
         return null;
     }
 
-    public static List<CriteriaDTO> getAllCriteria(String type) {
-        ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
-        Connection conn = ctx.getBean(Connection.class);
-        return type == null ? getAll(conn) : getAll(conn, type);
+    public static CriteriaDTO getCriteria(String name, int idProject) {
+        String query = "SELECT * FROM criteria where name = ? and idProject = ?";
+        try {
+            ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+            Connection conn = ctx.getBean(Connection.class);
+            PreparedStatement preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setString(1, name);
+            preparedStatement.setInt(2, idProject);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            return convertResultSetToCriteriaDTO(resultSet).get(0);
+        }
+        catch (SQLException e) {
+            while (e != null) {
+                System.err.println("\n----- SQLException -----");
+                System.err.println("  SQL State:  " + e.getSQLState());
+                System.err.println("  Error Code: " + e.getErrorCode());
+                System.err.println("  Message:    " + e.getMessage());
+                e = e.getNextException();
+            }
+        }
+        return null;
     }
 
-    private static List<CriteriaDTO> getAll(Connection conn, String type) {
-        String query = "SELECT * FROM criteria where type = ?";
+    public static List<CriteriaDTO> getAllCriteria(String type, int idProject) {
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Connection conn = ctx.getBean(Connection.class);
+        return type == null ? getAll(conn, idProject) : getAll(conn, type, idProject);
+    }
+
+    private static List<CriteriaDTO> getAll(Connection conn, String type, int idProject) {
+        String query = "SELECT * FROM criteria WHERE TYPE = ? AND IDPROJECT = ?";
         try {
             PreparedStatement preparedStatement = conn.prepareStatement(query);
             preparedStatement.setString(1, type);
+            preparedStatement.setInt(2, idProject);
             ResultSet resultSet = preparedStatement.executeQuery();
             return convertResultSetToCriteriaDTO(resultSet);
         }
@@ -117,10 +154,12 @@ public class Criteria {
         return new ArrayList<>();
     }
 
-    private static List<CriteriaDTO> getAll(Connection conn) {
+    private static List<CriteriaDTO> getAll(Connection conn, int idProject) {
+        String query = "SELECT * FROM criteria WHERE IDPROJECT = ?";
         try {
-            Statement s = conn.createStatement();
-            ResultSet resultSet = s.executeQuery("SELECT * FROM criteria");
+            PreparedStatement preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, idProject);
+            ResultSet resultSet = preparedStatement.executeQuery();
             return convertResultSetToCriteriaDTO(resultSet);
         }
         catch (SQLException e) {
@@ -179,22 +218,11 @@ public class Criteria {
         }
     }
 
-    public static void insertRowIni(Connection conn, ArrayList<Statement> statements) throws SQLException {
-        PreparedStatement psInsert;
-        psInsert = conn.prepareStatement("insert into criteria(name , text , type) values (?, ?, ?)");
-        statements.add(psInsert);
-
-        psInsert.setString(1, "EC1");
-        psInsert.setString(2, "Duplicated publication.");
-        psInsert.setString(3, "exclusion");
-        psInsert.executeUpdate();
-    }
-
     private static List<CriteriaDTO> convertResultSetToCriteriaDTO(ResultSet resultSet) throws SQLException {
         List<CriteriaDTO> criteriaDTOList = new ArrayList<>();
         while (resultSet.next()) {
             criteriaDTOList.add(new CriteriaDTO(resultSet.getInt("id"), resultSet.getString("name"),
-                    resultSet.getString("text"), resultSet.getString("type")));
+                    resultSet.getString("text"), resultSet.getString("type"), resultSet.getInt("idProject")));
         }
         return criteriaDTOList;
     }

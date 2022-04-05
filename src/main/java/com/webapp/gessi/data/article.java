@@ -1,5 +1,6 @@
 package com.webapp.gessi.data;
 
+import com.webapp.gessi.domain.dto.ProjectDTO;
 import org.apache.commons.io.IOUtils;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.BibTeXParser;
@@ -31,7 +32,7 @@ public class article {
     static Key articleKey = new Key("article");
     static Key affiliationKey = new Key("affiliation");
 
-    public static Timestamp importar( String idDL, int idProject, Statement s, MultipartFile file) throws IOException, ParseException,SQLException {
+    public static Timestamp importar(String idDL, ProjectDTO project, Statement s, MultipartFile file) throws IOException, ParseException,SQLException {
 
         //Reader reader = new FileReader(path);
         //Parametro MultipartFile file
@@ -50,7 +51,7 @@ public class article {
         if(!entries.isEmpty()) referencesImported = entries.size();
         for(BibTeXEntry entry : entries){
             System.out.println("Cite key:" + entry.getKey());
-            String doi = addArticle(idDL, idProject, s, entry, entriesPriority);
+            String doi = addArticle(idDL, project, s, entry, entriesPriority);
             if (!doi.contains("ERROR")) {
                 if (authorsToInsert != null) {
                     Integer[] idsResearchers = researcher.insertRows(authorsToInsert, s);
@@ -129,7 +130,7 @@ public class article {
     }
 
 //Devuelve un string de todos los autores de la referencia
-    static String addArticle(String idDL, int idProject, Statement s, BibTeXEntry entry, int entriesPriority) throws SQLException {
+    static String addArticle(String idDL, ProjectDTO project, Statement s, BibTeXEntry entry, int entriesPriority) throws SQLException {
         String doi;
         if (entry.getField(BibTeXEntry.KEY_DOI) == null) {
             String str = entry.getKey().toString();
@@ -159,22 +160,22 @@ public class article {
             int apCriteria = 0;
             if (rs.next()) {
                 updateRow(rs, entry, s, doi); //añadir informacion en los valores null del article
-                ResultSet duplicate = Reference.isDuplicate(s, doi, idProject);
+                ResultSet duplicate = Reference.isDuplicate(s, doi, project.getId());
                 if (duplicate == null)
                     System.err.println("Error Duplicate");
                 else if (duplicate.next()) {
                     if (entriesPriority > duplicate.getInt("priority")) {
                         estado = "out";
-                        apCriteria = 1;
+                        apCriteria = project.getIdDuplicateCriteria();
                     }
                     else
-                        Reference.updateEstateReferences(s, duplicate.getInt("idRef"));
+                        Reference.updateEstateReferences(s, duplicate.getInt("idRef"), project.getIdDuplicateCriteria());
                 }
             }
             else
                 insertRow(s, entry, doi);                                       //create article nuevo
 
-            int idRef = Reference.insertRow(s, doi, idDL, estado, idProject);
+            int idRef = Reference.insertRow(s, doi, idDL, estado, project.getId());
             if (idRef == -1) return "ERROR: This reference already exists";
             else if (idRef == -2) return "ERROR: The reference had problems";
             else if (apCriteria != 0)

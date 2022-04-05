@@ -1,9 +1,7 @@
 package com.webapp.gessi.domain.controllers;
 
 import com.webapp.gessi.config.DBConnection;
-import com.webapp.gessi.data.Exclusion;
 import com.webapp.gessi.data.Project;
-import com.webapp.gessi.domain.dto.ExclusionDTO;
 import com.webapp.gessi.domain.dto.ProjectDTO;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -18,9 +16,7 @@ public class ProjectController {
     public static void insertRows(List<ProjectDTO> projectDTOList) throws SQLException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
-        Statement s;
-        s = conn.createStatement();
-        projectDTOList.forEach(value -> Project.insertRow(s, value.getName()));
+        projectDTOList.forEach(value -> Project.insertRow(conn, value.getName()));
         conn.commit();
     }
 
@@ -36,8 +32,8 @@ public class ProjectController {
         return Project.getAll();
     }
 
-    public static ProjectDTO getByIdRef(int idRef) {
-        return Project.getById(idRef);
+    public static ProjectDTO getById(int id) {
+        return Project.getById(id);
     }
 
     public static ProjectDTO getByName(String name) {
@@ -46,5 +42,9 @@ public class ProjectController {
 
     public static void updateName(int id, String name) {
         Project.updateName(id, name);
+    }
+
+    public static void updateName(int id, int idICEC) {
+        Project.updateIdDuplicateCriteria(id, idICEC);
     }
 }

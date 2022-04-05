@@ -56,9 +56,13 @@
 <div class="m-3">
     <h2>Criteria</h2>
     <div style="width: 30%; float:left">
-        <form method="post" id="newCriteriaForm" th:action="@{/editCriteria}" th:object="${f}">
+        <form action="#" method="post" id="newCriteriaForm" th:action="@{/editCriteria}" th:object="${f}">
+            <div hidden class="form-group">
+                <label for="project">Id</label>
+                <input type="number" id="project" th:field="*{idProject}" class="form-control">
+            </div>
             <div class="form-group">
-                <label for="idICEC">Criteria identifier</label>
+                <label for="idICEC">Criteria name</label>
                 <input id="idICEC" placeholder="Enter identifier ICEC" required type="text" th:field="*{name}" class="form-control"/>
             </div>
             <div class="form-group">
@@ -69,14 +73,14 @@
             <div class="form-group">
                 <label for="type">Type</label>
                 <select id="type" required th:field="*{type}" class="form-control">
-                    <option value="" hidden>Select a type</option>
+                    <option value="" hidden="true">Select a type</option>
                     <option value="inclusion">Inclusion</option>
                     <option value="exclusion">Exclusion</option>
                 </select>
             </div>
             <div class="footer">
                 <input type="reset" class="btn btn-secondary pull-left" value="Clear">
-                <input type="submit" class="btn btn-primary pull-right" value="Create criteria">
+                <input type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right" value="Create criteria">
             </div>
         </form>
         <br>
@@ -127,7 +131,7 @@
                 </button></td>
                 <td><button type="button" class="btn btn-danger eBtn" style="font-size:12px" data-toggle="modal" data-target='#deleteCriteria'
                             th:attr="onclick=|deleteCriteria(&quot;${c.getId()}&quot;, &quot;${c.getName()}&quot;)|"
-                            th:if = "${c.getId()} != 1"><i class="fa fa-trash"></i>
+                            th:if = "${c.getId()} != ${currentProject.getIdDuplicateCriteria()}"><i class="fa fa-trash"></i>
                 </button></td>
             </tr>
         </table>
@@ -144,7 +148,7 @@
                     <div class="modal-body">
                         <form action='#' id="editCriteriaForm" method="post" th:action="@{/updateCriteria/id}" th:object="${f}">
                             <div class="form-group">
-                                <label for="idCRI">Criteria identifier</label>
+                                <label for="idCRI">Name</label>
                                 <input id="idCRI" th:field="*{name}" class="form-control"/>
                             </div>
                             <div class="form-group">
@@ -227,19 +231,26 @@
     const editCriteriaForm = document.getElementById("editCriteriaForm");
     const deleteCriteriaName = document.getElementById("deleteCriteriaName");
     const deleteCriteriaForm = document.getElementById("deleteCriteriaForm");
+    const projectInputForm = document.getElementById("project");
+    const createCriteriaSubmit =  $('input[id="createCriteriaSubmit"]');
     const selectType =  $('select[id="idProject"]');
 
-    if (queryParams.has("idProject"))
+    if (queryParams.has("idProject")) {
+        createCriteriaSubmit[0].disabled = false;
         selectType[0].value = queryParams.get("idProject");
+        projectInputForm.value = queryParams.get("idProject");
+    }
+    else
+        createCriteriaSubmit[0].disabled = true;
 
     function onClick(component, url) {
         component.href = window.location.href.indexOf("gessi-slr") > -1 ?  "/gessi-slr" +  url + "?" + queryParams.toString() : url + "?" + queryParams.toString();
-
     }
 
     function updateProject(component) {
         queryParams.set("idProject", component.value);
-        history.replaceState(null, null, "?"+queryParams.toString());
+        history.replaceState(null, null, "?" + queryParams.toString());
+        location.reload();
     }
 
     function editCriteria(id, name, text, type) {

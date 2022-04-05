@@ -68,11 +68,12 @@ public class ClientController {
     @GetMapping(value = "/getAllReferences", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public String getReferences(@RequestParam(value = "idProject") Optional<Integer> idProject,
                                 Model model){
+        int auxIdProject = idProject.orElse(-1);
         model.addAttribute("projectList", ProjectController.getAll());
-        List<referenceDTO> referenceDTOList = ReferenceController.getReferences(idProject.orElse(0));
+        List<referenceDTO> referenceDTOList = ReferenceController.getReferences(auxIdProject);
         model.addAttribute("referencesList", referenceDTOList);
         model.addAttribute("f", new referenceDTOupdate());
-        model.addAttribute("ECCriteria", criteriaController.getCriteriasEC());
+        model.addAttribute("ECCriteria", criteriaController.getCriteriasEC(auxIdProject));
         model.addAttribute("newProject", new ProjectDTO());
         return "allReferences";
     }
@@ -155,12 +156,14 @@ public class ClientController {
     @GetMapping(value = "/editCriteria")
     public String askInformationCriteria(@RequestParam(value = "idProject", required = false) Optional<Integer> idProject,
                                          Model model){
-        model.addAttribute("idProject", idProject.orElse(-1));
+        int auxIdProject = idProject.orElse(-1);
+        ProjectDTO projectDTO = auxIdProject == -1 ? new ProjectDTO(-1, null, 0) : ProjectController.getById(idProject.get());
+        model.addAttribute("currentProject", projectDTO);
         List<ProjectDTO> projectDTOList = ProjectController.getAll();
         model.addAttribute("projectList", projectDTOList);
-        List<CriteriaDTO> lIC = criteriaController.getCriteriasIC();
+        List<CriteriaDTO> lIC = criteriaController.getCriteriasIC(auxIdProject);
         model.addAttribute("listIC", lIC);
-        List<CriteriaDTO> lEC = criteriaController.getCriteriasEC();
+        List<CriteriaDTO> lEC = criteriaController.getCriteriasEC(auxIdProject);
         model.addAttribute("listEC", lEC);
         model.addAttribute("f", new CriteriaDTO());
         model.addAttribute("newProject", new ProjectDTO());
@@ -187,8 +190,8 @@ public class ClientController {
     @PostMapping(value=("/editCriteria"))
     public String editCriteria(@ModelAttribute("f") CriteriaDTO f,
                                HttpServletRequest request,
-                               RedirectAttributes redirectAttr){
-        String messageError = criteriaController.addCriteria(f.getName(),f.getText(),f.getType());
+                               RedirectAttributes redirectAttr) {
+        String messageError = criteriaController.addCriteria(f.getName(), f.getText(), f.getType(), f.getIdProject());
         redirectAttr.addFlashAttribute("errorM", messageError);
         String[] uriParts = request.getHeader("Referer").split("/");
         String url = uriParts[uriParts.length - 1];
@@ -210,7 +213,7 @@ public class ClientController {
         model.addAttribute("projectList", ProjectController.getAll());
         model.addAttribute("idProject", idProject.orElse(-1));
         model.addAttribute("newProject", new ProjectDTO());
-        ProjectDTO projectDTO = new ProjectDTO(idProject.orElse(-1), null);
+        ProjectDTO projectDTO = idProject.orElse(-1) == -1 ? new ProjectDTO(-1, null, 0) : ProjectController.getById(idProject.get());
         model.addAttribute("projectDTO", projectDTO);
         return "resetBD";
     }

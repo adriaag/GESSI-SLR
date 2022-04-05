@@ -60,14 +60,12 @@ public class Reference {
                 System.out.println("Table referencias exists");
             else if (e.getMessage().contains("primary key"))
                 System.out.println("Referencia ya importada");
-            else {
-                while (e != null) {
-                    System.err.println("\n----- SQLException -----");
-                    System.err.println("  SQL State:  " + e.getSQLState());
-                    System.err.println("  Error Code: " + e.getErrorCode());
-                    System.err.println("  Message:    " + e.getMessage());
-                    e = e.getNextException();
-                }
+            while (e != null) {
+                System.err.println("\n----- SQLException -----");
+                System.err.println("  SQL State:  " + e.getSQLState());
+                System.err.println("  Error Code: " + e.getErrorCode());
+                System.err.println("  Message:    " + e.getMessage());
+                e = e.getNextException();
             }
         }
     }
@@ -194,9 +192,7 @@ public class Reference {
         Project.createTable(s);
         article.createTable(s);
         researcher.createTable(s);
-        if (Criteria.createTable(s))
-            //insert duplicate exclusion
-            Criteria.insertRowIni(conn,statements);
+        Criteria.createTable(s);
         Reference.createTable(s);
         Exclusion.createTable(s);
         author.createTable(s);
@@ -220,12 +216,12 @@ public class Reference {
         Project.dropTable(s);
     }
 
-    public static List<importErrorDTO> importar(String idDL, int idProject, MultipartFile file) throws SQLException, IOException, ParseException {
+    public static List<importErrorDTO> importar(String idDL, ProjectDTO project, MultipartFile file) throws SQLException, IOException, ParseException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         conn.setAutoCommit(false);
         Statement s = conn.createStatement();
-        Timestamp t = article.importar(idDL, idProject, s, file);
+        Timestamp t = article.importar(idDL, project, s, file);
         List<importErrorDTO> r =  importationLogError.getErrors(s,t);
         conn.commit();
         return r;
@@ -345,14 +341,14 @@ public class Reference {
         }
         return null;
     }
-    static void updateEstateReferences(Statement s, int idRef) {
+    static void updateEstateReferences(Statement s, int idRef, int idDuplicateCriteria) {
         String query = "update referencias set state = 'out' where IDREF = ?";
         try {
             Connection conn = s.getConnection();
             PreparedStatement preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, idRef);
             preparedStatement.execute();
-            Exclusion.insertRow(s, 1, idRef);
+            Exclusion.insertRow(s, idDuplicateCriteria, idRef);
         }
         catch (SQLException e) {
             while (e != null) {

@@ -27,9 +27,15 @@ public class criteriaController {
     }
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static String addCriteria(String idICEC, String text, String type) {
+    public static String addCriteria(String idICEC, String text, String type, int idProject) {
         System.out.println("add criteria en controller criteria");
-        return Criteria.insert(idICEC, text, type);
+        return Criteria.insert(idICEC, text, type, idProject);
+    }
+
+    public static int insertDuplicateCriteria(int idProject) {
+        System.out.println("add criteria en controller criteria");
+        Criteria.insert("EC1", "Duplicated publication.", "exclusion", idProject);
+        return Criteria.getCriteria("EC1", idProject).getId();
     }
 
     public static void updateCriteria(int id, CriteriaDTO f) {
@@ -48,20 +54,20 @@ public class criteriaController {
 
     }
 
-    public static List<CriteriaDTO> getCriteriasIC() {
-        return Criteria.getAllCriteria("inclusion");
+    public static List<CriteriaDTO> getCriteriasIC(int idProject) {
+        return Criteria.getAllCriteria("inclusion", idProject);
     }
-    public static List<CriteriaDTO> getCriteriasEC() { return Criteria.getAllCriteria("exclusion"); }
+    public static List<CriteriaDTO> getCriteriasEC(int idProject) { return Criteria.getAllCriteria("exclusion", idProject); }
 
 
-    public static List<String> getStringListCriteriasEC() {
-        List<CriteriaDTO> list = Criteria.getAllCriteria("exclusion");
+    public static List<String> getStringListCriteriasEC(int idProject) {
+        List<CriteriaDTO> list = Criteria.getAllCriteria("exclusion", idProject);
         return list.stream().map(CriteriaDTO::getName).collect(Collectors.toList());
     }
 
-    public static List<String> getAllCriteria() {
+    public static List<String> getAllCriteria(int idProject) {
         ArrayList<String> r = new ArrayList<>();
-        List<CriteriaDTO> list = Criteria.getAllCriteria(null);
+        List<CriteriaDTO> list = Criteria.getAllCriteria(null, idProject);
         for (CriteriaDTO i : list) {
             r.add(i.getName());
             System.out.println(i.getName());

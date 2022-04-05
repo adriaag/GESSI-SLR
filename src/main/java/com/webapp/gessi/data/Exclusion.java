@@ -52,7 +52,6 @@ public class Exclusion {
         try {
             Connection conn = s.getConnection();
             CriteriaDTO criteriaDTO = Criteria.getById(conn, idICEC);
-            // TODO: IF YOU WANT TO UPDATE A REFERENCE THAT ALREADY EXIST WITH THE STATE OUT IT APPEARS THE ERROR "A lock could not be obtained within the time requested"
             referenceDTO referenceDTO = Reference.getReference(conn, idRef);
             if (criteriaDTO != null && referenceDTO != null) {
                 query = "INSERT INTO exclusion(idICEC, idRef) VALUES (?, ?)";

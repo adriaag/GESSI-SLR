@@ -7,12 +7,14 @@ public class CriteriaDTO {
     private String name;
     private String text;
     private String type;
+    private int idProject;
 
-    public CriteriaDTO(int id, String name, String text, String type) {
+    public CriteriaDTO(int id, String name, String text, String type, int idProject) {
         this.id = id;
         this.name = name;
         this.text = text;
         this.type = type;
+        this.idProject = idProject;
     }
 
     public CriteriaDTO() {}
@@ -41,5 +43,13 @@ public class CriteriaDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getIdProject() {
+        return idProject;
+    }
+
+    public void setIdProject(int idProject) {
+        this.idProject = idProject;
     }
 }
