@@ -7,53 +7,85 @@
 </head>
 <body>
     <header th:fragment="header">
-            <nav class="navbar navbar-expand-lg py-3 navbar-dark shadow-sm navbar-fixed-top" style="background-color: #153053;">
-                <div class="container"><!--style="background-color: #356ac3;"-->
-                    <!-- GESSi logo -->
+        <nav class="navbar navbar-expand-lg py-3 navbar-dark shadow-sm navbar-fixed-top" style="background-color: #153053;">
+            <div class="container-fluid"><!--style="background-color: #356ac3;"-->
+                <!-- GESSi logo -->
 
-                    <a id="logo" href="#" class="navbar-brand">
-                        <!-- Logo Image -->
-                        <img src="images/favicon.ico" class="rounded-circle z-depth-0" alt="" height="35">
-                        <!-- Logo Text -->
-                        <span class="text-uppercase font-weight-bold">GESSI-SLR</span>
-                    </a>
-                    <div class="container-fluid">
-                        <ul class="nav nav-tabs justify-content-center">
-                            <li  class="nav-item" >
-                                <a  class="nav-link active" th:href="@{/}">Home</a>
-                            </li>
-                            <li class="nav-item" >
-                                <a  class="nav-link" th:href="@{/newReference}">Import reference</a>
-                            </li>
-                            <li  class="nav-item">
-                                <a  class="nav-link" th:href="@{/editCriteria}">Edit ICEC</a>
-                            </li>
-                            <li class="nav-item">
-                                <a  class="nav-link " th:href="@{/getAllReferences}">Table references</a>
-                            </li>
-                            <li class="nav-item">
-                                <a  class="nav-link " th:href="@{/errors}">Import errors</a>
-                            </li>
-                            <li  class="nav-item">
-                                <a  class="nav-link" th:href="@{/resetView}">Reset database </a>
-                            </li>
-                        </ul>
+                <a id="logo" href="#" class="navbar-brand">
+                    <!-- Logo Image -->
+                    <img src='' th:src="@{images/favicon.ico}" class="rounded-circle z-depth-0" alt="" height="35">
+                    <!-- Logo Text -->
+                    <span class="text-uppercase font-weight-bold">GESSI-SLR</span>
+                </a>
+                <div style="width: 50%">
+                    <ul class="nav nav-tabs justify-content-center">
+                        <li  class="nav-item">
+                            <a class="nav-link active" onclick="onClick(this, '/')" th:href="@{/}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="onClick(this, '/newReference')" th:href="@{/newReference}">Import reference</a>
+                        </li>
+                        <li  class="nav-item">
+                            <a class="nav-link" onclick="onClick(this, '/editCriteria')" th:href="@{/editCriteria}">Edit ICEC</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="onClick(this, '/getAllReferences')" th:href="@{/getAllReferences}">Table references</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="onClick(this, '/errors')" th:href="@{/errors}">Import errors</a>
+                        </li>
+                        <li  class="nav-item">
+                            <a class="nav-link" onclick="onClick(this, '/resetView')" th:href="@{/resetView}">Reset database </a>
+                        </li>
+                    </ul>
 
-                    </div>
                 </div>
-            </nav>
-        </header>
+                <div class="d-flex justify-content-between" style="width: 20%">
+                    <label style="display: flex;" for="idProject"></label>
+                    <select required id="idProject" onchange="updateProject(this)" class="form-control">
+                        <option value="-1" hidden="true">Select a Project</option>
+                        <option th:each="x : ${projectList}" th:value="${x.getId()}" th:text="${x.getName()}"></option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
     <br>
     <div class="container">
         <div class="row"></div>
         <div class="row ml-5">
             <div class="col-5 ml-5">
-                <img src="images/favicon.ico" class="img-rounded ml-5" height="200"> </div>
+                <img src='' th:src="@{images/favicon.ico}" class="img-rounded ml-5" height="200"> </div>
             <div class="col-5 mr-5">
-                <h1>GESSI-SLR- 1.0</h1>
+                <h1>GESSI-SLR <br> 1.1.0-SNAPSHOT</h1>
                 <h3>GESSI Tool for helping research group members to conduct Sytematic Literature reviews.</h3></div>
         </div>
     </div>
-    <div class="col-md-5"></div>
 </body>
+<script language="javascript" type="text/javascript">
+
+    const projectModal = document.getElementById("createProject");
+
+    var queryParams = new URLSearchParams(window.location.search);
+    console.log(queryParams.toString());
+    const selectType =  $('select[id="idProject"]');
+    if (queryParams.has("idProject"))
+        selectType[0].value = queryParams.get("idProject");
+
+    function onClick(component, url) {
+        component.href = window.location.href.indexOf("gessi-slr") > -1 ?  "/gessi-slr" +  url + "?" + queryParams.toString() : url + "?" + queryParams.toString();
+    }
+
+    function updateProject(component) {
+        queryParams.set("idProject", component.value);
+        history.replaceState(null, null, "?" + queryParams.toString());
+        console.log(queryParams.toString());
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    function closeModel() {
+        projectModal.style.display = "none";
+    }
+
+</script>
 </html>

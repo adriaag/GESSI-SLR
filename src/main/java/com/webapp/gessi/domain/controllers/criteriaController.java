@@ -1,9 +1,9 @@
 package com.webapp.gessi.domain.controllers;
 
 import com.webapp.gessi.config.DBConnection;
-import com.webapp.gessi.data.criteria;
+import com.webapp.gessi.data.Criteria;
 import com.webapp.gessi.domain.dto.ExclusionDTO;
-import com.webapp.gessi.domain.dto.criteriaDTO;
+import com.webapp.gessi.domain.dto.CriteriaDTO;
 import com.webapp.gessi.domain.dto.referenceDTO;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -14,7 +14,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -28,51 +27,50 @@ public class criteriaController {
     }
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static String addCriteria(String idICEC, String text, String type) {
+    public static String addCriteria(String idICEC, String text, String type, int idProject) {
         System.out.println("add criteria en controller criteria");
-        return criteria.insert(idICEC, text, type);
+        return Criteria.insert(idICEC, text, type, idProject);
     }
 
-    public static void updateCriteria(String oldIdICEC, criteriaDTO f) {
-        System.out.println("update criteria en controller criteria");
-        if (!Objects.equals(oldIdICEC, f.getIdICEC()))
-            ExclusionController.deleteCriteriaFK();
-        criteria.update(f.getIdICEC(), f.getText(), f.getType(), oldIdICEC);
-        if (!Objects.equals(oldIdICEC, f.getIdICEC())) {
-            ExclusionController.UpdateIdICEC(oldIdICEC, f.getIdICEC());
-            ExclusionController.addCriteriaFK();
-        }
+    public static int insertDuplicateCriteria(int idProject) {
+        System.out.println("add criteria en controller criteria");
+        Criteria.insert("EC1", "Duplicated publication.", "exclusion", idProject);
+        return Criteria.getCriteria("EC1", idProject).getId();
     }
 
-    public static void deleteCriteria(@PathVariable("id") String idICEC) throws SQLException {
+    public static void updateCriteria(int id, CriteriaDTO f) {
+        Criteria.update(f.getName(), f.getText(), id);
+    }
+
+    public static void deleteCriteria(@PathVariable("id") int id) throws SQLException {
         System.out.println("delete criteria en controller criteria");
-        List<ExclusionDTO> exclusionDTOList = ExclusionController.getByIdICEC(idICEC);
+        List<ExclusionDTO> exclusionDTOList = ExclusionController.getByIdICEC(id);
         for (ExclusionDTO exclusionDTO : exclusionDTOList) {
             referenceDTO referenceDTO = ReferenceController.getReference(exclusionDTO.getIdRef());
-            if (referenceDTO.getApplCriteria().size() <= 1)
+            if (referenceDTO.getExclusionDTOList().size() <= 1)
                 ReferenceController.updateState(referenceDTO.getIdRef(), null);
         }
-        criteria.delete(idICEC);
+        Criteria.delete(id);
 
     }
 
-    public static List<criteriaDTO> getCriteriasIC() {
-        return criteria.getAllCriteria("IC");
+    public static List<CriteriaDTO> getCriteriasIC(int idProject) {
+        return Criteria.getAllCriteria("inclusion", idProject);
     }
-    public static List<criteriaDTO> getCriteriasEC() { return criteria.getAllCriteria("EC"); }
+    public static List<CriteriaDTO> getCriteriasEC(int idProject) { return Criteria.getAllCriteria("exclusion", idProject); }
 
 
-    public static List<String> getStringListCriteriasEC() {
-        List<criteriaDTO> list = criteria.getAllCriteria("EC");
-        return list.stream().map(criteriaDTO::getIdICEC).collect(Collectors.toList());
+    public static List<String> getStringListCriteriasEC(int idProject) {
+        List<CriteriaDTO> list = Criteria.getAllCriteria("exclusion", idProject);
+        return list.stream().map(CriteriaDTO::getName).collect(Collectors.toList());
     }
 
-    public static List<String> getAllCriteria() {
+    public static List<String> getAllCriteria(int idProject) {
         ArrayList<String> r = new ArrayList<>();
-        List<criteriaDTO> list = criteria.getAllCriteria("");
-        for (criteriaDTO i : list) {
-            r.add(i.getIdICEC());
-            System.out.println(i.getIdICEC());
+        List<CriteriaDTO> list = Criteria.getAllCriteria(null, idProject);
+        for (CriteriaDTO i : list) {
+            r.add(i.getName());
+            System.out.println(i.getName());
         }
         return r;
     }
