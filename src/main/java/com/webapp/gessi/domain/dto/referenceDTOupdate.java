@@ -1,17 +1,18 @@
 package com.webapp.gessi.domain.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class referenceDTOupdate implements Serializable {
     private int id;
-    private String estado;
-    private String applCriteria;
+    private String state;
+    private List<Integer> applCriteria;
 
     public referenceDTOupdate() {}
 
-    public referenceDTOupdate(int id, String estado, String applCriteria) {
+    public referenceDTOupdate(int id, String state, List<Integer> applCriteria) {
         this.id = id;
-        this.estado = estado;
+        this.state = state;
         this.applCriteria = applCriteria;
     }
 
@@ -23,15 +24,15 @@ public class referenceDTOupdate implements Serializable {
         this.id = id;
     }
 
-    public String getEstado() {
-        return estado;
+    public String getState() {
+        return state;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setState(String state) {
+        this.state = state;
     }
 
-    public String getApplCriteria() { return applCriteria; }
+    public List<Integer> getApplCriteria() { return applCriteria; }
 
-    public void setApplCriteria(String applCriteria) { this.applCriteria = applCriteria;    }
+    public void setApplCriteria(List<Integer> applCriteria) { this.applCriteria = applCriteria;    }
 }

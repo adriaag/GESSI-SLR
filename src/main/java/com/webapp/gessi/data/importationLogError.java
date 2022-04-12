@@ -12,7 +12,7 @@ public class importationLogError {
             s.execute("create TABLE ImportationLogError(" +
                     "idLogErr INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), time timestamp, " +
                     "doi VARCHAR(100), idDL int, BibTex VARCHAR(10000),  PRIMARY KEY (idLogErr)," +
-                    "CONSTRAINT DL_FK_I FOREIGN KEY (idDL) REFERENCES DIGITALLIBRARIES(idDL))");
+                    "CONSTRAINT DL_FK_I FOREIGN KEY (idDL) REFERENCES DIGITALLIBRARIES(idDL) ON DELETE CASCADE)");
             System.out.println("Created table importationLogError");
             return true;
 

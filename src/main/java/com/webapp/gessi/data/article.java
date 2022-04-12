@@ -1,5 +1,6 @@
 package com.webapp.gessi.data;
 
+import com.webapp.gessi.domain.dto.ProjectDTO;
 import org.apache.commons.io.IOUtils;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.BibTeXParser;
@@ -31,13 +32,13 @@ public class article {
     static Key articleKey = new Key("article");
     static Key affiliationKey = new Key("affiliation");
 
-    public static Timestamp importar( String idDL, Statement s, MultipartFile file) throws IOException, ParseException,SQLException {
+    public static Timestamp importar(String idDL, ProjectDTO project, Statement s, MultipartFile file) throws IOException, ParseException,SQLException {
 
         //Reader reader = new FileReader(path);
         //Parametro MultipartFile file
         ByteArrayInputStream stream0 = new ByteArrayInputStream(file.getBytes());
-        String myString = IOUtils.toString(stream0, "UTF-8");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(myString.getBytes(StandardCharsets.UTF_8)), "utf-8"));
+        String myString = IOUtils.toString(stream0, StandardCharsets.UTF_8);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(myString.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
 
         BibTeXParser bibtexParser = new BibTeXParser(); //add Exception
         BibTeXDatabase database = bibtexParser.parse(reader);
@@ -50,7 +51,7 @@ public class article {
         if(!entries.isEmpty()) referencesImported = entries.size();
         for(BibTeXEntry entry : entries){
             System.out.println("Cite key:" + entry.getKey());
-            String doi = addArticle(idDL, s, entry, entriesPriority);
+            String doi = addArticle(idDL, project, s, entry, entriesPriority);
             if (!doi.contains("ERROR")) {
                 if (authorsToInsert != null) {
                     Integer[] idsResearchers = researcher.insertRows(authorsToInsert, s);
@@ -72,7 +73,7 @@ public class article {
     //Guarda las referencias que no se pueden guardar en la BD
     public static Timestamp iniCheck(Statement sta, String idDL, MultipartFile file) throws IOException, SQLException {
         ByteArrayInputStream stream0 = new ByteArrayInputStream(file.getBytes());
-        String myString = IOUtils.toString(stream0, "UTF-8");
+        String myString = IOUtils.toString(stream0, StandardCharsets.UTF_8);
         ByteArrayInputStream stream = new ByteArrayInputStream(myString.getBytes(StandardCharsets.UTF_8));
 
         Scanner sc = new Scanner(stream);
@@ -129,7 +130,7 @@ public class article {
     }
 
 //Devuelve un string de todos los autores de la referencia
-    static String addArticle(String idDL, Statement s, BibTeXEntry entry, int entriesPriority) throws SQLException {
+    static String addArticle(String idDL, ProjectDTO project, Statement s, BibTeXEntry entry, int entriesPriority) throws SQLException {
         String doi;
         if (entry.getField(BibTeXEntry.KEY_DOI) == null) {
             String str = entry.getKey().toString();
@@ -156,23 +157,28 @@ public class article {
             doi = doi.replaceAll("[{-}]", "").replaceAll("'", "''");
             ResultSet rs = getArticle(s, doi);
             String estado = null;
-            String apCriteria = null;
+            int apCriteria = 0;
             if (rs.next()) {
                 updateRow(rs, entry, s, doi); //añadir informacion en los valores null del article
-                ResultSet duplicate = reference.isDuplicate(s, entriesPriority, doi);
-                if (duplicate.next()) {
-                    estado = "out";
-                    apCriteria = "EC1";
+                ResultSet duplicate = Reference.isDuplicate(s, doi, project.getId());
+                if (duplicate == null)
+                    System.err.println("Error Duplicate");
+                else if (duplicate.next()) {
+                    if (entriesPriority > duplicate.getInt("priority")) {
+                        estado = "out";
+                        apCriteria = project.getIdDuplicateCriteria();
+                    }
+                    else
+                        Reference.updateEstateReferences(s, duplicate.getInt("idRef"), project.getIdDuplicateCriteria());
                 }
-                else
-                    reference.updateEstateReferences(s, doi);
             }
             else
                 insertRow(s, entry, doi);                                       //create article nuevo
-            int idRef = reference.insertRow(s, doi, idDL, estado);
+
+            int idRef = Reference.insertRow(s, doi, idDL, estado, project.getId());
             if (idRef == -1) return "ERROR: This reference already exists";
             else if (idRef == -2) return "ERROR: The reference had problems";
-            else if (apCriteria != null)
+            else if (apCriteria != 0)
                 Exclusion.insertRow(s, apCriteria, idRef);
             return doi;
         }
@@ -181,7 +187,10 @@ public class article {
     }
 
     private static void insertRow(Statement s, BibTeXEntry entry, String doi) {
+        String query = "INSERT INTO articles(DOI, TYPE, CITEKEY, IDVEN, TITLE, KEYWORDS, NUMBER, NUMPAGES, PAGES, VOLUME, AÑO, ABSTRACT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
+            Connection conn = s.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query);
             Key type = entry.getType();
             Value title = entry.getField(BibTeXEntry.KEY_TITLE);
             Value authors = entry.getField(BibTeXEntry.KEY_AUTHOR);
@@ -197,16 +206,9 @@ public class article {
             Value article = entry.getField(articleKey);
             Value affil = entry.getField(affiliationKey);
 
-            String query;
-            StringBuilder atributsOfRow = new StringBuilder("INSERT INTO articles(");
-            StringBuilder valuesOfRow = new StringBuilder(") VALUES (");
-
-            atributsOfRow.append("doi");
-            valuesOfRow.append("'").append(doi).append("'");
-
-            atributsOfRow.append(", type, citeKey");
-            valuesOfRow.append(", '").append(type).append("', '").append(entry.getKey().toString().replaceAll("'", "''")).append("'");
-            //Citekey puede contener el DOI
+            preparedStatement.setString(1, doi);
+            preparedStatement.setString(2, String.valueOf(type));
+            preparedStatement.setString(3, entry.getKey().toString().replaceAll("'", "''"));
 
             if (booktitle != null || article != null || journal != null) {
                 String ven;
@@ -214,47 +216,60 @@ public class article {
                 else if (journal != null) ven = journal.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
                 else ven = article.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
                 int idVen = venue.insertRow(s, ven);
-                atributsOfRow.append(", idVen");
-                valuesOfRow.append(", ").append(idVen);
+                preparedStatement.setInt(4, idVen);
             }
+            else {
+                preparedStatement.setNull(4, java.sql.Types.INTEGER);
+            }
+
             if (title != null) {
-                atributsOfRow.append(", title");
-                valuesOfRow.append(", '").append(title.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
+                preparedStatement.setString(5, title.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+            } else {
+                preparedStatement.setString(5, null);
             }
+
             if (keywords != null) {
-                atributsOfRow.append(", keywords");
-                valuesOfRow.append(", '").append(keywords.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
+                preparedStatement.setString(6, keywords.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+            } else {
+                preparedStatement.setString(6, null);
             }
-            if (number != null ) {
-                if (!number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")) {
-                    atributsOfRow.append(", number");
-                    valuesOfRow.append(", '").append(number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
-                }
+
+            if (number != null && !number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")) {
+                preparedStatement.setString(7, number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+            } else {
+                preparedStatement.setString(7, null);
             }
+
             if (numpages != null) {
-                atributsOfRow.append(", numpages");
-                valuesOfRow.append(", ").append(numpages.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+                preparedStatement.setString(8, numpages.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+            } else {
+                preparedStatement.setString(8, null);
             }
+
             if (pages != null) {
-                atributsOfRow.append(", pages");
-                valuesOfRow.append(", '").append(pages.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
+                preparedStatement.setString(9, pages.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+            } else {
+                preparedStatement.setString(9, null);
             }
-            if (volume != null) {
-                if (!volume.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")) {
-                    atributsOfRow.append(", volume");
-                    valuesOfRow.append(", '").append(volume.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")).append("'");
-                }
+
+            if (volume != null && !volume.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")) {
+                preparedStatement.setString(10, volume.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+            } else {
+                preparedStatement.setString(10, null);
             }
+
             if (year != null) {
-                atributsOfRow.append(", año");
-                valuesOfRow.append(", ").append(year.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+                preparedStatement.setString(11, year.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+            } else {
+                preparedStatement.setString(11, null);
             }
+
             if (abstractE != null) {
-                String aux1 = abstractE.toUserString().replaceAll("[']", "").replaceAll("'", "''");
-                //El simbolo ' dentro del abstract provoca errores
-                atributsOfRow.append(", abstract");
-                valuesOfRow.append(", \'").append(aux1.replaceAll("[{-}]", "").replaceAll("'", "''")).append("\'");
+                preparedStatement.setString(12, abstractE.toUserString().replaceAll("[']", "").replaceAll("[{-}]", "").replaceAll("'", "''"));
+            } else {
+                preparedStatement.setString(12, null);
             }
+
             authorsToInsert = null;
             if (authors != null)
                 authorsToInsert = authors.toUserString().replaceAll("[\n]", " ").replaceAll("[{-}]", "").replaceAll("'", "''");
@@ -263,10 +278,8 @@ public class article {
             if (affil != null) {
                 affiliationToInsert = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "").replaceAll("'", "''");
             }
-            query = atributsOfRow.toString() + valuesOfRow.append(") ");
-            //System.out.println(query);
 
-            s.execute(query);
+            preparedStatement.execute();
             System.out.println("Inserted row with author, doi, ....");
         } catch (SQLException e) {
             if (e.getSQLState().equals("X0Y32")) {
@@ -399,9 +412,10 @@ public class article {
     public static void createTable(Statement s) {
         try {
             s.execute("create table articles( doi varchar(50), type varchar(50), citeKey varchar(50), " +
-                    "idVen int, title varchar(200), keywords varchar(1000), " +
-                    "number varchar(10), numpages INT, pages varchar(20), volume varchar(20), año INT, abstract varchar(6000), " +
-                    "PRIMARY KEY (doi), CONSTRAINT VEN_FK_R FOREIGN KEY (idVen) REFERENCES venues (idVen))");
+                    "idVen int, title varchar(200), keywords varchar(1000), number varchar(10), numpages INT, " +
+                    "pages varchar(20), volume varchar(20), año INT, abstract varchar(6000)," +
+                    "PRIMARY KEY (doi), " +
+                    "CONSTRAINT VEN_FK_R FOREIGN KEY (idVen) REFERENCES venues (idVen) ON DELETE CASCADE)");
             //type y citekey not null
             System.out.println("Created table articles");
         } catch (SQLException e  ) {
@@ -412,8 +426,6 @@ public class article {
                 System.err.println("  SQL State:  " + e.getSQLState());
                 System.err.println("  Error Code: " + e.getErrorCode());
                 System.err.println("  Message:    " + e.getMessage());
-                // for stack traces, refer to derby.log or uncomment this:
-                //e.printStackTrace(System.err);
                 e = e.getNextException();
             }
         }

@@ -1,15 +1,13 @@
 package com.webapp.gessi.data;
 
 import com.webapp.gessi.config.DBConnection;
+import com.webapp.gessi.domain.dto.CriteriaDTO;
 import com.webapp.gessi.domain.dto.ExclusionDTO;
 import com.webapp.gessi.domain.dto.referenceDTO;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +15,9 @@ public class Exclusion {
     public static boolean createTable (Statement s) {
         try {
             s.execute("create TABLE exclusion(" +
-                    "idICEC VARCHAR(5), idRef INT , " +
-                    "CONSTRAINT criteria_FK FOREIGN KEY (idICEC) REFERENCES criteria(idICEC) ON UPDATE RESTRICT ON DELETE CASCADE, " +
+                    "idICEC INT, " +
+                    "idRef INT, " +
+                    "CONSTRAINT criteria_FK FOREIGN KEY (idICEC) REFERENCES criteria(id) ON UPDATE RESTRICT ON DELETE CASCADE, " +
                     "CONSTRAINT referencies_FK FOREIGN KEY (idRef) REFERENCES referencias(idRef) ON DELETE CASCADE, " +
                     "PRIMARY KEY(idICEC, idRef))");
             System.out.println("Created table Exclusion");
@@ -48,22 +47,24 @@ public class Exclusion {
         }
     }
 
-    public static void insertRow(Statement s, String idICEC, int idRef) {
+    public static void insertRow(Statement s, int idICEC, int idRef) {
+        String query;
         try {
-            String query;
-            ResultSet criteriaExist = s.executeQuery("SELECT * FROM criteria where idICEC = '" + idICEC + "'");
-            boolean criteria = criteriaExist.next();
-            ResultSet referenceExist = s.executeQuery("SELECT * FROM referencias where idRef = " + idRef);
-            boolean reference = referenceExist.next();
-            if (criteria && reference) {
-                query = "INSERT INTO exclusion(idICEC, idRef) VALUES ('" + idICEC + "', " + idRef + ")";
-                s.execute(query);
+            Connection conn = s.getConnection();
+            CriteriaDTO criteriaDTO = Criteria.getById(conn, idICEC);
+            referenceDTO referenceDTO = Reference.getReference(conn, idRef);
+            if (criteriaDTO != null && referenceDTO != null) {
+                query = "INSERT INTO exclusion(idICEC, idRef) VALUES (?, ?)";
+                PreparedStatement preparedStatement = conn.prepareStatement(query);
+                preparedStatement.setInt(1, idICEC);
+                preparedStatement.setInt(2, idRef);
+                preparedStatement.execute();
                 System.out.println("Inserted row " + idICEC + ", " + idRef + " in exclusion");
             }
             else {
-                if (!criteria)
+                if (criteriaDTO == null)
                     System.out.println("idICEC doesn't exist " + idICEC);
-                if (!reference)
+                if (referenceDTO == null)
                     System.out.println("idRef doesn't exist " + idRef);
             }
         } catch (SQLException e) {
@@ -77,9 +78,14 @@ public class Exclusion {
         }
     }
 
-    public static void deleteRow(Statement s, String idICEC, int idRef) {
+    public static void deleteRow(Statement s, int idICEC, int idRef) {
+        String query = "DELETE FROM exclusion where idICEC = ? AND idRef = ?";
         try {
-            s.execute("DELETE FROM exclusion where idICEC = '" + idICEC + "' AND idRef = " + idRef);
+            Connection conn = s.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, idICEC);
+            preparedStatement.setInt(2, idRef);
+            preparedStatement.execute();
             System.out.println("Deleted row " + idICEC + ", " + idRef + " in exclusion");
         } catch (SQLException e) {
             while (e != null) {
@@ -93,9 +99,18 @@ public class Exclusion {
     }
 
     public static List<ExclusionDTO> getByIdRef(Statement s, int idRef) {
+        String query = "SELECT * FROM exclusion WHERE IDREF = ?";
         try {
-            ResultSet resultSet = s.executeQuery("SELECT * FROM exclusion WHERE idRef = " + idRef);
-            return convertResultSetToExclusionDTO(resultSet);
+            Connection conn = s.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, idRef);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<ExclusionDTO> exclusionDTOList = convertResultSetToExclusionDTO(resultSet, null);
+            exclusionDTOList.forEach(value -> {
+                CriteriaDTO criteriaDTO = Criteria.getById(conn, value.getIdICEC());
+                value.setNameICEC(criteriaDTO.getName());
+            });
+            return exclusionDTOList;
         } catch (SQLException e) {
             while (e != null) {
                 System.err.println("\n----- SQLException -----");
@@ -108,10 +123,15 @@ public class Exclusion {
         return null;
     }
 
-    public static List<ExclusionDTO> getByIdICEC(Statement s, String idICEC) {
+    public static List<ExclusionDTO> getByIdICEC(Statement s, int idICEC) {
+        String query = "SELECT * FROM exclusion WHERE IDICEC = ?";
         try {
-            ResultSet resultSet = s.executeQuery("SELECT * FROM exclusion WHERE idICEC = '" + idICEC + "'");
-            return convertResultSetToExclusionDTO(resultSet);
+            Connection conn = s.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, idICEC);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            CriteriaDTO criteriaDTO = Criteria.getById(conn, idICEC);
+            return convertResultSetToExclusionDTO(resultSet, criteriaDTO.getName());
         } catch (SQLException e) {
             while (e != null) {
                 System.err.println("\n----- SQLException -----");
@@ -178,10 +198,10 @@ public class Exclusion {
         }
     }
 
-    private static List<ExclusionDTO> convertResultSetToExclusionDTO(ResultSet resultSet) throws SQLException {
+    private static List<ExclusionDTO> convertResultSetToExclusionDTO(ResultSet resultSet, String nameICEC) throws SQLException {
         List<ExclusionDTO> exclusionDTOList = new ArrayList<>();
         while (resultSet.next()) {
-            exclusionDTOList.add(new ExclusionDTO(resultSet.getInt(2), resultSet.getString(1)));
+            exclusionDTOList.add(new ExclusionDTO(resultSet.getInt("idRef"), resultSet.getInt("idICEC"), nameICEC));
         }
         return exclusionDTOList;
     }
