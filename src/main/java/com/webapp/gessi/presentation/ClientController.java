@@ -5,6 +5,7 @@ import com.webapp.gessi.domain.controllers.ReferenceController;
 import com.webapp.gessi.domain.controllers.criteriaController;
 import com.webapp.gessi.domain.controllers.digitalLibraryController;
 import com.webapp.gessi.domain.dto.*;
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jbibtex.ParseException;
 import org.springframework.core.io.ByteArrayResource;
@@ -20,6 +21,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +39,23 @@ public class ClientController {
         model.addAttribute("idProject", idProject.orElse(-1));
         model.addAttribute("newProject", new ProjectDTO());
         return "index";
+    }
+
+    @RequestMapping(path = "/download_manual", method = RequestMethod.GET)
+    public ResponseEntity downloadManual() throws IOException {
+        ResponseEntity respEntity = new ResponseEntity("File Not Found", HttpStatus.OK);
+
+        File result = new File(getClass().getClassLoader().getResource("static/documents/Manual_GESSI-SLR.pdf").getFile());
+        if(result.exists()){
+            InputStream inputStream = Files.newInputStream(Paths.get(result.getPath()));
+            byte[] out= IOUtils.toByteArray(inputStream);
+
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.add("content-disposition", "attachment; filename=Manual GESSI-SLR.pdf");
+
+            respEntity = new ResponseEntity(out, responseHeaders,HttpStatus.OK);
+        }
+        return respEntity;
     }
 
     @PostMapping(value = "/newProject")
@@ -79,16 +99,22 @@ public class ClientController {
     }
 
     @RequestMapping(path = "/download", method = RequestMethod.GET)
-    public ResponseEntity<ByteArrayResource> download(@RequestParam(value = "idProject") Optional<Integer> idProject) throws IOException {
+    public ResponseEntity<ByteArrayResource> download(@RequestParam(value = "idProject") Optional<Integer> idProject) {
         try {
-            List<referenceDTO> p = ReferenceController.getReferences(idProject.orElse(0));
+            int project = idProject.orElse(0);
+            String nameFile = "All references";
+            if (project != 0) {
+                ProjectDTO projectDTO = ProjectController.getById(project);
+                nameFile = projectDTO.getName();
+            }
+            List<referenceDTO> p = ReferenceController.getReferences(project);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             Workbook workbook = creationExcel.create(p);
             workbook.write(stream);
             workbook.close();
             HttpHeaders header = new HttpHeaders();
             header.setContentType(new MediaType("application", "force-download"));
-            header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ProductTemplate.xlsx");
+            header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + nameFile + ".xlsx");
 
             return new ResponseEntity<>(new ByteArrayResource(stream.toByteArray()), header, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -210,10 +236,21 @@ public class ClientController {
     public String reset(@RequestParam(value = "idProject") Optional<Integer> idProject,
                         @ModelAttribute("mes") String mes,
                         Model model){
+        int project = idProject.orElse(-1);
         model.addAttribute("projectList", ProjectController.getAll());
-        model.addAttribute("idProject", idProject.orElse(-1));
+        model.addAttribute("idProject", project);
         model.addAttribute("newProject", new ProjectDTO());
-        ProjectDTO projectDTO = idProject.orElse(-1) == -1 ? new ProjectDTO(-1, null, 0) : ProjectController.getById(idProject.get());
+        ProjectDTO projectDTO = project == -1 ? new ProjectDTO(-1, null, 0) : ProjectController.getById(idProject.get());
+        if (project == -1) {
+            model.addAttribute("message", "Note that if you press the reset button the content of the database will be completely removed.");
+            model.addAttribute("titleDialog", "Reset Database");
+            model.addAttribute("messageDialog", " Are you sure you wanna reset the database?");
+        }
+        else {
+            model.addAttribute("message", "Note that if you press the reset button the content of the project " + projectDTO.getName() + " will be completely removed.");
+            model.addAttribute("titleDialog", "Delete Project");
+            model.addAttribute("messageDialog", " Are you sure you wanna delete the project " + projectDTO.getName() + " and all the references and criterias?");
+        }
         model.addAttribute("projectDTO", projectDTO);
         return "resetBD";
     }

@@ -26,16 +26,16 @@
                                 <a class="nav-link" onclick="onClick(this, '/newReference')" th:href="@{/newReference}">Import reference</a>
                             </li>
                             <li  class="nav-item">
-                                <a class="nav-link" onclick="onClick(this, '/editCriteria')" th:href="@{/editCriteria}">Edit ICEC</a>
+                                <a class="nav-link" onclick="onClick(this, '/editCriteria')" th:href="@{/editCriteria}">Criteria</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" onclick="onClick(this, '/getAllReferences')" th:href="@{/getAllReferences}">Table references</a>
+                                <a class="nav-link" onclick="onClick(this, '/getAllReferences')" th:href="@{/getAllReferences}">References</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" onclick="onClick(this, '/errors')" th:href="@{/errors}">Import errors</a>
+                                <a class="nav-link" onclick="onClick(this, '/errors')" th:href="@{/errors}">Errors</a>
                             </li>
                             <li  class="nav-item">
-                                <a class="nav-link active" onclick="onClick(this, '/resetView')" th:href="@{/resetView}">Reset database </a>
+                                <a class="nav-link active" onclick="onClick(this, '/resetView')" th:href="@{/resetView}">Reset</a>
                             </li>
                         </ul>
                     </div>
@@ -55,11 +55,10 @@
         <br>
         <div class="container">
             <h2> Reset</h2>
-            <span > Note that if you press the reset button the content of the database will be completely removed.
-                <button class="btn btn-primary eBtn" type="button" style="font-size:14px" data-toggle="modal" data-target="#exampleModal">
-                    <i class="fa fa-refresh">Reset</i>
-                </button>
-            </span>
+            <span th:text="${message}"></span>
+            <button class="btn btn-primary eBtn" type="button" style="font-size:14px" data-toggle="modal" data-target="#exampleModal">
+                <i class="fa fa-refresh">Reset</i>
+            </button>
             <br>
             <div th:if="${!#strings.isEmpty(mes)}">
                 <p class="alert alert-primary" role="alert" th:text="${mes}"></p>
@@ -70,17 +69,20 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Reset database</h5>
+                            <h5 class="modal-title" id="exampleModalLongTitle" th:text="${titleDialog}"></h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <label><i class="fa fa-warning"> Are you sure you wanna reset database?</i></label>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                <button id="buttonConf" type="submit" class="btn btn-primary">Confirm</button>
-                            </div>
+                            <label>
+                                <i class="fa fa-warning"></i>
+                                <span th:text="${messageDialog}"></span>
+                            </label>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button id="buttonConf" type="submit" class="btn btn-primary">Confirm</button>
                         </div>
                     </div>
                 </div>
@@ -128,7 +130,7 @@
     function updateProject(component) {
         queryParams.set("idProject", component.value);
         history.replaceState(null, null, "?"+queryParams.toString());
-        console.log(queryParams.toString());
+        location.reload();
     }
 
     function closeModel() {

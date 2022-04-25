@@ -134,7 +134,7 @@ public class Criteria {
     }
 
     private static List<CriteriaDTO> getAll(Connection conn, String type, int idProject) {
-        String query = "SELECT * FROM criteria WHERE TYPE = ? AND IDPROJECT = ?";
+        String query = "SELECT * FROM criteria WHERE TYPE = ? AND IDPROJECT = ? ORDER BY NAME ASC";
         try {
             PreparedStatement preparedStatement = conn.prepareStatement(query);
             preparedStatement.setString(1, type);
@@ -155,7 +155,7 @@ public class Criteria {
     }
 
     private static List<CriteriaDTO> getAll(Connection conn, int idProject) {
-        String query = "SELECT * FROM criteria WHERE IDPROJECT = ?";
+        String query = "SELECT * FROM criteria WHERE IDPROJECT = ? ORDER BY NAME ASC";
         try {
             PreparedStatement preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, idProject);
