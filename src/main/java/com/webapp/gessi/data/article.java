@@ -71,7 +71,7 @@ public class article {
     }
 
     //Guarda las referencias que no se pueden guardar en la BD
-    public static Timestamp iniCheck(Statement sta, String idDL, MultipartFile file) throws IOException, SQLException {
+    public static Timestamp iniCheck(Statement sta, String idDL, MultipartFile file) throws IOException {
         ByteArrayInputStream stream0 = new ByteArrayInputStream(file.getBytes());
         String myString = IOUtils.toString(stream0, StandardCharsets.UTF_8);
         ByteArrayInputStream stream = new ByteArrayInputStream(myString.getBytes(StandardCharsets.UTF_8));

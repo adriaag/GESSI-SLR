@@ -42,16 +42,16 @@
                         <a class="nav-link" onclick="onClick(this, '/newReference')" th:href="@{/newReference}">Import reference</a>
                     </li>
                     <li  class="nav-item">
-                        <a class="nav-link" onclick="onClick(this, '/editCriteria')" th:href="@{/editCriteria}">Edit ICEC</a>
+                        <a class="nav-link" onclick="onClick(this, '/editCriteria')" th:href="@{/editCriteria}">Criteria</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" onclick="onClick(this, '/getAllReferences')" th:href="@{/getAllReferences}">Table references</a>
+                        <a class="nav-link active" onclick="onClick(this, '/getAllReferences')" th:href="@{/getAllReferences}">References</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" onclick="onClick(this, '/errors')" th:href="@{/errors}">Import errors</a>
+                        <a class="nav-link" onclick="onClick(this, '/errors')" th:href="@{/errors}">Errors</a>
                     </li>
                     <li  class="nav-item">
-                        <a class="nav-link" onclick="onClick(this, '/resetView')" th:href="@{/resetView}">Reset database </a>
+                        <a class="nav-link" onclick="onClick(this, '/resetView')" th:href="@{/resetView}">Reset</a>
                     </li>
                 </ul>
 
@@ -211,7 +211,7 @@
     const modal = document.getElementById("exampleModal");
     const editForm = document.getElementById("myForm");
 
-    var queryParams = new URLSearchParams(window.location.search);
+    const queryParams = new URLSearchParams(window.location.search);
     if (queryParams.has("idProject")) {
         selectType[0].value = queryParams.get("idProject");
         editForm.action = editForm.action + "?" + queryParams.toString();
