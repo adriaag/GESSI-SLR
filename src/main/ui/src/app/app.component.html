@@ -1,0 +1,67 @@
+<head>
+  <title>Home</title>
+  <div replace="allReferences::head"></div>
+  <style>
+      .btn {
+          background-color: DodgerBlue;
+          border: none;
+          color: white;
+          padding: 12px 30px;
+          cursor: pointer;
+          font-size: 20px;
+      }
+
+      /* Darker background on mouse-over */
+      .btn:hover {
+          background-color: RoyalBlue;
+      }
+  </style>
+</head>
+<header fragment="header">
+  <nav class="navbar navbar-expand-lg py-3 navbar-dark shadow-sm navbar-fixed-top" style="background-color: #153053;">
+      <div class="container-fluid"><!--style="background-color: #356ac3;"-->
+          <!-- GESSi logo -->
+
+          <a id="logo" href="#" class="navbar-brand">
+              <!-- Logo Image -->
+              <img src="assets/favicon.ico" class="rounded-circle z-depth-0" alt="" height="35">
+              
+              <!-- Logo Text -->
+              <span class="text-uppercase font-weight-bold"> GESSI-SLR</span>
+          </a>
+          <div style="width: 50%">
+              <ul class="nav nav-tabs justify-content-center">
+                  <li  class="nav-item">
+                      <a class="nav-link active" routerLink="/">Home</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" onclick="onClick(this, '/newReference')" href="/newReference">Import reference</a>
+                  </li>
+                  <li  class="nav-item">
+                      <a class="nav-link" onclick="onClick(this, '/editCriteria')" href="/editCriteria">Criteria</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" onclick="onClick(this, '/getAllReferences')" href="/getAllReferences">References</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" onclick="onClick(this, '/errors')" href="/errors">Errors</a>
+                  </li>
+                  <li  class="nav-item">
+                      <a class="nav-link" onclick="onClick(this, '/resetView')" href="/resetView">Reset</a>
+                  </li>
+              </ul>
+
+          </div>
+          <div class="d-flex justify-content-between" style="width: 20%">
+              <label style="display: flex;" for="idProject"></label>
+              <select required id="idProject" (change)="changeProject($event)" class="form-control">
+                  <option value="-1" hidden="true">Select a Project</option>
+                  <option *ngFor="let project of projects" value={{project.id}} text={{project.name}}></option>
+                  
+              </select>
+          </div>
+      </div>
+  </nav>
+</header>
+projecte actual {{selectedProject}}
+<router-outlet></router-outlet>
