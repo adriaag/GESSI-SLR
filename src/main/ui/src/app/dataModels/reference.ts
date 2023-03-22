@@ -9,8 +9,8 @@ export interface Reference {
     idProject: Number;
     state: String;
     exclusionDTOList: Exclusion[];
-    articleDTO: Article;
-    digitalLibraryDTO: DigitalLibrary;
+    art: Article;
+    dl: DigitalLibrary;
     
 }
 

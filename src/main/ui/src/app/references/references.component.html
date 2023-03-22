@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!-- To use thymeleaf -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All references</title>
+</head>
+<body>
+<br>
+<div class="m-3" >
+    <h2> All references </h2>
+    <p>Download all references <a onclick="onClick(this, '/download')" th:href="@{/download}">here.</a></p>
+    <table class="table table-striped " id="dataTable" data-page-length='50'  data-order='[[0, "asc"]]'>
+        <thead>
+            <tr>
+                <th scope="col">DOI</th>
+                <th scope="col">#ref</th>
+                <th scope="col">DL</th>
+                <th scope="col">Year</th>
+                <th scope="col">Authors</th>
+                <th scope="col">Title</th>
+                <th scope="col">Venue</th>
+                <th scope="col">State</th>
+                <th scope="col">Criteria</th>
+                <th scope="col">Info</th>
+                <th scope="col">Classify</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let reference of references" [style]="reference.state === 'in' ? 'background-color:  #BDECD6': reference.state === 'out' ? 'background-color: #FFEBEE' : 'background-color: #E1F5FE'">
+                <td>{{reference.art.doi}}</td>
+                <td>{{reference.idRef}}</td>
+                <td>{{reference.dl.name}}</td>
+                <td>{{reference.art.any}}</td>
+                <td>
+                    <span *ngFor="let researcher of reference.art.researchers let i = 'index'">
+                        <span *ngIf="i < 2"> {{researcher.name}} ;<br> </span>
+                        <span *ngIf="i >= 2">...</span>
+                        <!---span class="hide" th:text="!${iterStatj.last}?${j.getName()}+'; ':${j.getName()}"></span--->
+                    </span>
+                </td>
+
+                <td >
+<!--                     <th:block th:with="name = ${i.getArt().getTitle()}">
+                        <div th:if="${#strings.length(name)}>=65" th:text="${#strings.substring(name,0,65)}+'...'"></div>
+                        <div th:unless="${#strings.length(name)}>=65" th:text="${name}"></div>
+                    </th:block> -->
+                </td>
+
+                <td th:if="${i.getArt().getVen() != null }" >
+                    <!-- <th:block th:with="name = ${i.getArt().getVen().getName()}">
+                        <div th:if="${#strings.length(name)}>=45" th:text="${#strings.substring(name,0,45)}+'...'"></div>
+                        <div th:unless="${#strings.length(name)}>=45" th:text="${name}"></div>
+                    </th:block> -->
+                </td>
+                <td th:unless="${i.getArt().getVen() != null }"> <p></p></td>
+                <td th:text="${i.getState()}"></td>
+                <td th:text="${i.getApplCriteriaString()}"></td>
+                <td th:unless="${i.getArt().getVen() != null }"> <p></p></td>
+                <td>
+                    <button class="btn btn-primary" th:data-url="@{/getReference?id={id}(id=${i.getIdRef()})}"
+                            onclick="window.open(this.getAttribute('data-url'))" style="font-size:12px"><i class="fa fa-info-circle" aria-hidden="true"></i>
+                    </button>
+                </td>
+                <td>
+                    <button id="modalButton" type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal" data-target="#exampleModal"
+                            th:attr="onclick=|editReference(this, &quot;${i.getIdRef()}&quot;, &quot;${i.getState()}&quot;, &quot;${i.getExclusionDTOIdList()}&quot;)|"><i class="fa fa-edit"></i>
+                    </button>
+                </td>
+
+            </tr>
+        </tbody>
+    </table>
+</div>
+<!-- Modal -->
+<div class="modal fade" th:id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Classify</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModel()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action='#' id="myForm" method="post" th:action="@{/editReference}" th:object="${f}">
+                    <div hidden class="form-group">
+                        <label for="id">Id</label>
+                        <input type="number" id="id" th:field="*{id}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <select id="state" onchange="updateEditCriteria(this)" required th:field="*{state}" class="form-control">
+                            <option value="" hidden>Select a type</option>
+                            <option value="">None</option>
+                            <option value="in">In</option>
+                            <option value="out">Out</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="applCriteria">Application criteria</label>
+                        <select multiple required id="applCriteria" th:field="*{applCriteria}" class="form-control">
+                            <option value="" hidden>Select a Criteria</option>
+                            <div th:each="x : ${ECCriteria}">
+                                <option th:value="${x.getId}" th:text="${x.getName}"></option>
+                            </div>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Update reference</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" th:id="createProject" tabindex="-1" role="dialog" aria-labelledby="createProject" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModal">Create Project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModel()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action='#' id="Form" method="post" th:action="@{/newProject}" th:object="${newProject}">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input id="name" required th:field="*{name}" class="form-control">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
