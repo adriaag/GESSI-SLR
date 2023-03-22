@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Project } from './dataModels/project';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
+import { Reference } from './dataModels/reference';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,15 @@ export class DataService {
       this.rootUrl+"/projects", this.setHttpHeader())
       .pipe(
         //tap(data => console.log("Anlagenstatus Daten:", data)),
+        catchError(this.handleError),
+      )
+  }
+
+  getReferences(idProject: number): Observable<Reference[]> {
+    return this.http.get<Project[]>(
+      `${this.rootUrl}/references?idProject=${idProject}`, this.setHttpHeader())
+      .pipe(
+        tap(data => console.log("Anlagenstatus Daten:", data)),
         catchError(this.handleError),
       )
   }

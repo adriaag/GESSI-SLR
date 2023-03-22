@@ -32,16 +32,18 @@
           <div style="width: 50%">
               <ul class="nav nav-tabs justify-content-center">
                   <li  class="nav-item">
-                      <a class="nav-link active" routerLink="/">Home</a>
+                      <a *ngIf="this.router.url === '/'" class="nav-link active" routerLink="/">Home</a>
+                      <a *ngIf="this.router.url != '/'" class="nav-link" routerLink="/">Home</a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link" onclick="onClick(this, '/newReference')" href="/newReference">Import reference</a>
+                      <a class="nav-link" routerLink="/newReference">Import reference</a>
                   </li>
                   <li  class="nav-item">
                       <a class="nav-link" onclick="onClick(this, '/editCriteria')" href="/editCriteria">Criteria</a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link" onclick="onClick(this, '/getAllReferences')" href="/getAllReferences">References</a>
+                      <a *ngIf="this.router.url === '/references'" class="nav-link active" routerLink="/references" [queryParams]="{idProject: selectedProject}">References</a>
+                      <a *ngIf="this.router.url != '/references'" class="nav-link" routerLink="/references" [queryParams]="{idProject: selectedProject}">References</a>
                   </li>
                   <li class="nav-item">
                       <a class="nav-link" onclick="onClick(this, '/errors')" href="/errors">Errors</a>
