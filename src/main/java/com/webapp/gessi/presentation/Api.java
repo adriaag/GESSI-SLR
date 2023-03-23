@@ -18,7 +18,6 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
@@ -48,6 +47,37 @@ public class Api{
         return ResponseEntity.ok(referenceDTOList);
     }
     
+    @GetMapping(value = "/download")
+    public ResponseEntity<ByteArrayResource> download(@RequestParam(value = "idProject") Integer idProject) {
+        try {
+            int project = idProject;
+            String nameFile = "All references";
+            if (project != 0) {
+                ProjectDTO projectDTO = ProjectController.getById(project);
+                nameFile = projectDTO.getName();
+            }
+            List<referenceDTO> p = ReferenceController.getReferences(project);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            Workbook workbook = creationExcel.create(p);
+            workbook.write(stream);
+            workbook.close();
+            HttpHeaders header = new HttpHeaders();
+            header.setContentType(new MediaType("application", "force-download"));
+            header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + nameFile + ".xlsx");
+
+            return ResponseEntity.ok(new ByteArrayResource(stream.toByteArray()));
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    
+    
+ 
+    
+    //////////////////////////////////FUNCIONS DE CLIENT CONTROLLER/////////////////////////////////////////////////////
+
     public String index(@RequestParam(value = "idProject", required = false) Optional<Integer> idProject,
                         Model model) throws SQLException {
         model.addAttribute("projectList", ProjectController.getAll());
@@ -83,30 +113,6 @@ public class Api{
         return "oneReference";
     }
 
-    @RequestMapping(path = "/download", method = RequestMethod.GET)
-    public ResponseEntity<ByteArrayResource> download(@RequestParam(value = "idProject") Optional<Integer> idProject) {
-        try {
-            int project = idProject.orElse(0);
-            String nameFile = "All references";
-            if (project != 0) {
-                ProjectDTO projectDTO = ProjectController.getById(project);
-                nameFile = projectDTO.getName();
-            }
-            List<referenceDTO> p = ReferenceController.getReferences(project);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            Workbook workbook = creationExcel.create(p);
-            workbook.write(stream);
-            workbook.close();
-            HttpHeaders header = new HttpHeaders();
-            header.setContentType(new MediaType("application", "force-download"));
-            header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + nameFile + ".xlsx");
-
-            return new ResponseEntity<>(new ByteArrayResource(stream.toByteArray()), header, HttpStatus.CREATED);
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     @RequestMapping(value = "/newReference")
     public String askInformation(@RequestParam(value = "idProject", required = false) Optional<Integer> idProject,
