@@ -32,33 +32,32 @@
                 <td>{{reference.dl.name}}</td>
                 <td>{{reference.art.any}}</td>
                 <td>
-                    <span *ngFor="let researcher of reference.art.researchers let i = 'index'">
-                        <span *ngIf="i < 2"> {{researcher.name}} ;<br> </span>
-                        <span *ngIf="i >= 2">...</span>
-                        <!---span class="hide" th:text="!${iterStatj.last}?${j.getName()}+'; ':${j.getName()}"></span--->
+                    <span *ngFor="let researcher of reference.art.researchers let i = 'index'; let last = 'last'">
+                        <span *ngIf="i < 1"> {{researcher.name}} ;<br> </span>
+                        <span *ngIf="i == 1">{{researcher.name}}</span>
+                        <span *ngIf="i == 1 && !last">...</span>
                     </span>
                 </td>
 
-                <td >
-<!--                     <th:block th:with="name = ${i.getArt().getTitle()}">
-                        <div th:if="${#strings.length(name)}>=65" th:text="${#strings.substring(name,0,65)}+'...'"></div>
-                        <div th:unless="${#strings.length(name)}>=65" th:text="${name}"></div>
-                    </th:block> -->
+                <td>
+                    <div *ngIf="reference.art.title.length >= 65">{{reference.art.title.substring(0,65)}}...</div> 
+                    <div *ngIf="reference.art.title.length < 65">{{reference.art.title}}</div>
                 </td>
 
-                <td th:if="${i.getArt().getVen() != null }" >
-                    <!-- <th:block th:with="name = ${i.getArt().getVen().getName()}">
-                        <div th:if="${#strings.length(name)}>=45" th:text="${#strings.substring(name,0,45)}+'...'"></div>
-                        <div th:unless="${#strings.length(name)}>=45" th:text="${name}"></div>
-                    </th:block> -->
+                <td *ngIf="reference.art.ven != null">
+                    <div *ngIf="reference.art.ven.name.length >=45">{{reference.art.ven.name.substring(0,45)}}...</div>
+                    <div *ngIf="reference.art.ven.name.length < 45">{{reference.art.ven.name}}</div>
                 </td>
-                <td th:unless="${i.getArt().getVen() != null }"> <p></p></td>
-                <td th:text="${i.getState()}"></td>
-                <td th:text="${i.getApplCriteriaString()}"></td>
-                <td th:unless="${i.getArt().getVen() != null }"> <p></p></td>
+                <td *ngIf="reference.art.ven == null"> <p></p></td>
+                <td> {{reference.state}} </td>
+                <td *ngIf="reference.exclusionDTOList != null">
+                    <div *ngFor="let exlusion of reference.exclusionDTOList">{{exlusion.nameICEC}} </div>
+                </td>
+                <td *ngIf="reference.exclusionDTOList == null"> </td>
+                <td *ngIf="reference.art.ven == null"> <p></p></td>
                 <td>
-                    <button class="btn btn-primary" th:data-url="@{/getReference?id={id}(id=${i.getIdRef()})}"
-                            onclick="window.open(this.getAttribute('data-url'))" style="font-size:12px"><i class="fa fa-info-circle" aria-hidden="true"></i>
+                    <button class="btn btn-primary" routerLink="/"
+                            style="font-size:12px"><i class="fa fa-info-circle" aria-hidden="true"></i>
                     </button>
                 </td>
                 <td>
