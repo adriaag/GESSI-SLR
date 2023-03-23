@@ -16,7 +16,7 @@ import { ReferencesComponent } from './references/references.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

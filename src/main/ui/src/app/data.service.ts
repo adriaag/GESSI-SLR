@@ -31,6 +31,14 @@ export class DataService {
       )
   }
 
+  getExcelFile(idProject: number): Observable<Blob> {
+    return this.http.get(
+      `${this.rootUrl}/download?idProject=${idProject}`,{responseType: 'blob' })
+      .pipe(
+        catchError(this.handleError)
+      )
+  }
+
   private setHttpHeader() {
     const headers = new HttpHeaders().set('Accept', 'application/json').set('Content-Type', 'application/json');
     let options = { headers: headers };

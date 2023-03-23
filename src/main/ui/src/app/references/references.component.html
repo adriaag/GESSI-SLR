@@ -8,25 +8,27 @@
 <br>
 <div class="m-3" >
     <h2> All references </h2>
-    <p>Download all references <a onclick="onClick(this, '/download')" th:href="@{/download}">here.</a></p>
-    <table class="table table-striped " id="dataTable" data-page-length='50'  data-order='[[0, "asc"]]'>
+    <div class="d-flex mt-3">
+        <a (click)="downloadExcel()" target="_blank"><button class="btn"><i class="fa fa-download"></i> Download references (.xls)</button></a>
+    </div>
+    <table matSort (matSortChange)="sortData($event)" class="table table-striped " id="dataTable" data-page-length='50'>
         <thead>
             <tr>
-                <th scope="col">DOI</th>
-                <th scope="col">#ref</th>
-                <th scope="col">DL</th>
-                <th scope="col">Year</th>
-                <th scope="col">Authors</th>
-                <th scope="col">Title</th>
-                <th scope="col">Venue</th>
-                <th scope="col">State</th>
-                <th scope="col">Criteria</th>
-                <th scope="col">Info</th>
-                <th scope="col">Classify</th>
+                <th mat-sort-header="doi" scope="col">DOI</th>
+                <th mat-sort-header="ref" scope="col">#ref</th>
+                <th mat-sort-header="dl" scope="col">DL</th>
+                <th mat-sort-header="year" scope="col">Year</th>
+                <th mat-sort-header="auth" scope="col">Authors</th>
+                <th mat-sort-header="title" scope="col">Title</th>
+                <th mat-sort-header="venue" scope="col">Venue</th>
+                <th mat-sort-header="state" scope="col">State</th>
+                <th mat-sort-header="crit" scope="col">Criteria</th>
+                <th mat-sort-header="inf" scope="col">Info</th>
+                <th mat-sort-header="clas" scope="col">Classify</th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let reference of references" [style]="reference.state === 'in' ? 'background-color:  #BDECD6': reference.state === 'out' ? 'background-color: #FFEBEE' : 'background-color: #E1F5FE'">
+            <tr *ngFor="let reference of sortedData" [style]="reference.state === 'in' ? 'background-color:  #BDECD6': reference.state === 'out' ? 'background-color: #FFEBEE' : 'background-color: #E1F5FE'">
                 <td>{{reference.art.doi}}</td>
                 <td>{{reference.idRef}}</td>
                 <td>{{reference.dl.name}}</td>
