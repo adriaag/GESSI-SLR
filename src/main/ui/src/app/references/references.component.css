@@ -11,3 +11,31 @@
 .btn:hover {
     background-color: RoyalBlue;
 }
+
+table {
+    width: 100%;
+  }
+  
+  .mat-form-field {
+    font-size: 14px;
+    width: 20%;
+  }
+  
+  .th-center{
+    text-align: center;
+  }
+  .th-left{
+    text-align: left;
+  }
+  .th-right{
+    text-align: right;
+  }
+
+  mat-paginator {
+    display: block;
+  }
+  
+  .mat-paginator-container {
+    display: flex;
+    align-items: center;
+  }
