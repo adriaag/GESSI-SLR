@@ -39,3 +39,8 @@ table {
     display: flex;
     align-items: center;
   }
+
+  h1 {
+    display: flex;
+    justify-content: space-between;
+  }
