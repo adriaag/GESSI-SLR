@@ -1,20 +1,22 @@
 <html>
 <head>
-    <title>All rows</title>
+    <title>All references</title>
 </head>
 <body>
 <br>
 <div class="m-3" >
-    <h2> All rows </h2>
-    <div class="d-flex mt-3">
-        <a (click)="downloadExcel()" target="_blank"><button class="btn"><i class="fa fa-download"></i> Download rows (.xls)</button></a>
-    </div>
-    
-    <mat-form-field>
-        <mat-label>Filter Table</mat-label>
-        <input matInput (keyup)="applyFilter($event)" placeholder="Search" #input>
-      </mat-form-field>
-    
+    <h2> All references </h2>
+    <h1>
+        <div class="d-flex mt-3">
+            <a (click)="downloadExcel()" target="_blank"><button class="btn"><i class="fa fa-download"></i> Download references (.xls)</button></a>
+        </div>
+
+        <mat-form-field >
+            <mat-label>Filter Table</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Search" #input>
+        </mat-form-field>
+
+    </h1>
     <table mat-table [dataSource]="dataSource" matSort class="table table-striped" id="dataTable">
             
         <ng-container matColumnDef="doi">
@@ -110,7 +112,7 @@
         </tr>
         
     </table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons aria-label="Select page of users"></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons aria-label="Select page of references"></mat-paginator>
 
 </div>
 <!-- Modal -->

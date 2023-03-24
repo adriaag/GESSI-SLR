@@ -53,6 +53,7 @@ export class ReferencesComponent implements OnInit{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sortData = this.sortData();
       this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = this.filterData();
     })
   }
 
@@ -63,6 +64,42 @@ export class ReferencesComponent implements OnInit{
         window.open(url);
     });
   }
+
+  filterData() {
+    let filterFunction = 
+        (data: Reference, filter: string): boolean => {
+          if (filter) {
+            //obtenim una string amb totes les dades de reference que apareixen a la taula 
+            var filterText = ""
+            filterText += data.doi;
+            filterText += data.idRef;
+            filterText += data.dl.name;
+            filterText += data.art.any;
+            for (let researcher of data.art.researchers){
+              filterText += researcher.name;
+            }
+            filterText += data.art.title;
+            filterText += data.art.ven.name;
+            filterText += data.state;
+            if (data.exclusionDTOList != null) {
+              for (let exclusion of data.exclusionDTOList){
+                filterText += exclusion.nameICEC;
+              }
+            }
+
+            filterText = filterText.toLowerCase()
+
+            console.log(filterText, "Text per filtrar")
+            
+            if (filterText.indexOf(filter) != -1) {
+                return true;
+            }
+            return false;
+          } else {
+            return true;
+          }
+       };    return filterFunction;
+}
   
   sortData() {
     let sortFunction =
