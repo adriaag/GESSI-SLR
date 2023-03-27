@@ -1,13 +1,14 @@
-import { Component, OnInit, ViewChild} from '@angular/core';
-import { Router } from '@angular/router';
+import { AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
 import { DataService } from '../data.service';
 import { Reference } from '../dataModels/reference';
 import { Researcher } from '../dataModels/researcher';
 import { ProjectService } from '../project.service';
 import { MatSort } from '@angular/material/sort';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatTableDataSource} from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 import { Exclusion } from '../dataModels/exclusion';
+import { MatDialog} from '@angular/material/dialog';
+import { ReferenceInfoComponent } from '../reference-info/reference-info.component';
 
 @Component({
   selector: 'app-references',
@@ -15,10 +16,13 @@ import { Exclusion } from '../dataModels/exclusion';
   styleUrls: ['./references.component.css']
 })
 
-export class ReferencesComponent implements OnInit{
-  references: Reference[] = []
-  projectId: number  = NaN
-  sortedData: Reference[] = []
+export class ReferencesComponent implements OnChanges, AfterViewInit{
+
+  @Input('references') referenceslist!: Reference[]
+
+  references: Reference[] = [];
+  projectId: number  = NaN;
+  sortedData: Reference[] = [];
   dataSource!: MatTableDataSource<Reference>;
   displayedColumns: string[] = ['doi','ref', 'dl', 'year', 'auth', 'tit', 'ven', 'sta', 'cri', 'inf', 'cla'];
 
@@ -26,36 +30,23 @@ export class ReferencesComponent implements OnInit{
   @ViewChild(MatSort) sort!: MatSort;
 
 
-  constructor(private dataService: DataService, private projectService: ProjectService, private router: Router) {}
-
-  ngOnInit(){
-    this.getProject();
-    this.getReferences();
+  constructor(private dataService: DataService, private dialog: MatDialog) {
   }
 
-  getProject(): void {
-    this.projectService.getProject().subscribe((resposta) => {
-      console.log(resposta , 'Projecte');
-      if (resposta != this.projectId) {
-        this.projectId = resposta
-        this.getReferences()
-      }
-
-    })
+  ngOnChanges(changes: SimpleChanges) {
+    this.references = this.referenceslist
+    this.sortedData = this.references.slice();
+    this.dataSource = new MatTableDataSource(this.referenceslist);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sortData = this.sortData();
+    this.dataSource.sort = this.sort;
+    this.dataSource.filterPredicate = this.filterData();
 
   }
 
-  getReferences(): void {
-    this.dataService.getReferences(this.projectId).subscribe((resposta)=> {
-      console.log(resposta , 'User resume response');
-      this.references = resposta;
-      this.sortedData = this.references.slice();
-      this.dataSource = new MatTableDataSource(resposta);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sortData = this.sortData();
-      this.dataSource.sort = this.sort;
-      this.dataSource.filterPredicate = this.filterData();
-    })
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+    this.dataSource.filterPredicate = this.filterData();
   }
 
   downloadExcel(): void {
@@ -63,6 +54,12 @@ export class ReferencesComponent implements OnInit{
         var newBlob = new Blob([resposta], { type: "application/vnd.ms-excel" });
         const url= window.URL.createObjectURL(newBlob);
         window.open(url);
+    });
+  }
+
+  openDialog(ref: Reference) {
+    this.dialog.open(ReferenceInfoComponent, {
+      data : ref
     });
   }
   

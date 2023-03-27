@@ -32,8 +32,9 @@
           <div style="width: 50%">
               <ul class="nav nav-tabs justify-content-center">
                   <li  class="nav-item">
-                      <a *ngIf="this.router.url === '/'" class="nav-link active" routerLink="/">Home</a>
-                      <a *ngIf="this.router.url != '/'" class="nav-link" routerLink="/">Home</a>
+                      <a *ngIf="this.selectedOption === 'index'" class="nav-link active">Home</a>
+                      <a *ngIf="this.selectedOption !== 'index'" class="nav-link" (click)="changeOption('index')">Home</a>
+
                   </li>
                   <li class="nav-item">
                       <a class="nav-link" routerLink="/newReference">Import reference</a>
@@ -42,12 +43,12 @@
                       <a class="nav-link" onclick="onClick(this, '/editCriteria')" href="/editCriteria">Criteria</a>
                   </li>
                   <li class="nav-item">
-                      <a *ngIf="this.router.url.includes('/references')" class="nav-link active" routerLink="/references">References</a>
-                      <a *ngIf="!this.router.url.includes('/references')" class="nav-link" routerLink="/references">References</a>
+                      <a *ngIf="this.selectedOption === 'references'" class="nav-link active">References</a>
+                      <a *ngIf="this.selectedOption !== 'references'" class="nav-link" (click)="changeOption('references')">References</a>
                   </li>
                   <li class="nav-item">
-                    <a *ngIf="this.router.url.includes('/errors')" class="nav-link active" routerLink="/errors">Errors</a>
-                    <a *ngIf="!this.router.url.includes('/errors')" class="nav-link" routerLink="/errors">Errors</a>
+                    <a *ngIf="this.selectedOption === 'errors'" class="nav-link active">References</a>
+                    <a *ngIf="this.selectedOption !== 'errors'" class="nav-link" (click)="changeOption('errors')">Errors</a>
                   </li>
                   <li  class="nav-item">
                       <a class="nav-link" onclick="onClick(this, '/resetView')" href="/resetView">Reset</a>
@@ -67,4 +68,8 @@
   </nav>
 </header>
 projecte actual {{selectedProject}}
-<router-outlet></router-outlet>
+<div [ngSwitch]="selectedOption">
+    <app-index *ngSwitchCase="'index'"></app-index>
+    <app-references *ngSwitchCase="'references'" [references]="references"></app-references>
+    <app-errors *ngSwitchCase="'errors'" [errors]="errors"></app-errors>
+</div>

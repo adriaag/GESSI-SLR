@@ -1,3 +1,18 @@
 .mar {
     padding: 50px 50px 100px;
 }
+
+.dialog-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+.boto {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+}

@@ -136,7 +136,7 @@ a:hover{
     color:#0056b3;
     text-decoration:underline
 }
-a:not([href]):not([tabindex]){
+/*a:not([href]):not([tabindex]){
     color:inherit;
     text-decoration:none
 }
@@ -146,7 +146,7 @@ a:not([href]):not([tabindex]):focus,a:not([href]):not([tabindex]):hover{
 }
 a:not([href]):not([tabindex]):focus{
     outline:0
-}
+}*/
 code,kbd,pre,samp{
     font-family:monospace,monospace;
     font-size:1em

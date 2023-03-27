@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -21,37 +21,23 @@ export class ErrorsComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
+  @Input('errors') errorslist!: ImportError[]
 
-  constructor(private dataService: DataService, private projectService: ProjectService) {}
 
-  ngOnInit(){
-    this.getProject();
-    this.getErrors();
-  }
-
-  getProject(): void {
-    this.projectService.getProject().subscribe((resposta) => {
-      console.log(resposta , 'Projecte');
-      if (resposta != this.projectId) {
-        this.projectId = resposta
-        this.getErrors()
-      }
-
-    })
+  ngOnChanges(changes: SimpleChanges) {
+    this.errors = this.errorslist
+    this.sortedData = this.errors.slice();
+    this.dataSource = new MatTableDataSource(this.errorslist);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sortData = this.sortData();
+    this.dataSource.sort = this.sort;
+    this.dataSource.filterPredicate = this.filterData();
 
   }
 
-  getErrors(): void {
-    this.dataService.getErrors(this.projectId).subscribe((resposta)=> {
-      console.log(resposta , 'User resume response');
-      this.errors = resposta;
-      this.sortedData = this.errors.slice();
-      this.dataSource = new MatTableDataSource(resposta);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sortData = this.sortData();
-      this.dataSource.sort = this.sort;
-      this.dataSource.filterPredicate = this.filterData();
-    })
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+    this.dataSource.filterPredicate = this.filterData();
   }
 
   filterData() {
