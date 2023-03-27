@@ -31,6 +31,15 @@ export class DataService {
       )
   }
 
+  getReference(idReference: number): Observable<Reference> {
+    return this.http.get<Project[]>(
+      `${this.rootUrl}/reference?idReference=${idReference}`, this.setHttpHeader())
+      .pipe(
+        tap(data => console.log("Anlagenstatus Daten:", data)),
+        catchError(this.handleError),
+      )
+  }
+
   getExcelFile(idProject: number): Observable<Blob> {
     return this.http.get(
       `${this.rootUrl}/download?idProject=${idProject}`,{responseType: 'blob' })
