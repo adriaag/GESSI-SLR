@@ -1,0 +1,90 @@
+<div class="m-3">
+<h2>One reference</h2>
+
+    <table style="border: hidden" class="table table-bordered table-striped">
+        <tbody style="border: hidden">
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>#ref</b></td>
+            <td style="border: hidden">{{reference.idRef}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>DL-name</b></td>
+            <td style="border: hidden">{{reference.dl.name}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>Year</b></td>
+            <td style="border: hidden">{{reference.art.any}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>DOI</b></td>
+            <td style="border: hidden">{{reference.doi}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>State</b></td>
+            <td style="border: hidden">{{reference.state}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>Criteria</b></td>
+            <td style="border: hidden" th:text="${ref.getApplCriteriaString()}">{{getCriteriaString()}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>Authors</b></td>
+            <td style="border: hidden">
+                <span *ngFor="let author of reference.art.researchers; let last = last">
+                    <span *ngIf="!last">{{author.name}}; </span>
+                    <span *ngIf="last">{{author.name}}</span>
+                </span>
+            </td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>Title</b></td>
+            <td style="border: hidden">{{reference.art.title}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>Venue</b></td>
+            <td style="border: hidden" *ngIf="reference.art.ven !== null">{{reference.art.ven.name}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>Type</b></td>
+            <td style="border: hidden">{{reference.art.type}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>Affiliations</b></td>
+            <td style="border: hidden">
+                <span *ngFor="let company of reference.art.companies; let last = last">
+                    <span *ngIf="!last">{{company.name}}; </span>
+                    <span *ngIf="last">{{company.name}}</span>
+                </span>
+            </td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>Volume</b></td>
+            <td style="border: hidden">{{reference.art.volume}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>Pages</b></td>
+            <td style="border: hidden">{{reference.art.pages}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>Number</b></td>
+            <td style="border: hidden">{{reference.art.number}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>Numpages</b></td>
+            <td style="border: hidden">{{reference.art.numpages}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>Keywords</b></td>
+            <td style="border: hidden">{{reference.art.keywords}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>Cite key</b></td>
+            <td style="border: hidden">{{reference.art.citeKey}}</td>
+        </tr>
+        <tr style="border: hidden">
+            <td style="border: hidden"><b>Abstract</b></td>
+            <td style="border: hidden">{{reference.art.abstractA}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

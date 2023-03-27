@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import { Component, OnInit, ViewChild} from '@angular/core';
+import { Router } from '@angular/router';
 import { DataService } from '../data.service';
 import { Reference } from '../dataModels/reference';
 import { Researcher } from '../dataModels/researcher';
 import { ProjectService } from '../project.service';
-import { MatSort, Sort } from '@angular/material/sort';
+import { MatSort } from '@angular/material/sort';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
 import { Exclusion } from '../dataModels/exclusion';
@@ -25,7 +26,7 @@ export class ReferencesComponent implements OnInit{
   @ViewChild(MatSort) sort!: MatSort;
 
 
-  constructor(private dataService: DataService, private projectService: ProjectService) {}
+  constructor(private dataService: DataService, private projectService: ProjectService, private router: Router) {}
 
   ngOnInit(){
     this.getProject();
@@ -63,6 +64,11 @@ export class ReferencesComponent implements OnInit{
         const url= window.URL.createObjectURL(newBlob);
         window.open(url);
     });
+  }
+
+  redirectToReference(ref: Reference): void {
+    this.router.navigateByUrl('/references/'+ref);
+    
   }
 
   filterData() {

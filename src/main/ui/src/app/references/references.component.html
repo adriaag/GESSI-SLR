@@ -43,7 +43,7 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Authors</th>
             <td mat-cell *matCellDef="let row">
                 <span *ngFor="let researcher of row.art.researchers let i = 'index'; let last = 'last'">
-                    <span *ngIf="i < 1"> {{researcher.name}} ;<br> </span>
+                    <span *ngIf="i < 1">{{researcher.name}};<br></span>
                     <span *ngIf="i == 1">{{researcher.name}}</span>
                     <span *ngIf="i == 1 && !last">...</span>
                 </span>
@@ -87,7 +87,7 @@
         <ng-container matColumnDef="inf">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Info</th>
             <td mat-cell *matCellDef="let row">
-                <button class="btn btn-primary" routerLink="/"
+                <button class="btn btn-primary" [routerLink]="['/references/',row.idRef]"
                             style="font-size:12px"><i class="fa fa-info-circle" aria-hidden="true"></i>
                 </button>
             </td>

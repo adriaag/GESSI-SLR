@@ -72,6 +72,11 @@ public class Api{
         }
     }
     
+    @GetMapping(value = "/reference", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
+    public ResponseEntity<?> getReference(@RequestParam(name= "idReference") int idR){
+        referenceDTO r = ReferenceController.getReference(idR);
+        return ResponseEntity.ok(r);
+    }
     
     
  
@@ -106,12 +111,6 @@ public class Api{
         return "redirect:" + url;
     }
 
-    @GetMapping(value = "/getReference", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public String getReference(@RequestParam(name= "id") int idR, Model model){
-        referenceDTO r = ReferenceController.getReference(idR);
-        model.addAttribute("ref", r);
-        return "oneReference";
-    }
 
 
     @RequestMapping(value = "/newReference")

@@ -13,12 +13,14 @@ import { MatInputModule } from '@angular/material/input';
 import { AppComponent } from './app.component';
 import { IndexComponent } from './index/index.component';
 import { ReferencesComponent } from './references/references.component';
+import { ReferenceInfoComponent } from './reference-info/reference-info.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     IndexComponent,
-    ReferencesComponent
+    ReferencesComponent,
+    ReferenceInfoComponent
   ],
   imports: [
     BrowserModule,
