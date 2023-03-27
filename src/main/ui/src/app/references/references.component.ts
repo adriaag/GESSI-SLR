@@ -65,12 +65,7 @@ export class ReferencesComponent implements OnInit{
         window.open(url);
     });
   }
-
-  redirectToReference(ref: Reference): void {
-    this.router.navigateByUrl('/references/'+ref);
-    
-  }
-
+  
   filterData() {
     let filterFunction = 
         (data: Reference, filter: string): boolean => {

@@ -4,6 +4,7 @@ import { Project } from './dataModels/project';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { Reference } from './dataModels/reference';
+import { ImportError } from './dataModels/importError';
 
 @Injectable({
   providedIn: 'root'
@@ -45,6 +46,15 @@ export class DataService {
       `${this.rootUrl}/download?idProject=${idProject}`,{responseType: 'blob' })
       .pipe(
         catchError(this.handleError)
+      )
+  }
+
+  getErrors(idProject: number): Observable<ImportError[]> {
+    return this.http.get<Project[]>(
+      `${this.rootUrl}/errors?idProject=${idProject}`, this.setHttpHeader())
+      .pipe(
+        tap(data => console.log("Anlagenstatus Daten:", data)),
+        catchError(this.handleError),
       )
   }
 

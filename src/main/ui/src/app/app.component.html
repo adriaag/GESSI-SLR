@@ -46,7 +46,8 @@
                       <a *ngIf="!this.router.url.includes('/references')" class="nav-link" routerLink="/references">References</a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link" onclick="onClick(this, '/errors')" href="/errors">Errors</a>
+                    <a *ngIf="this.router.url.includes('/errors')" class="nav-link active" routerLink="/errors">Errors</a>
+                    <a *ngIf="!this.router.url.includes('/errors')" class="nav-link" routerLink="/errors">Errors</a>
                   </li>
                   <li  class="nav-item">
                       <a class="nav-link" onclick="onClick(this, '/resetView')" href="/resetView">Reset</a>
