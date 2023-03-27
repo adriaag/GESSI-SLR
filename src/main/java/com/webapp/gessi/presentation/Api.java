@@ -79,6 +79,12 @@ public class Api{
     }
     
     
+    @GetMapping(value = "/errors")
+    public ResponseEntity<?> importErrors(@RequestParam(value = "idProject") Integer idProject) throws SQLException, IOException, ParseException {
+        List<importErrorDTO> errors = ReferenceController.getAllErrors();
+        return ResponseEntity.ok(errors);
+    }
+    
  
     
     //////////////////////////////////FUNCIONS DE CLIENT CONTROLLER/////////////////////////////////////////////////////
@@ -157,16 +163,6 @@ public class Api{
             redirectAttr.addFlashAttribute("DLnew", names.get(num - 1));
         }
         return "redirect:/newReference?idProject=" + f.getIdProject();
-    }
-
-    @GetMapping(value = "/errors")
-    public String importErrors(@RequestParam(value = "idProject") Optional<Integer> idProject,
-                               Model model) throws SQLException, IOException, ParseException {
-        model.addAttribute("projectList", ProjectController.getAll());
-        model.addAttribute("idProject", idProject.orElse(-1));
-        model.addAttribute("errorsList", ReferenceController.getAllErrors());
-        model.addAttribute("newProject", new ProjectDTO());
-        return "importErrors";
     }
 
     @GetMapping(value = "/editCriteria")

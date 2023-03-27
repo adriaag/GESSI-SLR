@@ -14,13 +14,15 @@ import { AppComponent } from './app.component';
 import { IndexComponent } from './index/index.component';
 import { ReferencesComponent } from './references/references.component';
 import { ReferenceInfoComponent } from './reference-info/reference-info.component';
+import { ErrorsComponent } from './errors/errors.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     IndexComponent,
     ReferencesComponent,
-    ReferenceInfoComponent
+    ReferenceInfoComponent,
+    ErrorsComponent
   ],
   imports: [
     BrowserModule,
