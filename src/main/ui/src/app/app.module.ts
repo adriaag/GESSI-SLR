@@ -17,6 +17,8 @@ import { IndexComponent } from './index/index.component';
 import { ReferencesComponent } from './references/references.component';
 import { ReferenceInfoComponent } from './reference-info/reference-info.component';
 import { ErrorsComponent } from './errors/errors.component';
+import { ReferenceImportComponent } from './reference-import/reference-import.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,8 @@ import { ErrorsComponent } from './errors/errors.component';
     IndexComponent,
     ReferencesComponent,
     ReferenceInfoComponent,
-    ErrorsComponent
+    ErrorsComponent,
+    ReferenceImportComponent
   ],
   imports: [
     BrowserModule,
@@ -37,7 +40,9 @@ import { ErrorsComponent } from './errors/errors.component';
     MatFormFieldModule,
     MatInputModule,
     MatDialogModule,
-    MatIconModule
+    MatIconModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

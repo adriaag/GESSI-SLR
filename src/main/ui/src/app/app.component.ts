@@ -19,12 +19,19 @@ export class AppComponent implements OnInit {
   selectedOption: String = "index"
   references: Reference[] = [];
   errors: ImportError[] = [];
+  dlNames: String[] = [];
 
 
   constructor(private dataService: DataService, public router: Router, private projectService: ProjectService) {}
 
   ngOnInit(): void {
     this.getProjects();
+    this.getDLNames();
+  }
+
+  newReferences(): void {
+    this.getProjectData();
+    this.getProjectErrors();
   }
 
   getProjects(): void {
@@ -57,6 +64,14 @@ export class AppComponent implements OnInit {
     this.dataService.getErrors(this.selectedProject).subscribe((resposta)=> {
       console.log(resposta , 'User resume response');
       this.errors = resposta;
+    })
+
+  }
+
+  getDLNames(): void {
+    this.dataService.getDLNames().subscribe((resposta)=> {
+      console.log(resposta , 'User resume response');
+      this.dlNames = resposta;
     })
 
   }

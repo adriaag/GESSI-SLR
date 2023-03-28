@@ -1,11 +1,11 @@
 package com.webapp.gessi.presentation;
 
+
 import com.webapp.gessi.domain.controllers.ProjectController;
 import com.webapp.gessi.domain.controllers.ReferenceController;
 import com.webapp.gessi.domain.controllers.criteriaController;
 import com.webapp.gessi.domain.controllers.digitalLibraryController;
 import com.webapp.gessi.domain.dto.*;
-import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jbibtex.ParseException;
 import org.springframework.core.io.ByteArrayResource;
@@ -13,20 +13,20 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.json.JSONObject;
 
 @RestController
 @RequestMapping("/api/")
@@ -78,12 +78,55 @@ public class Api{
         return ResponseEntity.ok(r);
     }
     
+    @PostMapping(value = "/newReferencesFromFile", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> submitFile(@RequestParam(name = "idProject") String idProject, @RequestParam(name = "dlNum") String dlNum, @RequestParam(name = "file") MultipartFile file)
+            throws ParseException, SQLException, IOException {
+    	
+    	
+    	formDTO form = new formDTO();
+    	form.setdlNum(dlNum);
+    	form.setFile(file);
+    	form.setIdProject(Integer.parseInt(idProject));
+    	
+        List<String> names = digitalLibraryController.getNames();
+        List<importErrorDTO> errors;
+        
+        String nameFile = form.getFile().getOriginalFilename();
+        JSONObject returnData = new JSONObject();
+        if(!nameFile.matches(PATH_PATTERN)) {
+        	returnData.put("errorFile", "The file selected has to be a BIB file.");
+        	returnData.put("importBool", false);
+        }
+        else {
+            errors = ReferenceController.addReference(form.getdlNum(), form.getIdProject(), form.getFile());
+            int num = Integer.parseInt(form.getdlNum());
+            returnData.put("newDL", form.getdlNum());
+            returnData.put("newName", StringUtils.cleanPath(nameFile));
+            returnData.put("errors", errors);
+       
+            if (ReferenceController.getReferencesImport() > 0) {
+            	returnData.put("refsImp", ReferenceController.getReferencesImport());
+                ReferenceController.resetReferencesImport();
+            }
+            returnData.put("DLnew", names.get(num - 1));
+            returnData.put("importBool", true);            
+        }
+        return ResponseEntity.ok(returnData.toString());
+    }
+    
+    @GetMapping(value = "/dl", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
+    public ResponseEntity<?> getDLs() throws SQLException{
+    	List<String> dlNames = digitalLibraryController.getNames();
+        return ResponseEntity.ok(dlNames);
+    }
+    
     
     @GetMapping(value = "/errors")
     public ResponseEntity<?> importErrors(@RequestParam(value = "idProject") Integer idProject) throws SQLException, IOException, ParseException {
         List<importErrorDTO> errors = ReferenceController.getAllErrors();
         return ResponseEntity.ok(errors);
     }
+    
     
  
     
@@ -115,54 +158,6 @@ public class Api{
             url = url + "?idProject=" + id;
         }
         return "redirect:" + url;
-    }
-
-
-
-    @RequestMapping(value = "/newReference")
-    public String askInformation(@RequestParam(value = "idProject", required = false) Optional<Integer> idProject,
-                                 @ModelAttribute("errorFile") String errorFile,
-                                 @ModelAttribute("importBool") String importBool,
-                                 @ModelAttribute("newDL") String newDL,
-                                 @ModelAttribute("newName") String newName,
-                                 @ModelAttribute("errors") importErrorDTO errors,
-                                 @ModelAttribute("refsImp") String refsImp,
-                                 @ModelAttribute("DLnew") String DLnew,
-                                 Model model) throws SQLException {
-        model.addAttribute("projectList", ProjectController.getAll());
-        model.addAttribute("idProject", idProject.orElse(-1));
-        model.addAttribute("f", new formDTO());
-        model.addAttribute("DLnames", digitalLibraryController.getNames());
-        model.addAttribute("newProject", new ProjectDTO());
-        return "newReference";
-    }
-
-    @PostMapping(value = "/new")
-    public String submit(@ModelAttribute("f") formDTO f,
-                         RedirectAttributes redirectAttr)
-            throws ParseException, SQLException, IOException {
-        List<String> names = digitalLibraryController.getNames();
-        List<importErrorDTO> errors;
-        String nameFile = f.getFile().getOriginalFilename();
-        if(!nameFile.matches(PATH_PATTERN)) {
-            redirectAttr.addFlashAttribute("errorFile", "The file selected has to be a BIB file.");
-            redirectAttr.addFlashAttribute("importBool", false);
-        }
-        else {
-            errors = ReferenceController.addReference(f.getdlNum(), f.getIdProject(), f.getFile());
-            int num = Integer.parseInt(f.getdlNum());
-            redirectAttr.addFlashAttribute("newDL", f.getdlNum());
-            redirectAttr.addFlashAttribute("newName", StringUtils.cleanPath(nameFile));
-            redirectAttr.addFlashAttribute("errors", errors);
-            if (ReferenceController.getReferencesImport() > 0) {
-                redirectAttr.addFlashAttribute("refsImp", ReferenceController.getReferencesImport());
-                ReferenceController.resetReferencesImport();
-            }
-            redirectAttr.addFlashAttribute("importBool", true);
-            redirectAttr.addFlashAttribute("errorFile", "");
-            redirectAttr.addFlashAttribute("DLnew", names.get(num - 1));
-        }
-        return "redirect:/newReference?idProject=" + f.getIdProject();
     }
 
     @GetMapping(value = "/editCriteria")

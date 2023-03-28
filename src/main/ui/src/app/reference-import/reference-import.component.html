@@ -1,0 +1,53 @@
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Add reference</title>
+</head>
+
+<body>
+    <form ngNativeValidate method="post" enctype="multipart/form-data">
+        <div class=" container" >
+            <h2> Import new reference </h2>
+            <div class="form-group">
+                <label for="file">File</label>
+                <input id="file" type="file" name="file" required (change)="handleFileInput($event)" class="form-control"
+                       placeholder="Enter .bib file" accept="file/bib"/>
+            </div>
+            <div class="form-group">
+                <label for="dlNum">Digital Library</label>
+                <select id="dlNum" required class="form-control" (change)="changeDL($event)">
+                <option value="" hidden="true">Select a digital library</option>
+                <option *ngFor="let name of DLNames; let i = index" value={{i+1}}>{{name}}</option>
+                </select>
+            </div>
+            <button type="submit" id="createReference" (click)="submitFile()" class="btn btn-primary">Create reference</button>
+            <button type="reset" class="btn btn-secondary">Clear</button>
+            <br>
+
+            <div *ngIf="importBool == false"> 
+                <p style="color:#ff0000"></p> {{errorFile}} </div>
+            <div *ngIf="importBool == true">
+                <div><b>Imported file name: </b><span id="pathNEW"> {{newName}} </span></div>
+                <div><b>Number of references imported: </b><span id="numRNEW"> {{refsImp}}</span></div>
+                <div><b>Digital library of imported file: </b><span id="DLNEW"> {{DLnew}}</span></div>
+                <div *ngIf="errors.length == 0">
+                    <b>Import process successfully.</b>
+                </div>
+                <div *ngIf="!(errors.length == 0)">
+                    <table class="table table-bordered  table-striped ">
+                        <tr colspan="4"><b>Import process errors:</b></tr>
+                        <tr class="btn-info" style="background: #1c4c96 ">
+                            <th>DOI</th>
+                            <th>DL</th>
+                            <th>Reference's information </th>
+                        </tr>
+                        <tr *ngFor="let error of errors">
+                            <td>{{error.doi}}</td>
+                            <td>{{error.idDL}}</td>
+                            <td>{{error.bibTex}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>

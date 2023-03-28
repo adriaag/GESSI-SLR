@@ -5,6 +5,7 @@ import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { Reference } from './dataModels/reference';
 import { ImportError } from './dataModels/importError';
+import { ReferenceFromFileResponse } from './dataModels/referenceFromFileResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -56,6 +57,30 @@ export class DataService {
         tap(data => console.log("Anlagenstatus Daten:", data)),
         catchError(this.handleError),
       )
+  }
+
+  getDLNames(): Observable<String[]> {
+    return this.http.get<Project[]>(
+      `${this.rootUrl}/dl`, this.setHttpHeader())
+      .pipe(
+        tap(data => console.log("Anlagenstatus Daten:", data)),
+        catchError(this.handleError),
+      )
+  }
+
+  createReferenceFromFile(idProject: string, idDl: string, file: File): Observable<ReferenceFromFileResponse> {
+    console.log(idProject, 'idProject')
+    const formData: FormData = new FormData();
+    formData.append('file', file);
+    formData.append('dlNum',idDl);
+    formData.append('idProject',idProject);
+    const header = new HttpHeaders()//.set('Content-Type', 'application/x-www-form-urlencoded')
+    return this.http.post<ReferenceFromFileResponse>(
+      `${this.rootUrl}/newReferencesFromFile`,formData,{headers: header})
+    .pipe(
+      tap(data => console.log("Anlagenstatus Daten:", data)),
+      catchError(this.handleError),
+    )
   }
 
   private setHttpHeader() {
