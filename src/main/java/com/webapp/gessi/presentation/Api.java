@@ -137,6 +137,12 @@ public class Api{
         return ResponseEntity.ok(returnData.toString());
     }
     
+    @PostMapping(value=("/criteria"))
+    public ResponseEntity<?> newCriteria(@RequestParam(name = "name") String name, @RequestParam(name = "text") String text, @RequestParam(name = "type") String type, @RequestParam(name = "idProject") Integer idProject) {
+        String messageError = criteriaController.addCriteria(name, text, type, idProject);
+        return ResponseEntity.ok(messageError);
+    }
+    
     
  
     
