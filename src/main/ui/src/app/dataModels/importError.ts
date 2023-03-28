@@ -1,6 +1,6 @@
 export interface ImportError {
     dateTime: Date;
-    idDl: number;
+    idDL: number;
     doi: String;
     bibTex: String;
 }

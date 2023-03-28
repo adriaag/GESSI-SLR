@@ -45,8 +45,10 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   }
 
   ngAfterViewInit() {
+    this.dataSource.sortData = this.sortData();
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.filterData();
+    this.dataSource.paginator = this.paginator;
   }
 
   downloadExcel(): void {

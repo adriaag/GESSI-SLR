@@ -47,7 +47,7 @@ export class ErrorsComponent {
             //obtenim una string amb totes les dades de error que apareixen a la taula 
             var filterText = ""
             filterText += data.dateTime;
-            filterText += data.idDl;
+            filterText += data.idDL;
             filterText += data.doi;
             filterText += data.bibTex;
 
@@ -78,7 +78,7 @@ export class ErrorsComponent {
           case 'dat':
             return compare(a.dateTime, b.dateTime, isAsc);
           case 'idDL':
-            return compare(a.idDl, b.idDl, isAsc);
+            return compare(a.idDL, b.idDL, isAsc);
           case 'doi':
             return compare(a.doi, b.doi, isAsc);
           case 'bibTex':
