@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
   
   title = 'GESSI-SLR';
   projects: Project[] = [];
-  selectedProject: number = NaN;
+  selectedProject!: Project;
   selectedOption: String = "index"
   references: Reference[] = [];
   errors: ImportError[] = [];
@@ -43,8 +43,7 @@ export class AppComponent implements OnInit {
     })
   }
 
-  changeProject(value: any) {
-    this.selectedProject = value.target.value;
+  changeProject() {
     this.getProjectData()
     this.getProjectErrors()
     this.getProjectCriteria()
@@ -55,7 +54,7 @@ export class AppComponent implements OnInit {
   }
 
   getProjectData(): void {
-    this.dataService.getReferences(this.selectedProject).subscribe((resposta)=> {
+    this.dataService.getReferences(this.selectedProject.id).subscribe((resposta)=> {
       console.log(resposta , 'User resume response');
       this.references = resposta;
     })
@@ -63,7 +62,7 @@ export class AppComponent implements OnInit {
   }
 
   getProjectErrors(): void {
-    this.dataService.getErrors(this.selectedProject).subscribe((resposta)=> {
+    this.dataService.getErrors(this.selectedProject.id).subscribe((resposta)=> {
       console.log(resposta , 'User resume response');
       this.errors = resposta;
     })
@@ -71,7 +70,7 @@ export class AppComponent implements OnInit {
   }
 
   getProjectCriteria(): void {
-    this.dataService.getCriteria(this.selectedProject).subscribe((resposta) => {
+    this.dataService.getCriteria(this.selectedProject.id).subscribe((resposta) => {
       this.EC = resposta.exclusionCriteria;
       this.IC = resposta.inclusionCriteria
     })

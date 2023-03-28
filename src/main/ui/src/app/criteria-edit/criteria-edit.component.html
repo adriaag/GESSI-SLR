@@ -6,7 +6,7 @@
     <div mat-dialog-title class="dialog-title">
         <h2 *ngIf="criteria.id === -1">New Criteria</h2>
         <h2 *ngIf="criteria.id !== -1">Edit Criteria</h2>
-        <button class="boto" mat-icon-button aria-label="close dialog" mat-dialog-close>
+        <button class="boto" mat-icon-button aria-label="close dialog" [mat-dialog-close]="errors">
             <mat-icon>close</mat-icon>
         </button>
     </div>
@@ -29,17 +29,20 @@
                 <label for="type">Type</label>
                 <select id="type" required [formControl]="type" class="form-control">
                     <option value="" hidden="true">Select a type</option>
-                    <option value="inclusion">Inclusion</option>
+                    <option value="inclusion" [disabled]="inclusionDisabled">Inclusion</option>
                     <option value="exclusion">Exclusion</option>
                 </select>
             </div>
             <div class="footer">
-                <input type="reset" class="btn btn-secondary pull-left" value="Clear">
-                <input type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right" [value]="criteria.id === -1? 'Create criteria' : 'Edit Criteria'">
+                <button type="reset" class="btn btn-secondary pull-left">Clear</button>
+                <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right" (click)="submit()" [mat-dialog-close]="errors">
+                    <div *ngIf="criteria.id === -1">Create criteria</div>
+                    <div *ngIf="criteria.id !== -1">Edit criteria</div>
+                </button>
             </div>
         </form>
         <br>
         <br>
-        <div th:if="${errorM}"> <p th:text="${errorM}" style="color:#ff0000"></p> </div>
+        <div> <p style="color:#ff0000">{{errors}}</p> </div>
     </mat-dialog-content>
 </div>

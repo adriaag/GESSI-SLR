@@ -1,5 +1,5 @@
 export interface Project {
-    id: Number;
-    name: String;
-    idDuplicateCriteria: Number;
+    id: number;
+    name: string;
+    idDuplicateCriteria: number;
 }

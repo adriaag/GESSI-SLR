@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { DataService } from '../data.service';
 import { ImportError } from '../dataModels/importError';
 

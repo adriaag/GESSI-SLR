@@ -60,9 +60,9 @@
           </div>
           <div class="d-flex justify-content-between" style="width: 20%">
               <label style="display: flex;" for="idProject"></label>
-              <select required id="idProject" (change)="changeProject($event)" class="form-control">
-                  <option value="-1" hidden="true">Select a Project</option>
-                  <option *ngFor="let project of projects" value={{project.id}} text={{project.name}}></option>
+              <select required id="idProject" (change)="changeProject()" [(ngModel)]="selectedProject" class="form-control">
+                  <option [selected]="true" hidden="true">Select a Project</option>
+                  <option *ngFor="let project of projects" [ngValue]="project">{{project.name}}</option>
                   
               </select>
           </div>
@@ -71,8 +71,8 @@
 </header>
 <div [ngSwitch]="selectedOption">
     <app-index *ngSwitchCase="'index'"></app-index>
-    <app-references *ngSwitchCase="'references'" [references]="references" [idProject]="selectedProject"></app-references>
+    <app-references *ngSwitchCase="'references'" [references]="references" [idProject]="selectedProject.id"></app-references>
     <app-errors *ngSwitchCase="'errors'" [errors]="errors"></app-errors>
-    <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject" (newReferencesImported)="newReferences()"> </app-reference-import>
-    <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC"></app-criteria>
+    <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject.id" (newReferencesImported)="newReferences()"> </app-reference-import>
+    <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC" [idDuplicateCriteria]="selectedProject.idDuplicateCriteria" [idProject]="selectedProject.id" (criteriaUpdated)="getProjectCriteria()"></app-criteria>
 </div>
