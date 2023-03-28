@@ -2,7 +2,6 @@ import { AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild} f
 import { DataService } from '../data.service';
 import { Reference } from '../dataModels/reference';
 import { Researcher } from '../dataModels/researcher';
-import { ProjectService } from '../project.service';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';

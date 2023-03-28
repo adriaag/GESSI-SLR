@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Project } from './dataModels/project';
 import { DataService } from './data.service';
 import { Router } from '@angular/router'
-import { ProjectService } from './project.service';
 import { Reference } from './dataModels/reference';
 import { ImportError } from './dataModels/importError';
 import { Criteria } from './dataModels/criteria';
@@ -25,7 +24,7 @@ export class AppComponent implements OnInit {
   EC: Criteria[] = [];
 
 
-  constructor(private dataService: DataService, public router: Router, private projectService: ProjectService) {}
+  constructor(private dataService: DataService, public router: Router) {}
 
   ngOnInit(): void {
     this.getProjects();
@@ -45,7 +44,6 @@ export class AppComponent implements OnInit {
   }
 
   changeProject(value: any) {
-    this.projectService.setProject(value.target.value);
     this.selectedProject = value.target.value;
     this.getProjectData()
     this.getProjectErrors()

@@ -2,9 +2,7 @@ import { Component, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { DataService } from '../data.service';
 import { ImportError } from '../dataModels/importError';
-import { ProjectService } from '../project.service';
 
 @Component({
   selector: 'app-errors',

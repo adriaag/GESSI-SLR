@@ -20,6 +20,7 @@ import { ErrorsComponent } from './errors/errors.component';
 import { ReferenceImportComponent } from './reference-import/reference-import.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CriteriaComponent } from './criteria/criteria.component';
+import { CriteriaEditComponent } from './criteria-edit/criteria-edit.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { CriteriaComponent } from './criteria/criteria.component';
     ReferenceInfoComponent,
     ErrorsComponent,
     ReferenceImportComponent,
-    CriteriaComponent
+    CriteriaComponent,
+    CriteriaEditComponent,
   ],
   imports: [
     BrowserModule,
