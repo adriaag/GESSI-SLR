@@ -71,7 +71,7 @@
 projecte actual {{selectedProject}}
 <div [ngSwitch]="selectedOption">
     <app-index *ngSwitchCase="'index'"></app-index>
-    <app-references *ngSwitchCase="'references'" [references]="references"></app-references>
+    <app-references *ngSwitchCase="'references'" [references]="references" [idProject]="selectedProject"></app-references>
     <app-errors *ngSwitchCase="'errors'" [errors]="errors"></app-errors>
     <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject" (newReferencesImported)="newReferences()"> </app-reference-import>
 </div>

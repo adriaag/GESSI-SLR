@@ -19,9 +19,9 @@ import { ReferenceInfoComponent } from '../reference-info/reference-info.compone
 export class ReferencesComponent implements OnChanges, AfterViewInit{
 
   @Input('references') referenceslist!: Reference[]
+  @Input('idProject') idProject!: number
 
   references: Reference[] = [];
-  projectId: number  = NaN;
   sortedData: Reference[] = [];
   dataSource!: MatTableDataSource<Reference>;
   displayedColumns: string[] = ['doi','ref', 'dl', 'year', 'auth', 'tit', 'ven', 'sta', 'cri', 'inf', 'cla'];
@@ -52,7 +52,7 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   }
 
   downloadExcel(): void {
-    this.dataService.getExcelFile(this.projectId).subscribe((resposta) => {
+    this.dataService.getExcelFile(this.idProject).subscribe((resposta) => {
         var newBlob = new Blob([resposta], { type: "application/vnd.ms-excel" });
         const url= window.URL.createObjectURL(newBlob);
         window.open(url);
