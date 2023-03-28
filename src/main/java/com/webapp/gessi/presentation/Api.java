@@ -121,24 +121,26 @@ public class Api{
     }
     
     
-    @GetMapping(value = "/errors")
+    @GetMapping(value = "/errors", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public ResponseEntity<?> importErrors(@RequestParam(value = "idProject") Integer idProject) throws SQLException, IOException, ParseException {
         List<importErrorDTO> errors = ReferenceController.getAllErrors();
         return ResponseEntity.ok(errors);
+    }
+    
+    @GetMapping(value = "/criteria", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
+    public ResponseEntity<?> getCriteria(@RequestParam(value = "idProject") Integer idProject) {
+        List<CriteriaDTO> lIC = criteriaController.getCriteriasIC(idProject);
+        List<CriteriaDTO> lEC = criteriaController.getCriteriasEC(idProject);
+        JSONObject returnData = new JSONObject();
+        returnData.put("inclusionCriteria", lIC);
+        returnData.put("exclusionCriteria", lEC);
+        return ResponseEntity.ok(returnData.toString());
     }
     
     
  
     
     //////////////////////////////////FUNCIONS DE CLIENT CONTROLLER/////////////////////////////////////////////////////
-
-    public String index(@RequestParam(value = "idProject", required = false) Optional<Integer> idProject,
-                        Model model) throws SQLException {
-        model.addAttribute("projectList", ProjectController.getAll());
-        model.addAttribute("idProject", idProject.orElse(-1));
-        model.addAttribute("newProject", new ProjectDTO());
-        return "index";
-    }
 
     @PostMapping(value = "/newProject")
     public String submitNewProject(@ModelAttribute("newProject") ProjectDTO projectDTO,
@@ -158,23 +160,6 @@ public class Api{
             url = url + "?idProject=" + id;
         }
         return "redirect:" + url;
-    }
-
-    @GetMapping(value = "/editCriteria")
-    public String askInformationCriteria(@RequestParam(value = "idProject", required = false) Optional<Integer> idProject,
-                                         Model model){
-        int auxIdProject = idProject.orElse(-1);
-        ProjectDTO projectDTO = auxIdProject == -1 ? new ProjectDTO(-1, null, 0) : ProjectController.getById(idProject.get());
-        model.addAttribute("currentProject", projectDTO);
-        List<ProjectDTO> projectDTOList = ProjectController.getAll();
-        model.addAttribute("projectList", projectDTOList);
-        List<CriteriaDTO> lIC = criteriaController.getCriteriasIC(auxIdProject);
-        model.addAttribute("listIC", lIC);
-        List<CriteriaDTO> lEC = criteriaController.getCriteriasEC(auxIdProject);
-        model.addAttribute("listEC", lEC);
-        model.addAttribute("f", new CriteriaDTO());
-        model.addAttribute("newProject", new ProjectDTO());
-        return "editCriteria";
     }
 
     @PostMapping(value = "/updateCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")

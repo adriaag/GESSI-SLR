@@ -5,6 +5,7 @@ import { Router } from '@angular/router'
 import { ProjectService } from './project.service';
 import { Reference } from './dataModels/reference';
 import { ImportError } from './dataModels/importError';
+import { Criteria } from './dataModels/criteria';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +21,8 @@ export class AppComponent implements OnInit {
   references: Reference[] = [];
   errors: ImportError[] = [];
   dlNames: String[] = [];
+  IC: Criteria[] = [];
+  EC: Criteria[] = [];
 
 
   constructor(private dataService: DataService, public router: Router, private projectService: ProjectService) {}
@@ -46,6 +49,7 @@ export class AppComponent implements OnInit {
     this.selectedProject = value.target.value;
     this.getProjectData()
     this.getProjectErrors()
+    this.getProjectCriteria()
   }
 
   changeOption(opt: String) {
@@ -68,6 +72,13 @@ export class AppComponent implements OnInit {
 
   }
 
+  getProjectCriteria(): void {
+    this.dataService.getCriteria(this.selectedProject).subscribe((resposta) => {
+      this.EC = resposta.exclusionCriteria;
+      this.IC = resposta.inclusionCriteria
+    })
+  }
+
   getDLNames(): void {
     this.dataService.getDLNames().subscribe((resposta)=> {
       console.log(resposta , 'User resume response');
@@ -75,5 +86,7 @@ export class AppComponent implements OnInit {
     })
 
   }
+
+
 }
 

@@ -41,7 +41,8 @@
                     <a *ngIf="this.selectedOption !== 'import'" class="nav-link" (click)="changeOption('import')">Import reference</a>
                   </li>
                   <li  class="nav-item">
-                      <a class="nav-link" onclick="onClick(this, '/editCriteria')" href="/editCriteria">Criteria</a>
+                    <a *ngIf="this.selectedOption === 'criteria'" class="nav-link active">Criteria</a>
+                    <a *ngIf="this.selectedOption !== 'criteria'" class="nav-link" (click)="changeOption('criteria')">Criteria</a>
                   </li>
                   <li class="nav-item">
                       <a *ngIf="this.selectedOption === 'references'" class="nav-link active">References</a>
@@ -68,10 +69,10 @@
       </div>
   </nav>
 </header>
-projecte actual {{selectedProject}}
 <div [ngSwitch]="selectedOption">
     <app-index *ngSwitchCase="'index'"></app-index>
     <app-references *ngSwitchCase="'references'" [references]="references" [idProject]="selectedProject"></app-references>
     <app-errors *ngSwitchCase="'errors'" [errors]="errors"></app-errors>
     <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject" (newReferencesImported)="newReferences()"> </app-reference-import>
+    <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC"></app-criteria>
 </div>

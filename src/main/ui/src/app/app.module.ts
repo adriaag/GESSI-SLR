@@ -19,6 +19,7 @@ import { ReferenceInfoComponent } from './reference-info/reference-info.componen
 import { ErrorsComponent } from './errors/errors.component';
 import { ReferenceImportComponent } from './reference-import/reference-import.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { CriteriaComponent } from './criteria/criteria.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     ReferencesComponent,
     ReferenceInfoComponent,
     ErrorsComponent,
-    ReferenceImportComponent
+    ReferenceImportComponent,
+    CriteriaComponent
   ],
   imports: [
     BrowserModule,

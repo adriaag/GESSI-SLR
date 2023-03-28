@@ -6,6 +6,8 @@ import { tap, catchError } from 'rxjs/operators';
 import { Reference } from './dataModels/reference';
 import { ImportError } from './dataModels/importError';
 import { ReferenceFromFileResponse } from './dataModels/referenceFromFileResponse';
+import { Criteria } from './dataModels/criteria';
+import { CriteriaResponse } from './criteriaResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -81,6 +83,15 @@ export class DataService {
       tap(data => console.log("Anlagenstatus Daten:", data)),
       catchError(this.handleError),
     )
+  }
+
+  getCriteria(idProject: number): Observable<CriteriaResponse> {
+    return this.http.get<CriteriaResponse>(
+      `${this.rootUrl}/criteria?idProject=${idProject}`, this.setHttpHeader())
+      .pipe(
+        tap(data => console.log("Anlagenstatus Daten:", data)),
+        catchError(this.handleError),
+      )
   }
 
   private setHttpHeader() {
