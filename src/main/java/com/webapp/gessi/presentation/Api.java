@@ -143,6 +143,19 @@ public class Api{
         return ResponseEntity.ok(messageError);
     }
     
+    @PutMapping(value = "/criteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
+    public static ResponseEntity<?> updateCriteria(@PathVariable("id") int id, @RequestParam(name = "name") String name, @RequestParam(name = "text") String text, @RequestParam(name = "type") String type, @RequestParam(name = "idProject") Integer idProject) {
+    	CriteriaDTO criteria = new CriteriaDTO(id, name, text, type, idProject);
+        criteriaController.updateCriteria(id, criteria);
+        return ResponseEntity.ok("");   
+    }
+    
+    @DeleteMapping(value = "/criteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
+    public static ResponseEntity<?> deleteCriteria(@PathVariable("id") int idICEC) throws SQLException {
+        criteriaController.deleteCriteria(idICEC);
+        return ResponseEntity.ok(""); 
+    }
+    
     
  
     
@@ -165,23 +178,6 @@ public class Api{
             int id = ProjectController.getByName(projectDTO.getName()).getId();
             url = url + "?idProject=" + id;
         }
-        return "redirect:" + url;
-    }
-
-    @PostMapping(value = "/updateCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public static String updateCriteria(@PathVariable("id") int id,
-                                         @RequestParam(value = "idProject", required = false) Optional<Integer> idProject,
-                                         @ModelAttribute("f") CriteriaDTO f) {
-        criteriaController.updateCriteria(id, f);
-        String url = idProject.map(integer -> "/editCriteria?idProject=" + integer).orElse("/editCriteria");
-        return "redirect:" + url;
-    }
-
-    @PostMapping(value = "/deleteCriteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public static String deleteCriteria(@PathVariable("id") int idICEC,
-                                        @RequestParam(value = "idProject", required = false) Optional<Integer> idProject) throws SQLException {
-        criteriaController.deleteCriteria(idICEC);
-        String url = idProject.map(integer -> "/editCriteria?idProject=" + integer).orElse("/editCriteria");
         return "redirect:" + url;
     }
 
