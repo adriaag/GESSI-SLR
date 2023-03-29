@@ -23,6 +23,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CriteriaComponent } from './criteria/criteria.component';
 import { CriteriaEditComponent } from './criteria-edit/criteria-edit.component';
 import { ReferenceClassifyComponent } from './reference-classify/reference-classify.component';
+import { ProjectCreateComponent } from './project-create/project-create.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { ReferenceClassifyComponent } from './reference-classify/reference-class
     CriteriaComponent,
     CriteriaEditComponent,
     ReferenceClassifyComponent,
+    ProjectCreateComponent,
   ],
   imports: [
     BrowserModule,

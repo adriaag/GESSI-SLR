@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -40,6 +39,25 @@ public class Api{
         return ResponseEntity.ok(resource);
     }
     
+    @PostMapping(value = "/projects")
+    public ResponseEntity<?> newProject(@RequestParam("name") String name) throws SQLException {
+        ProjectDTO exist = ProjectController.getByName(name);
+        if (exist != null) {
+        	return ResponseEntity.status(HttpStatus.CONFLICT).body("The project " + name + " already exist");
+        }
+        else {
+        	ProjectDTO newProject = new ProjectDTO();
+        	newProject.setName(name);
+        			
+        	List<ProjectDTO> projectDTOList = new ArrayList<>();
+            projectDTOList.add(newProject);
+            ProjectController.insertRows(projectDTOList);
+            ProjectDTO insertedProject = ProjectController.getByName(name);
+            return ResponseEntity.ok(insertedProject);
+        }
+		
+    }
+    
     @GetMapping(value = "/references", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public ResponseEntity<?> getReferences(@RequestParam(value = "idProject") Integer idProject){
         List<referenceDTO> referenceDTOList = ReferenceController.getReferences(idProject);
@@ -47,35 +65,10 @@ public class Api{
         return ResponseEntity.ok(referenceDTOList);
     }
     
-    @GetMapping(value = "/download")
-    public ResponseEntity<ByteArrayResource> download(@RequestParam(value = "idProject") Integer idProject) {
-        try {
-            int project = idProject;
-            String nameFile = "All references";
-            if (project != 0) {
-                ProjectDTO projectDTO = ProjectController.getById(project);
-                nameFile = projectDTO.getName();
-            }
-            List<referenceDTO> p = ReferenceController.getReferences(project);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            Workbook workbook = creationExcel.create(p);
-            workbook.write(stream);
-            workbook.close();
-            HttpHeaders header = new HttpHeaders();
-            header.setContentType(new MediaType("application", "force-download"));
-            header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + nameFile + ".xlsx");
-
-            return ResponseEntity.ok(new ByteArrayResource(stream.toByteArray()));
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    
-    @GetMapping(value = "/reference", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public ResponseEntity<?> getReference(@RequestParam(name= "idReference") int idR){
-        referenceDTO r = ReferenceController.getReference(idR);
-        return ResponseEntity.ok(r);
+    @PutMapping(value=("/references/{id}"))
+    public ResponseEntity<?> editReference(@PathVariable("id") int idRef, @RequestParam(name = "state") String state, @RequestParam(name = "criteria") List<Integer> criteria) throws SQLException {
+        ReferenceController.updateReference(idRef, state, criteria);
+        return ResponseEntity.ok(""); 
     }
     
     @PostMapping(value = "/newReferencesFromFile", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -113,6 +106,32 @@ public class Api{
         }
         return ResponseEntity.ok(returnData.toString());
     }
+    
+    @GetMapping(value = "/download")
+    public ResponseEntity<ByteArrayResource> download(@RequestParam(value = "idProject") Integer idProject) {
+        try {
+            int project = idProject;
+            String nameFile = "All references";
+            if (project != 0) {
+                ProjectDTO projectDTO = ProjectController.getById(project);
+                nameFile = projectDTO.getName();
+            }
+            List<referenceDTO> p = ReferenceController.getReferences(project);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            Workbook workbook = creationExcel.create(p);
+            workbook.write(stream);
+            workbook.close();
+            HttpHeaders header = new HttpHeaders();
+            header.setContentType(new MediaType("application", "force-download"));
+            header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + nameFile + ".xlsx");
+
+            return ResponseEntity.ok(new ByteArrayResource(stream.toByteArray()));
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
     
     @GetMapping(value = "/dl", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public ResponseEntity<?> getDLs() throws SQLException{
@@ -156,37 +175,15 @@ public class Api{
         return ResponseEntity.ok(""); 
     }
     
-    @PutMapping(value=("/references/{id}"))
-    public ResponseEntity<?> editReference(@PathVariable("id") int idRef, @RequestParam(name = "state") String state, @RequestParam(name = "criteria") List<Integer> criteria) throws SQLException {
-        ReferenceController.updateReference(idRef, state, criteria);
-        return ResponseEntity.ok(""); 
-    }
+    
+    
+
 
     
     
  
     
     //////////////////////////////////FUNCIONS DE CLIENT CONTROLLER/////////////////////////////////////////////////////
-
-    @PostMapping(value = "/newProject")
-    public String submitNewProject(@ModelAttribute("newProject") ProjectDTO projectDTO,
-                                   HttpServletRequest request,
-                                   RedirectAttributes redirectAttr) throws SQLException {
-        List<ProjectDTO> projectDTOList = new ArrayList<>();
-        ProjectDTO exist = ProjectController.getByName(projectDTO.getName());
-        String[] uriParts = request.getHeader("Referer").split("/");
-        String url = uriParts[uriParts.length - 1].split("\\?")[0].length() > 0 ? uriParts[uriParts.length - 1].split("\\?")[0] : "";
-        if (exist != null) {
-            redirectAttr.addFlashAttribute("projectError", "The project " + projectDTO.getName() + " already exist");
-        }
-        else {
-            projectDTOList.add(projectDTO);
-            ProjectController.insertRows(projectDTOList);
-            int id = ProjectController.getByName(projectDTO.getName()).getId();
-            url = url + "?idProject=" + id;
-        }
-        return "redirect:" + url;
-    }
 
     @RequestMapping(value=("/resetView"))
     public String reset(@RequestParam(value = "idProject") Optional<Integer> idProject,
@@ -226,6 +223,12 @@ public class Api{
         }
         return "redirect:/resetView";
     }
+    
+    /*@GetMapping(value = "/reference", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
+    public ResponseEntity<?> getReference(@RequestParam(name= "idReference") int idR){
+        referenceDTO r = ReferenceController.getReference(idR);
+        return ResponseEntity.ok(r);
+    }*/
 
 }
 

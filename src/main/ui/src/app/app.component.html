@@ -1,22 +1,3 @@
-<head>
-  <title>Home</title>
-  <div replace="allReferences::head"></div>
-  <style>
-      .btn {
-          background-color: DodgerBlue;
-          border: none;
-          color: white;
-          padding: 12px 30px;
-          cursor: pointer;
-          font-size: 20px;
-      }
-
-      /* Darker background on mouse-over */
-      .btn:hover {
-          background-color: RoyalBlue;
-      }
-  </style>
-</head>
 <header fragment="header">
   <nav class="navbar navbar-expand-lg py-3 navbar-dark shadow-sm navbar-fixed-top" style="background-color: #153053;">
       <div class="container-fluid"><!--style="background-color: #356ac3;"-->
@@ -59,19 +40,22 @@
 
           </div>
           <div class="d-flex justify-content-between" style="width: 20%">
-              <label style="display: flex;" for="idProject"></label>
-              <select required id="idProject" (change)="changeProject()" [(ngModel)]="selectedProject" class="form-control">
-                  <option *ngFor="let project of projects" [ngValue]="project">{{project.name}}</option>
+            <label style="display: flex;" for="idProject"></label>
+            <mat-select required id="idProject" (selectionChange)="changeProject()" [formControl]="selectedProject" class="form-control" [compareWith]="compareProjectObjects">
+                <mat-option *ngFor="let project of projects" [value]="project">{{project.name}}</mat-option>
                   
-              </select>
+            </mat-select>
+            <button type="button" class="btn btn-primary eBtn" (click)="createProjectDialog()">
+                <i class="fa fa-plus"></i>
+            </button>
           </div>
       </div>
   </nav>
 </header>
 <div [ngSwitch]="selectedOption">
     <app-index *ngSwitchCase="'index'"></app-index>
-    <app-references *ngSwitchCase="'references'" [references]="references" [idProject]="selectedProject.id" [exclusionCriteria]="EC" (referencesUpdated)="getProjectData()"></app-references>
+    <app-references *ngSwitchCase="'references'" [references]="references" [idProject]="selectedProject.value.id" [exclusionCriteria]="EC" (referencesUpdated)="getProjectData()"></app-references>
     <app-errors *ngSwitchCase="'errors'" [errors]="errors"></app-errors>
-    <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject.id" (newReferencesImported)="newReferences()"> </app-reference-import>
-    <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC" [idDuplicateCriteria]="selectedProject.idDuplicateCriteria" [idProject]="selectedProject.id" (criteriaUpdated)="getProjectCriteria()"></app-criteria>
+    <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject.value.id" (newReferencesImported)="newReferences()"> </app-reference-import>
+    <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC" [idDuplicateCriteria]="selectedProject.value.idDuplicateCriteria" [idProject]="selectedProject.value.id" (criteriaUpdated)="getProjectCriteria()"></app-criteria>
 </div>

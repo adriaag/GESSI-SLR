@@ -6,7 +6,6 @@ import { tap, catchError } from 'rxjs/operators';
 import { Reference } from './dataModels/reference';
 import { ImportError } from './dataModels/importError';
 import { ReferenceFromFileResponse } from './dataModels/referenceFromFileResponse';
-import { Criteria } from './dataModels/criteria';
 import { CriteriaResponse } from './criteriaResponse';
 
 @Injectable({
@@ -26,6 +25,17 @@ export class DataService {
       )
   }
 
+  createProject(nameProject: string): Observable<Project> {
+    const formData: FormData = new FormData();
+    formData.append('name', nameProject);
+    return this.http.post<Project>(
+      `${this.rootUrl}/projects`, formData)
+      .pipe(
+        tap(data => console.log("Anlagenstatus Daten:", data)),
+        catchError(this.handleError),
+      )
+  }
+
   getReferences(idProject: number): Observable<Reference[]> {
     return this.http.get<Project[]>(
       `${this.rootUrl}/references?idProject=${idProject}`, this.setHttpHeader())
@@ -35,14 +45,14 @@ export class DataService {
       )
   }
 
-  getReference(idReference: number): Observable<Reference> {
+  /*getReference(idReference: number): Observable<Reference> {
     return this.http.get<Project[]>(
       `${this.rootUrl}/reference?idReference=${idReference}`, this.setHttpHeader())
       .pipe(
         tap(data => console.log("Anlagenstatus Daten:", data)),
         catchError(this.handleError),
       )
-  }
+  }*/
 
   getExcelFile(idProject: number): Observable<Blob> {
     return this.http.get(
@@ -71,7 +81,6 @@ export class DataService {
   }
 
   createReferenceFromFile(idProject: string, idDl: string, file: File): Observable<ReferenceFromFileResponse> {
-    console.log(idProject, 'idProject')
     const formData: FormData = new FormData();
     formData.append('file', file);
     formData.append('dlNum',idDl);
@@ -152,93 +161,5 @@ export class DataService {
   private handleError(error: Response): Observable<any> {
     console.error("observable error: ", error);
     return throwError(() => (error.statusText));
-  }
-
-  getSubmissions(mode: string | null, user: string | null) {
-    return this.http.get(
-      `${this.rootUrl}/submissions?mode=${mode}&user=${user}`,
-      {headers: this.getHeaders()}
-    );
-  }
-
-  getSubmission(id: string | null) {
-    return this.http.get(
-      `${this.rootUrl}/submissions/${id}`,
-      {headers: this.getHeaders()}
-    );
-  }
-
-  getComments(id: string | null,mode:string|null) {
-    return this.http.get(
-      `${this.rootUrl}/comments?user=${id}&mode=${mode}`,
-      {headers: this.getHeaders()}
-    );
-  }
-
-  setUserAbout(id: string | null, about: string | null) {
-    return this.http.put(
-      `${this.rootUrl}/users/${id}`,
-      {about: about},
-      {headers: this.getHeaders()});
-  }
-
-  likeSubmission(id: string) {
-    return this.http.post(
-      `${this.rootUrl}/submissions/${id}/votes`,null,{headers: this.getHeaders()});
-  }
-  
-  unlikeSubmission(id: string) {
-    return this.http.delete(
-      `${this.rootUrl}/submissions/${id}/votes`,{headers: this.getHeaders()});
-  }
-  
-  likeComment(id: string) {
-    return this.http.post(
-      `${this.rootUrl}/comments/${id}/votes`,null,{headers: this.getHeaders()});
-  }
-  
-  unlikeComment(id: string) {
-    return this.http.delete(
-      `${this.rootUrl}/comments/${id}/votes`,{headers: this.getHeaders()});
-  }
-
-  likeReply(id: string) {
-    return this.http.post(
-      `${this.rootUrl}/replies/${id}/votes`,null,{headers: this.getHeaders()});
-  }
-  
-  unlikeReply(id: string) {
-    return this.http.delete(
-      `${this.rootUrl}/replies/${id}/votes`,{headers: this.getHeaders()});
-  }
-  
-  createSubmission(titol: string, text: string, url: string) {
-    return this.http.post(`${this.rootUrl}/submissions`,
-    {
-      "title": titol,
-      "text": text,
-      "url": url
-    },{headers: this.getHeaders()});
-  }
-  
-  addComment(submission_id: string, contingut: string) {
-    return this.http.post(`${this.rootUrl}/comments?submission_id=${submission_id}`,
-    {content: contingut},
-    {headers: this.getHeaders()});
-  }
-  
-  addReply(comment_id: string, reply_id: string | null, contingut: string) {
-    let url = "replies?comment_id=" + comment_id;
-    if (reply_id != null) url += "&reply_id=" + reply_id; 
-    return this.http.post(`${this.rootUrl}/` + url,
-    {content: contingut},
-    {headers: this.getHeaders()});
-  }
-
-  getHeaders() {
-    return new HttpHeaders({
-      Accept: 'application/json',
-      'X-API-KEY': sessionStorage['userApiKey']
-    });
   }
 }

@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Project } from './dataModels/project';
 import { DataService } from './data.service';
-import { Router } from '@angular/router'
 import { Reference } from './dataModels/reference';
 import { ImportError } from './dataModels/importError';
 import { Criteria } from './dataModels/criteria';
+import { MatDialog } from '@angular/material/dialog';
+import { ProjectCreateComponent } from './project-create/project-create.component';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +17,7 @@ export class AppComponent implements OnInit {
   
   title = 'GESSI-SLR';
   projects: Project[] = [];
-  selectedProject!: Project;
+  selectedProject = new FormControl();
   selectedOption: String = "index"
   references: Reference[] = [];
   errors: ImportError[] = [];
@@ -24,11 +26,32 @@ export class AppComponent implements OnInit {
   EC: Criteria[] = [];
 
 
-  constructor(private dataService: DataService, public router: Router) {}
+  constructor(private dataService: DataService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.getProjects();
     this.getDLNames();
+  }
+
+  createProjectDialog() {
+    let createProjectDialog = this.dialog.open(ProjectCreateComponent)
+    createProjectDialog.afterClosed().subscribe((resposta) => {
+      this.createProject(resposta)
+      
+    })
+
+  }
+
+  compareProjectObjects(project1: Project, project2: Project) {
+    return project1 && project2 && project1.id == project2.id;
+  }
+
+  createProject(name: string) {
+    this.dataService.createProject(name).subscribe((resposta) => {
+      this.getProjects()
+      this.selectedProject.setValue(resposta)
+      this.changeProject()
+    })
   }
 
   newReferences(): void {
@@ -44,6 +67,7 @@ export class AppComponent implements OnInit {
   }
 
   changeProject() {
+    console.log("change project")
     this.getProjectData()
     this.getProjectErrors()
     this.getProjectCriteria()
@@ -54,7 +78,7 @@ export class AppComponent implements OnInit {
   }
 
   getProjectData(): void {
-    this.dataService.getReferences(this.selectedProject.id).subscribe((resposta)=> {
+    this.dataService.getReferences(this.selectedProject.value.id).subscribe((resposta)=> {
       console.log(resposta , 'User resume response');
       this.references = resposta;
     })
@@ -62,7 +86,7 @@ export class AppComponent implements OnInit {
   }
 
   getProjectErrors(): void {
-    this.dataService.getErrors(this.selectedProject.id).subscribe((resposta)=> {
+    this.dataService.getErrors(this.selectedProject.value.id).subscribe((resposta)=> {
       console.log(resposta , 'User resume response');
       this.errors = resposta;
     })
@@ -70,7 +94,7 @@ export class AppComponent implements OnInit {
   }
 
   getProjectCriteria(): void {
-    this.dataService.getCriteria(this.selectedProject.id).subscribe((resposta) => {
+    this.dataService.getCriteria(this.selectedProject.value.id).subscribe((resposta) => {
       this.EC = resposta.exclusionCriteria;
       this.IC = resposta.inclusionCriteria
     })
