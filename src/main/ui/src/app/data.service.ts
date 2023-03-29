@@ -131,6 +131,18 @@ export class DataService {
     )
   }
 
+  editReferenceCriteria(idRef: number, state: string, criteria: number[]) {
+    const formData: FormData = new FormData();
+    formData.append('state', state);
+    formData.append('criteria', String(criteria));
+    return this.http.put<string>(
+      `${this.rootUrl}/references/${idRef}`,formData)
+    .pipe(
+      tap(data => console.log("Anlagenstatus Daten:", data)),
+      catchError(this.handleError),
+    )
+  }
+
   private setHttpHeader() {
     const headers = new HttpHeaders().set('Accept', 'application/json').set('Content-Type', 'application/json');
     let options = { headers: headers };

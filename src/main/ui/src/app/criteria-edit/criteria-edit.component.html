@@ -6,7 +6,7 @@
     <div mat-dialog-title class="dialog-title">
         <h2 *ngIf="criteria.id === -1">New {{criteria.type}} Criteria</h2>
         <h2 *ngIf="criteria.id !== -1">Edit Criteria</h2>
-        <button class="boto" mat-icon-button aria-label="close dialog" [mat-dialog-close]="errors">
+        <button class="boto" mat-icon-button aria-label="close dialog" [mat-dialog-close]="">
             <mat-icon>close</mat-icon>
         </button>
     </div>
@@ -35,7 +35,7 @@
             </div>
             <div class="footer">
                 <button type="reset" class="btn btn-secondary pull-left">Clear</button>
-                <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right" (click)="submit()" [mat-dialog-close]="errors">
+                <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right" [mat-dialog-close]="getOutput()">
                     <div *ngIf="criteria.id === -1">Create criteria</div>
                     <div *ngIf="criteria.id !== -1">Edit criteria</div>
                 </button>
@@ -43,6 +43,6 @@
         </form>
         <br>
         <br>
-        <div> <p style="color:#ff0000">{{errors}}</p> </div>
+        <!--<div> <p style="color:#ff0000">{{errors}}</p> </div>-->
     </mat-dialog-content>
 </div>

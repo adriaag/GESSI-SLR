@@ -24,7 +24,7 @@ export class CriteriaComponent {
   openCriteriaDialog(selectedCriteria: Criteria| null, criteriaType: string){
 
     if (selectedCriteria === null) {
-      selectedCriteria = {id: -1, name:"", text:"", type: criteriaType, idProject:this.idProject}
+      selectedCriteria = {id: -1, name:"", text:"", type: criteriaType, idProject: NaN}
     }
     const critDialog = this.dialog.open(CriteriaEditComponent, {
       data: {
@@ -32,12 +32,13 @@ export class CriteriaComponent {
       }
     })
     critDialog.afterClosed().subscribe(result => {
-      console.log(result)
-      if (result === "") {
-        this.criteriaUpdated.emit()
-      }
-      else {
-        this.errors = result
+      if (result !== "") {
+        if (selectedCriteria!.id === -1) {
+          this.createCriteria(result.name, result.desc, result.type)
+        }
+        else {
+          this.updateCriteria(selectedCriteria!.id, result.name, result.desc, result.type)
+        }
       }
     });
 
@@ -54,5 +55,20 @@ export class CriteriaComponent {
       this.criteriaUpdated.emit()
     })
       
+  }
+
+  createCriteria(name: string, text: string, type: string ): void {
+    this.dataService.createCriteria(name, text, type, this.idProject).subscribe((resposta) => {
+      this.errors = resposta
+      this.criteriaUpdated.emit()
+
+    })
+  }
+
+  updateCriteria(id: number, name: string, text: string, type: string): void{
+    this.dataService.updateCriteria(id, name, text, type, this.idProject).subscribe((resposta) => {
+      this.errors = resposta
+      this.criteriaUpdated.emit()
+    })
   }
 }

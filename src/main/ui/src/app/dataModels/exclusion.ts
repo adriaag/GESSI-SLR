@@ -1,5 +1,5 @@
 export interface Exclusion {
-    idRef: Number;
-    idICEC: Number;
-    nameICEC: String;
+    idRef: number;
+    idICEC: number;
+    nameICEC: string;
 }

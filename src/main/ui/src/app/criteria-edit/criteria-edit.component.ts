@@ -18,29 +18,15 @@ export class CriteriaEditComponent {
   desc = new FormControl(this.criteria.text)
   type = new FormControl(this.criteria.type)
   inclusionDisabled = (this.criteria.type !== "inclusion")
-  errors = ""
 
-  submit(): void {
-    if (this.criteria.id == -1) {
-      this.createCriteria()
+  getOutput() {
+    let data = {
+      name: this.name.value,
+      desc: this.desc.value,
+      type: this.type.value
     }
-    else {
-      this.updateCriteria()
-    }
+    return data
+
   }
-
-  createCriteria(): void {
-    this.dataService.createCriteria(this.name.value!,this.desc.value!, this.type.value!, this.criteria.idProject).subscribe((resposta) => {
-      this.errors = resposta
-
-    })
-  }
-
-  updateCriteria(): void{
-    this.dataService.updateCriteria(this.criteria.id, this.name.value!,this.desc.value!, this.type.value!, this.criteria.idProject).subscribe((resposta) => {
-      this.errors = resposta
-    })
-  }
-
 
 }

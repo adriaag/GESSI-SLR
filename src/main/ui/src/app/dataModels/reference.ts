@@ -3,11 +3,11 @@ import { Article } from "./article";
 import { DigitalLibrary } from "./digitalLibrary";
 
 export interface Reference {
-    idRef: Number;
-    doi: String;
-    idDL: Number;
-    idProject: Number;
-    state: String;
+    idRef: number;
+    doi: string;
+    idDL: number;
+    idProject: number;
+    state: string;
     exclusionDTOList: Exclusion[];
     art: Article;
     dl: DigitalLibrary;
