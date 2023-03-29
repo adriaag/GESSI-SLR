@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
 import { DataService } from '../data.service';
 import { Reference } from '../dataModels/reference';
 import { Researcher } from '../dataModels/researcher';
@@ -8,6 +8,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Exclusion } from '../dataModels/exclusion';
 import { MatDialog} from '@angular/material/dialog';
 import { ReferenceInfoComponent } from '../reference-info/reference-info.component';
+import { ReferenceClassifyComponent } from '../reference-classify/reference-classify.component';
+import { Criteria } from '../dataModels/criteria';
 
 @Component({
   selector: 'app-references',
@@ -19,6 +21,8 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
 
   @Input('references') referenceslist!: Reference[]
   @Input('idProject') idProject!: number
+  @Input('exclusionCriteria') exclusionCriteria!: Criteria[]
+  @Output() referencesUpdated = new EventEmitter();
 
   references: Reference[] = [];
   sortedData: Reference[] = [];
@@ -58,10 +62,29 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
     });
   }
 
-  openDialog(ref: Reference) {
+  viewReference(ref: Reference) {
     this.dialog.open(ReferenceInfoComponent, {
       data : ref
     });
+  }
+
+  editReferenceDialog(ref: Reference) {
+    let referenceEditDialog = this.dialog.open(ReferenceClassifyComponent, {
+      data: {
+        reference: ref,
+        exclusionCriteria: this.exclusionCriteria
+      }
+    })
+    referenceEditDialog.afterClosed().subscribe(result => {
+      this.updateReference(ref.idRef, result.type, result.criteria)
+    })
+
+  }
+
+  updateReference(id: number, type: string, idCriteria: number[]) {
+    this.dataService.editReferenceCriteria(id,type,idCriteria).subscribe((resposta) => {
+      this.referencesUpdated.emit()
+    })
   }
   
   filterData() {

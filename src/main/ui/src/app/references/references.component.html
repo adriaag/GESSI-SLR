@@ -87,7 +87,7 @@
         <ng-container matColumnDef="inf">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Info</th>
             <td mat-cell *matCellDef="let row">
-                <button class="btn btn-primary" (click)="openDialog(row)"
+                <button class="btn btn-primary" (click)="viewReference(row)"
                             style="font-size:12px" ><i class="fa fa-info-circle" aria-hidden="true"></i>
                 </button>
             </td>
@@ -96,8 +96,7 @@
         <ng-container matColumnDef="cla">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Classify</th>
             <td mat-cell *matCellDef="let row">
-                <button id="modalButton" type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal" data-target="#exampleModal"
-                            th:attr="onclick=|editrow(this, &quot;${i.getIdRef()}&quot;, &quot;${i.getState()}&quot;, &quot;${i.getExclusionDTOIdList()}&quot;)|"><i class="fa fa-edit"></i>
+                <button id="modalButton" type="button" class="btn btn-primary eBtn" style="font-size:12px" (click)="editReferenceDialog(row)"><i class="fa fa-edit"></i>
                 </button>
             </td>
         </ng-container>
@@ -116,48 +115,6 @@
 
 </div>
 <!-- Modal -->
-<div class="modal fade" th:id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Classify</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModel()">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form action='#' id="myForm" method="post" th:action="@{/editrow}" th:object="${f}">
-                    <div hidden class="form-group">
-                        <label for="id">Id</label>
-                        <input type="number" id="id" th:field="*{id}" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="state">State</label>
-                        <select id="state" onchange="updateEditCriteria(this)" required th:field="*{state}" class="form-control">
-                            <option value="" hidden>Select a type</option>
-                            <option value="">None</option>
-                            <option value="in">In</option>
-                            <option value="out">Out</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="applCriteria">Application criteria</label>
-                        <select multiple required id="applCriteria" th:field="*{applCriteria}" class="form-control">
-                            <option value="" hidden>Select a Criteria</option>
-                            <div th:each="x : ${ECCriteria}">
-                                <option th:value="${x.getId}" th:text="${x.getName}"></option>
-                            </div>
-                        </select>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Update row</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="modal fade" th:id="createProject" tabindex="-1" role="dialog" aria-labelledby="createProject" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">

@@ -70,7 +70,7 @@
 </header>
 <div [ngSwitch]="selectedOption">
     <app-index *ngSwitchCase="'index'"></app-index>
-    <app-references *ngSwitchCase="'references'" [references]="references" [idProject]="selectedProject.id"></app-references>
+    <app-references *ngSwitchCase="'references'" [references]="references" [idProject]="selectedProject.id" [exclusionCriteria]="EC" (referencesUpdated)="getProjectData()"></app-references>
     <app-errors *ngSwitchCase="'errors'" [errors]="errors"></app-errors>
     <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject.id" (newReferencesImported)="newReferences()"> </app-reference-import>
     <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC" [idDuplicateCriteria]="selectedProject.idDuplicateCriteria" [idProject]="selectedProject.id" (criteriaUpdated)="getProjectCriteria()"></app-criteria>

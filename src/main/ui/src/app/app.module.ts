@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 
 
 import { AppComponent } from './app.component';
@@ -21,6 +22,7 @@ import { ReferenceImportComponent } from './reference-import/reference-import.co
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CriteriaComponent } from './criteria/criteria.component';
 import { CriteriaEditComponent } from './criteria-edit/criteria-edit.component';
+import { ReferenceClassifyComponent } from './reference-classify/reference-classify.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +34,7 @@ import { CriteriaEditComponent } from './criteria-edit/criteria-edit.component';
     ReferenceImportComponent,
     CriteriaComponent,
     CriteriaEditComponent,
+    ReferenceClassifyComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,7 +49,8 @@ import { CriteriaEditComponent } from './criteria-edit/criteria-edit.component';
     MatDialogModule,
     MatIconModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

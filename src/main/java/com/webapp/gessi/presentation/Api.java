@@ -144,17 +144,24 @@ public class Api{
     }
     
     @PutMapping(value = "/criteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public static ResponseEntity<?> updateCriteria(@PathVariable("id") int id, @RequestParam(name = "name") String name, @RequestParam(name = "text") String text, @RequestParam(name = "type") String type, @RequestParam(name = "idProject") Integer idProject) {
+    public ResponseEntity<?> updateCriteria(@PathVariable("id") int id, @RequestParam(name = "name") String name, @RequestParam(name = "text") String text, @RequestParam(name = "type") String type, @RequestParam(name = "idProject") Integer idProject) {
     	CriteriaDTO criteria = new CriteriaDTO(id, name, text, type, idProject);
         criteriaController.updateCriteria(id, criteria);
         return ResponseEntity.ok("");   
     }
     
     @DeleteMapping(value = "/criteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public static ResponseEntity<?> deleteCriteria(@PathVariable("id") int idICEC) throws SQLException {
+    public ResponseEntity<?> deleteCriteria(@PathVariable("id") int idICEC) throws SQLException {
         criteriaController.deleteCriteria(idICEC);
         return ResponseEntity.ok(""); 
     }
+    
+    @PutMapping(value=("/references/{id}"))
+    public ResponseEntity<?> editReference(@PathVariable("id") int idRef, @RequestParam(name = "state") String state, @RequestParam(name = "criteria") List<Integer> criteria) throws SQLException {
+        ReferenceController.updateReference(idRef, state, criteria);
+        return ResponseEntity.ok(""); 
+    }
+
     
     
  
@@ -179,25 +186,6 @@ public class Api{
             url = url + "?idProject=" + id;
         }
         return "redirect:" + url;
-    }
-
-    @PostMapping(value=("/editCriteria"))
-    public String editCriteria(@ModelAttribute("f") CriteriaDTO f,
-                               HttpServletRequest request,
-                               RedirectAttributes redirectAttr) {
-        String messageError = criteriaController.addCriteria(f.getName(), f.getText(), f.getType(), f.getIdProject());
-        redirectAttr.addFlashAttribute("errorM", messageError);
-        String[] uriParts = request.getHeader("Referer").split("/");
-        String url = uriParts[uriParts.length - 1];
-        return "redirect:" + url;
-    }
-
-    @PostMapping(value=("/editReference"))
-    public String editReference(@RequestParam(value = "idProject") int idProject,
-                                @ModelAttribute("f") referenceDTOupdate f) throws SQLException {
-        f.getApplCriteria().remove(null);
-        ReferenceController.updateReference(f.getId(), f.getState(), f.getApplCriteria());
-        return "redirect:/getAllReferences?idProject=" + idProject;
     }
 
     @RequestMapping(value=("/resetView"))
