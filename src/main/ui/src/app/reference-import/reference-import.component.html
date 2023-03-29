@@ -20,8 +20,10 @@
                 <option *ngFor="let name of DLNames; let i = index" value={{i+1}}>{{name}}</option>
                 </select>
             </div>
-            <button type="submit" id="createReference" (click)="submitFile()" class="btn btn-primary">Create reference</button>
-            <button type="reset" class="btn btn-secondary">Clear</button>
+            <h4>
+                <button type="reset" class="btn btn-secondary">Clear</button>
+                <button type="submit" id="createReference" (click)="submitFile()" class="btn btn-primary">Create reference</button>
+            </h4>
             <br>
 
             <div *ngIf="importBool == false"> 

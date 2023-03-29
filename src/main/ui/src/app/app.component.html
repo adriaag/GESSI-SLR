@@ -61,7 +61,6 @@
           <div class="d-flex justify-content-between" style="width: 20%">
               <label style="display: flex;" for="idProject"></label>
               <select required id="idProject" (change)="changeProject()" [(ngModel)]="selectedProject" class="form-control">
-                  <option [selected]="true" hidden="true">Select a Project</option>
                   <option *ngFor="let project of projects" [ngValue]="project">{{project.name}}</option>
                   
               </select>
