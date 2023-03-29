@@ -2,7 +2,6 @@ import { Component, Inject, Injectable, OnInit} from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Criteria } from '../dataModels/criteria';
 import { FormControl } from '@angular/forms';
-import { DataService } from '../data.service';
 
 @Component({
   selector: 'app-criteria-edit',
@@ -11,7 +10,7 @@ import { DataService } from '../data.service';
 })
 export class CriteriaEditComponent {
   
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private dataService: DataService) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
   
   criteria: Criteria = this.data.criteria
   name = new FormControl(this.criteria.name)

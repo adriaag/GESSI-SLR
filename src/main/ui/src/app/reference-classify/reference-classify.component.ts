@@ -4,7 +4,6 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Criteria } from '../dataModels/criteria';
 import { Exclusion } from '../dataModels/exclusion';
 import { Reference } from '../dataModels/reference';
-import { DataService } from '../data.service';
 
 @Component({
   selector: 'app-reference-classify',
@@ -12,7 +11,7 @@ import { DataService } from '../data.service';
   styleUrls: ['./reference-classify.component.css']
 })
 export class ReferenceClassifyComponent {
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private dataService: DataService) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 
   reference: Reference = this.data.reference
   exclusionCriteria: Criteria[] = this.data.exclusionCriteria
