@@ -36,6 +36,15 @@ export class DataService {
       )
   }
 
+  deleteProject(idProject: number): Observable<{message: string}> {
+    return this.http.delete<{message: string}>(
+      `${this.rootUrl}/projects/${idProject}`)
+      .pipe(
+        tap(data => console.log("Anlagenstatus Daten:", data)),
+        catchError(this.handleError),
+      )
+  }
+
   getReferences(idProject: number): Observable<Reference[]> {
     return this.http.get<Project[]>(
       `${this.rootUrl}/references?idProject=${idProject}`, this.setHttpHeader())

@@ -13,17 +13,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.json.JSONObject;
 
@@ -56,6 +53,24 @@ public class Api{
             return ResponseEntity.ok(insertedProject);
         }
 		
+    }
+    
+    @DeleteMapping(value="/projects/{id}", produces = MediaType.APPLICATION_JSON_VALUE +"; charset=utf-8")
+    public ResponseEntity<?> deleteProject(@PathVariable("id") int idProj) throws SQLException {
+    	JSONObject returnData = new JSONObject();
+        if (idProj < 1) {
+            ReferenceController.reset();
+            returnData.put("message", "The database has been reset!");
+            
+        }
+        else {
+        	ProjectDTO projectDTO = ProjectController.getById(idProj);
+            List<ProjectDTO> projectDTOList = new ArrayList<>();
+            projectDTOList.add(projectDTO);
+            ProjectController.deleteRows(projectDTOList);
+            returnData.put("message", "The project has been deleted!");
+        }
+        return ResponseEntity.ok(returnData.toString());
     }
     
     @GetMapping(value = "/references", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
@@ -173,55 +188,6 @@ public class Api{
     public ResponseEntity<?> deleteCriteria(@PathVariable("id") int idICEC) throws SQLException {
         criteriaController.deleteCriteria(idICEC);
         return ResponseEntity.ok(""); 
-    }
-    
-    
-    
-
-
-    
-    
- 
-    
-    //////////////////////////////////FUNCIONS DE CLIENT CONTROLLER/////////////////////////////////////////////////////
-
-    @RequestMapping(value=("/resetView"))
-    public String reset(@RequestParam(value = "idProject") Optional<Integer> idProject,
-                        @ModelAttribute("mes") String mes,
-                        Model model){
-        int project = idProject.orElse(-1);
-        model.addAttribute("projectList", ProjectController.getAll());
-        model.addAttribute("idProject", project);
-        model.addAttribute("newProject", new ProjectDTO());
-        ProjectDTO projectDTO = project == -1 ? new ProjectDTO(-1, null, 0) : ProjectController.getById(idProject.get());
-        if (project == -1) {
-            model.addAttribute("message", "Note that if you press the reset button the content of the database will be completely removed.");
-            model.addAttribute("titleDialog", "Reset Database");
-            model.addAttribute("messageDialog", " Are you sure you wanna reset the database?");
-        }
-        else {
-            model.addAttribute("message", "Note that if you press the reset button the content of the project " + projectDTO.getName() + " will be completely removed.");
-            model.addAttribute("titleDialog", "Delete Project");
-            model.addAttribute("messageDialog", " Are you sure you wanna delete the project " + projectDTO.getName() + " and all the references and criterias?");
-        }
-        model.addAttribute("projectDTO", projectDTO);
-        return "resetBD";
-    }
-
-    @PostMapping(value=("/reset"))
-    public String resetBD(@ModelAttribute("projectDTO") ProjectDTO projectDTO,
-                          RedirectAttributes redirectAttr) throws SQLException {
-        if (projectDTO.getId() < 1) {
-            ReferenceController.reset();
-            redirectAttr.addFlashAttribute("mes", "The database has been reset!");
-        }
-        else {
-            List<ProjectDTO> projectDTOList = new ArrayList<>();
-            projectDTOList.add(projectDTO);
-            ProjectController.deleteRows(projectDTOList);
-            redirectAttr.addFlashAttribute("mes", "The project has been deleted!");
-        }
-        return "redirect:/resetView";
     }
     
     /*@GetMapping(value = "/reference", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")

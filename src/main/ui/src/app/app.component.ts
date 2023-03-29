@@ -33,6 +33,26 @@ export class AppComponent implements OnInit {
     this.getDLNames();
   }
 
+  //funció temporal per permetre resetejar la BD. La gestió de projectes s'ha de modificar
+  getIdProject() {
+    if(this.selectedProject.value !== null) {
+      return this.selectedProject.value.id
+    }
+    else{
+      return -1
+    }
+  }
+
+  //funció temporal per permetre resetejar la BD. La gestió de projectes s'ha de modificar
+  getNameProject(){
+    if(this.selectedProject.value !== null) {
+      return this.selectedProject.value.name
+    }
+    else{
+      return "the database"
+    }
+  }
+
   createProjectDialog() {
     let createProjectDialog = this.dialog.open(ProjectCreateComponent)
     createProjectDialog.afterClosed().subscribe((resposta) => {
@@ -59,6 +79,11 @@ export class AppComponent implements OnInit {
     this.getProjectErrors();
   }
 
+  projectDeleted(): void {
+    this.getProjects()
+    this.selectedProject.setValue('')
+  }
+
   getProjects(): void {
     this.dataService.getProjects().subscribe((resposta)=> {
       //console.log(resposta , 'User resume response');
@@ -67,7 +92,6 @@ export class AppComponent implements OnInit {
   }
 
   changeProject() {
-    console.log("change project")
     this.getProjectData()
     this.getProjectErrors()
     this.getProjectCriteria()
