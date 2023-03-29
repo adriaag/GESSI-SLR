@@ -108,6 +108,29 @@ export class DataService {
     )
   }
 
+  updateCriteria(id: number, name: string, text: string, type: string, idProject: number): Observable<string> {
+    const formData: FormData = new FormData();
+    formData.append('name', name);
+    formData.append('text', text);
+    formData.append('type', type);
+    formData.append('idProject', String(idProject));
+    return this.http.put<string>(
+      `${this.rootUrl}/criteria/${id}`,formData)
+    .pipe(
+      tap(data => console.log("Anlagenstatus Daten:", data)),
+      catchError(this.handleError),
+    )
+  }
+
+  deleteCriteria(id: number): Observable<string> {
+    return this.http.delete<string>(
+      `${this.rootUrl}/criteria/${id}`)
+    .pipe(
+      tap(data => console.log("Anlagenstatus Daten:", data)),
+      catchError(this.handleError),
+    )
+  }
+
   private setHttpHeader() {
     const headers = new HttpHeaders().set('Accept', 'application/json').set('Content-Type', 'application/json');
     let options = { headers: headers };

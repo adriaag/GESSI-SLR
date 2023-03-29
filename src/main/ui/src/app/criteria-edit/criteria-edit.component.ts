@@ -14,16 +14,18 @@ export class CriteriaEditComponent {
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, private dataService: DataService) {}
   
   criteria: Criteria = this.data.criteria
-  idDuplicateCriteria: number = this.data.idDuplicateCriteria
   name = new FormControl(this.criteria.name)
   desc = new FormControl(this.criteria.text)
   type = new FormControl(this.criteria.type)
-  inclusionDisabled = (this.idDuplicateCriteria === this.criteria.id)
+  inclusionDisabled = (this.criteria.type !== "inclusion")
   errors = ""
 
   submit(): void {
     if (this.criteria.id == -1) {
       this.createCriteria()
+    }
+    else {
+      this.updateCriteria()
     }
   }
 
@@ -32,8 +34,12 @@ export class CriteriaEditComponent {
       this.errors = resposta
 
     })
+  }
 
-
+  updateCriteria(): void{
+    this.dataService.updateCriteria(this.criteria.id, this.name.value!,this.desc.value!, this.type.value!, this.criteria.idProject).subscribe((resposta) => {
+      this.errors = resposta
+    })
   }
 
 

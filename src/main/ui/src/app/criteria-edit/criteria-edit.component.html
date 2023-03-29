@@ -4,7 +4,7 @@
 
 <div class="m-3">
     <div mat-dialog-title class="dialog-title">
-        <h2 *ngIf="criteria.id === -1">New Criteria</h2>
+        <h2 *ngIf="criteria.id === -1">New {{criteria.type}} Criteria</h2>
         <h2 *ngIf="criteria.id !== -1">Edit Criteria</h2>
         <button class="boto" mat-icon-button aria-label="close dialog" [mat-dialog-close]="errors">
             <mat-icon>close</mat-icon>
@@ -30,7 +30,7 @@
                 <select id="type" required [formControl]="type" class="form-control">
                     <option value="" hidden="true">Select a type</option>
                     <option value="inclusion" [disabled]="inclusionDisabled">Inclusion</option>
-                    <option value="exclusion">Exclusion</option>
+                    <option value="exclusion" [disabled]="!inclusionDisabled">Exclusion</option>
                 </select>
             </div>
             <div class="footer">
