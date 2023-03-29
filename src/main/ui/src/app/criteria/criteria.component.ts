@@ -59,7 +59,7 @@ export class CriteriaComponent {
 
   createCriteria(name: string, text: string, type: string ): void {
     this.dataService.createCriteria(name, text, type, this.idProject).subscribe((resposta) => {
-      this.errors = resposta
+      this.errors = resposta.message
       this.criteriaUpdated.emit()
 
     })

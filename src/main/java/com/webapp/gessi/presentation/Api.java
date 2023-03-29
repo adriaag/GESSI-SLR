@@ -9,7 +9,6 @@ import com.webapp.gessi.domain.dto.*;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jbibtex.ParseException;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +39,9 @@ public class Api{
     public ResponseEntity<?> newProject(@RequestParam("name") String name) throws SQLException {
         ProjectDTO exist = ProjectController.getByName(name);
         if (exist != null) {
-        	return ResponseEntity.status(HttpStatus.CONFLICT).body("The project " + name + " already exist");
+        	JSONObject returnData = new JSONObject();
+        	returnData.put("error", "The project " + name + " already exist");
+        	return ResponseEntity.status(HttpStatus.CONFLICT).body(returnData.toString());
         }
         else {
         	ProjectDTO newProject = new ProjectDTO();
@@ -126,19 +127,11 @@ public class Api{
     public ResponseEntity<ByteArrayResource> download(@RequestParam(value = "idProject") Integer idProject) {
         try {
             int project = idProject;
-            String nameFile = "All references";
-            if (project != 0) {
-                ProjectDTO projectDTO = ProjectController.getById(project);
-                nameFile = projectDTO.getName();
-            }
             List<referenceDTO> p = ReferenceController.getReferences(project);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             Workbook workbook = creationExcel.create(p);
             workbook.write(stream);
             workbook.close();
-            HttpHeaders header = new HttpHeaders();
-            header.setContentType(new MediaType("application", "force-download"));
-            header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + nameFile + ".xlsx");
 
             return ResponseEntity.ok(new ByteArrayResource(stream.toByteArray()));
         } catch (Exception e) {
@@ -174,7 +167,9 @@ public class Api{
     @PostMapping(value=("/criteria"))
     public ResponseEntity<?> newCriteria(@RequestParam(name = "name") String name, @RequestParam(name = "text") String text, @RequestParam(name = "type") String type, @RequestParam(name = "idProject") Integer idProject) {
         String messageError = criteriaController.addCriteria(name, text, type, idProject);
-        return ResponseEntity.ok(messageError);
+        JSONObject returnData = new JSONObject();
+        returnData.put("message",messageError);
+        return ResponseEntity.ok(returnData.toString());
     }
     
     @PutMapping(value = "/criteria/{id}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")

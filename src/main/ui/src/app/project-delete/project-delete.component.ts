@@ -24,6 +24,7 @@ export class ProjectDeleteComponent {
       message =  "Are you sure you wanna delete the project " + this.nameProject + " and all the references and criterias?"
     }
     if(confirm(message)) {
+      
       this.deleteProject()
     }
   }

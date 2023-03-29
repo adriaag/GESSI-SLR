@@ -28,13 +28,13 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   sortedData: Reference[] = [];
   dataSource!: MatTableDataSource<Reference>;
   displayedColumns: string[] = ['doi','ref', 'dl', 'year', 'auth', 'tit', 'ven', 'sta', 'cri', 'inf', 'cla'];
-
+  filterValue: string = ""
+  
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
 
-  constructor(private dataService: DataService, private dialog: MatDialog) {
-  }
+  constructor(private dataService: DataService, private dialog: MatDialog) {}
 
   ngOnChanges(changes: SimpleChanges) {
     this.references = this.referenceslist
@@ -44,6 +44,7 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
     this.dataSource.sortData = this.sortData();
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.filterData();
+    this.applyFilterWhenReloading()
 
   }
 
@@ -87,6 +88,7 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
     })
   }
   
+  //possible optimització precomputant-ho quan es carreguen les dades
   filterData() {
     let filterFunction = 
         (data: Reference, filter: string): boolean => {
@@ -161,12 +163,22 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   }
 
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = this.filterValue.trim().toLowerCase();
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+  //funció pensada per què quan es modifiqui una referència el filtre es mantingui
+  applyFilterWhenReloading() {
+    this.dataSource.filter = this.filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+
   }
 }
 

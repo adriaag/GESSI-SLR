@@ -112,13 +112,13 @@ export class DataService {
       )
   }
 
-  createCriteria(name: string, text: string, type: string, idProject: number): Observable<string> {
+  createCriteria(name: string, text: string, type: string, idProject: number): Observable<{message: string}> {
     const formData: FormData = new FormData();
     formData.append('name', name);
     formData.append('text', text);
     formData.append('type', type);
     formData.append('idProject', String(idProject));
-    return this.http.post<string>(
+    return this.http.post<{message: string}>(
       `${this.rootUrl}/criteria`,formData)
     .pipe(
       tap(data => console.log("Anlagenstatus Daten:", data)),
@@ -167,8 +167,9 @@ export class DataService {
     return options;
   }
 
-  private handleError(error: Response): Observable<any> {
-    console.error("observable error: ", error);
+  private handleError(error: any): Observable<any> {
+    alert(error.error.error);
+    console.log(error)
     return throwError(() => (error.statusText));
   }
 }

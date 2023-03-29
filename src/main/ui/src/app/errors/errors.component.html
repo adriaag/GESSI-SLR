@@ -11,7 +11,7 @@
             
         <ng-container matColumnDef="dat">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Date&Time</th>
-                <td mat-cell *matCellDef="let row"> {{row.dateTime}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.datetime}} </td>
         </ng-container>
 
         <ng-container matColumnDef="doi">
@@ -33,7 +33,8 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     
         <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+            <td *ngIf="errors.length > 0" class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+            <td *ngIf="errors.length <= 0" class="mat-cell" colspan="4">No data available in table</td>
         </tr>
         
     </table>

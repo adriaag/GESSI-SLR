@@ -106,6 +106,7 @@ export class AppComponent implements OnInit {
       console.log(resposta , 'User resume response');
       this.references = resposta;
     })
+    console.log("reference", this.references)
 
   }
 

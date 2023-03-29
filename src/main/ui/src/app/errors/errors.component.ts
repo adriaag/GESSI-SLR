@@ -36,6 +36,8 @@ export class ErrorsComponent {
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.filterData();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sortData = this.sortData();
   }
 
   filterData() {
