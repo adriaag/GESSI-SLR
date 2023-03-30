@@ -7,12 +7,13 @@ import { Reference } from './dataModels/reference';
 import { ImportError } from './dataModels/importError';
 import { ReferenceFromFileResponse } from './dataModels/referenceFromFileResponse';
 import { CriteriaResponse } from './criteriaResponse';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  rootUrl: string = 'http://localhost:8080/api';
+  rootUrl: string = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
