@@ -123,6 +123,14 @@ public class Api{
         return ResponseEntity.ok(returnData.toString());
     }
     
+    @DeleteMapping(value="/references/{id}", produces = MediaType.APPLICATION_JSON_VALUE +"; charset=utf-8")
+    public ResponseEntity<?> deleteReference(@PathVariable("id") int idRef) throws SQLException {
+    	JSONObject returnData = new JSONObject();
+    	ReferenceController.deleteReference(idRef);
+        returnData.put("message", "The reference has been deleted!");
+        return ResponseEntity.ok(returnData.toString());
+    }
+    
     @GetMapping(value = "/download")
     public ResponseEntity<ByteArrayResource> download(@RequestParam(value = "idProject") Integer idProject) {
         try {

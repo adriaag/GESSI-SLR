@@ -76,6 +76,10 @@ public class ReferenceController {
             ExclusionController.deleteRows(exclusionDTOList);
         }
     }
+    
+    public static void deleteReference(int idRef) {
+    	Reference.delete(idRef);
+    }
 
     public static List<importErrorDTO> getAllErrors() throws SQLException {
         return Reference.getAllErrors();
@@ -84,6 +88,7 @@ public class ReferenceController {
     public static void updateState(int idRef, String state) {
         Reference.update(idRef, state);
     }
+    
 
     @RequestMapping(value = "/createTables")
     public void createTables(){
