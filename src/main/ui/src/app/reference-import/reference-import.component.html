@@ -5,7 +5,7 @@
 
 <body>
     <br>
-    <form ngNativeValidate method="post" enctype="multipart/form-data">
+    <form ngNativeValidate #form method="post" enctype="multipart/form-data">
         <div class=" container" >
             <h2> Import new reference </h2>
             <div class="form-group">
@@ -22,7 +22,7 @@
             </div>
             <h4>
                 <button type="reset" class="btn btn-secondary">Clear</button>
-                <button type="submit" id="createReference" (click)="submitFile()" class="btn btn-primary">Create reference</button>
+                <button type="submit" id="createReference" (click)="form.checkValidity()? submitFile(): null" class="btn btn-primary">Create reference</button>
             </h4>
             <br>
 

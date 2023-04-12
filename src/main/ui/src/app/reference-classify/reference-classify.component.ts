@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Criteria } from '../dataModels/criteria';
 import { Exclusion } from '../dataModels/exclusion';
 import { Reference } from '../dataModels/reference';
@@ -11,7 +11,7 @@ import { Reference } from '../dataModels/reference';
   styleUrls: ['./reference-classify.component.css']
 })
 export class ReferenceClassifyComponent {
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<ReferenceClassifyComponent>) {}
 
   reference: Reference = this.data.reference
   exclusionCriteria: Criteria[] = this.data.exclusionCriteria
@@ -30,7 +30,7 @@ export class ReferenceClassifyComponent {
 
   }
 
-  getOutput() {
+  close() {
     let criteriaIds: number[] = []
     if (this.type.value === "out") {
       criteriaIds = this.selectedEC.value!
@@ -39,7 +39,7 @@ export class ReferenceClassifyComponent {
       type: this.type.value,
       criteria: criteriaIds
     }
-    return data
+    this.dialogRef.close(data)
   }
   
 }

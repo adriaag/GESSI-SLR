@@ -1,5 +1,5 @@
 import { Component, Inject, Injectable, OnInit} from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Criteria } from '../dataModels/criteria';
 import { FormControl } from '@angular/forms';
 
@@ -10,7 +10,7 @@ import { FormControl } from '@angular/forms';
 })
 export class CriteriaEditComponent {
   
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<CriteriaEditComponent>) {}
   
   criteria: Criteria = this.data.criteria
   name = new FormControl(this.criteria.name)
@@ -18,13 +18,14 @@ export class CriteriaEditComponent {
   type = new FormControl(this.criteria.type)
   inclusionDisabled = (this.criteria.type !== "inclusion")
 
-  getOutput() {
+  close() {
     let data = {
       name: this.name.value,
       desc: this.desc.value,
       type: this.type.value
     }
-    return data
+    this.dialogRef.close(data)
+    
 
   }
 

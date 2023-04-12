@@ -77,7 +77,8 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
       }
     })
     referenceEditDialog.afterClosed().subscribe(result => {
-      this.updateReference(ref.idRef, result.type, result.criteria)
+      if(result !== undefined)
+        this.updateReference(ref.idRef, result.type, result.criteria)
     })
 
   }

@@ -32,7 +32,7 @@ export class CriteriaComponent {
       }
     })
     critDialog.afterClosed().subscribe(result => {
-      if (result !== "") {
+      if (result !== undefined) {
         if (selectedCriteria!.id === -1) {
           this.createCriteria(result.name, result.desc, result.type)
         }

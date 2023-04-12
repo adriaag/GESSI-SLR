@@ -11,7 +11,7 @@
         </button>
     </div>
     <mat-dialog-content>
-        <form ngNativeValidate id="newCriteriaForm">
+        <form ngNativeValidate #form id="newCriteriaForm">
             <div hidden class="form-group">
                 <label for="project">Id</label>
                 <input type="number" id="project" class="form-control">
@@ -35,7 +35,7 @@
             </div>
             <div class="footer">
                 <button type="reset" class="btn btn-secondary pull-left">Clear</button>
-                <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right" [mat-dialog-close]="getOutput()">
+                <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right" (click)="form.checkValidity()? close() : null">
                     <div *ngIf="criteria.id === -1">Create criteria</div>
                     <div *ngIf="criteria.id !== -1">Edit criteria</div>
                 </button>

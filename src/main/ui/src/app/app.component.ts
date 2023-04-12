@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { Project } from './dataModels/project';
 import { DataService } from './data.service';
 import { Reference } from './dataModels/reference';
@@ -56,7 +56,9 @@ export class AppComponent implements OnInit {
   createProjectDialog() {
     let createProjectDialog = this.dialog.open(ProjectCreateComponent)
     createProjectDialog.afterClosed().subscribe((resposta) => {
-      this.createProject(resposta)
+      if (resposta != undefined) {
+        this.createProject(resposta)
+      }
       
     })
 
@@ -80,14 +82,15 @@ export class AppComponent implements OnInit {
   }
 
   projectDeleted(): void {
+    this.selectedProject.setValue(null)
     this.getProjects()
-    this.selectedProject.setValue('')
   }
 
   getProjects(): void {
     this.dataService.getProjects().subscribe((resposta)=> {
       //console.log(resposta , 'User resume response');
       this.projects = resposta;
+      this.defaultProject()
     })
   }
 
@@ -129,6 +132,35 @@ export class AppComponent implements OnInit {
     this.dataService.getDLNames().subscribe((resposta)=> {
       console.log(resposta , 'User resume response');
       this.dlNames = resposta;
+    })
+
+  }
+
+  //funció temporal. L'ubicació de projects ha de canviar
+  defaultProject(): void {
+    console.log('selected project', this.selectedProject)
+    if(this.selectedProject.value == null){
+      if (this.projects.length > 0) {
+        this.selectedProject.setValue(this.projects[0])
+        this.changeProject()
+      }
+      else {
+        this.createProjectDialogNoProjects()
+      }
+    }
+  }
+
+  //funció temporal
+  createProjectDialogNoProjects() {
+    let createProjectDialog = this.dialog.open(ProjectCreateComponent)
+    createProjectDialog.afterClosed().subscribe((resposta) => {
+      if (resposta != undefined) {
+        this.createProject(resposta)
+      }
+      else {
+        this.createProjectDialogNoProjects()
+      }
+      
     })
 
   }
