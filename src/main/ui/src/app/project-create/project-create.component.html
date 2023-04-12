@@ -1,0 +1,23 @@
+<head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<div class="m-3">
+    <div mat-dialog-title class="dialog-title">
+        <h2>Create Project</h2>
+        <button class="boto" mat-icon-button aria-label="close dialog" [mat-dialog-close]="">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+    <mat-dialog-content>
+        <form ngNativeValidate #form id="Form" method="post">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input id="name" required class="form-control" [formControl]="projectName">
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" (click)="form.checkValidity()? close(projectName.value) : null">Submit</button>
+            </div>
+        </form>
+    </mat-dialog-content>
+</div>

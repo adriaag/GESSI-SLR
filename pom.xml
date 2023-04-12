@@ -134,7 +134,12 @@
             <version>22.0.0</version>
             <scope>compile</scope>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20230227</version>
+		</dependency>
     </dependencies>
 
     <build>
@@ -164,6 +169,46 @@
 	                <target>1.8</target>
 	            </configuration>
 	        </plugin>
+	        <plugin>
+		        <groupId>com.github.eirslett</groupId>
+		        <artifactId>frontend-maven-plugin</artifactId>
+		        <!-- Use the latest released version:
+		        https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ -->
+		        <version>1.12.1</version>
+		        <configuration>
+					<installDirectory>root</installDirectory>
+					<workingDirectory>src/main/ui</workingDirectory>
+  				</configuration>
+	  			<executions>
+	      			<execution>
+		  				<id>install node and npm</id>
+			  			<goals>
+			      			<goal>install-node-and-npm</goal>
+			  			</goals>
+				  		<configuration>
+				      		<nodeVersion>v18.14.0</nodeVersion>
+				      		<npmVersion>9.5.0</npmVersion>
+				  		</configuration>
+	      			</execution>
+	      			<execution>
+		  				<id>npm install</id>
+		  				<goals>
+		      				<goal>npm</goal>
+		  				</goals>
+	      			</execution>
+	      			<execution>
+		  				<id>prod build</id>
+		  				<goals>
+		      				<goal>npm</goal>
+		  				</goals>
+		  				<phase>generate-resources</phase>
+		  				<configuration>
+		     				<arguments>run ng build</arguments>
+		      				<npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>
+		  				</configuration>
+	      			</execution>
+	  			</executions>
+    		</plugin>
         </plugins>
     </build>
 

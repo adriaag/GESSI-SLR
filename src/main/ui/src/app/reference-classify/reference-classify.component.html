@@ -1,0 +1,33 @@
+<head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<div class="m-3">
+<div mat-dialog-title class="dialog-title">
+    <h2>Classify Reference</h2>
+    <button class="boto" mat-icon-button aria-label="close dialog" [mat-dialog-close]="">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<mat-dialog-content>
+    <form ngNativeValidate #form action='#' id="myForm">
+        <div class="form-group">
+            <label for="state">State</label>
+            <select id="state" required [formControl]="type" (change)="stateChanged()" class="form-control">
+                <option value="" hidden>Select a type</option>
+                <option value="">None</option>
+                <option value="in">In</option>
+                <option value="out">Out</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="applCriteria">Application criteria</label><br>
+            <mat-select multiple required id="applCriteria" [formControl]="selectedEC">
+                <mat-option *ngFor="let criteria of exclusionCriteria" [value]="criteria.id">{{criteria.name}}</mat-option>
+            </mat-select>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" (click)="form.checkValidity()? close(): null">Update row</button>
+        </div>
+    </form>
+</mat-dialog-content>

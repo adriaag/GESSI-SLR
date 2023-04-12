@@ -1,5 +1,5 @@
 FROM maven:3.8 as maven
-LABEL MAINTAINER="marc.almirall@estudiantat.upc.edu"
+LABEL MAINTAINER="adria.aumatell@estudiantat.upc.edu"
 LABEL APPLICATION="Sample Application"
 
 WORKDIR /usr/src/app

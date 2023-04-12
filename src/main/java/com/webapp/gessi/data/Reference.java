@@ -182,6 +182,28 @@ public class Reference {
             }
         }
     }
+    
+    public static void delete(int id) {
+        String query = "DELETE FROM REFERENCIAS WHERE IDREF = ?";
+        try{
+            ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+            Connection conn = ctx.getBean(Connection.class);
+            PreparedStatement preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, id);
+            preparedStatement.execute();
+            conn.commit();
+            System.out.println("deleted row in reference");
+        }catch (SQLException e) {
+            while (e != null) {
+                System.err.println("\n----- SQLException -----");
+                System.err.println("  SQL State:  " + e.getSQLState());
+                System.err.println("  Error Code: " + e.getErrorCode());
+                System.err.println("  Message:    " + e.getMessage());
+                e = e.getNextException();
+            }
+        }
+    }
+
 
     private static void crearTablas(Statement s, Connection conn, ArrayList<Statement> statements) throws SQLException {
         // Create table digitalLibraries if not exist
