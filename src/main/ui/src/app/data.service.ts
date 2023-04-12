@@ -55,6 +55,15 @@ export class DataService {
       )
   }
 
+  deleteReference(idRef: number): Observable<string> {
+    return this.http.delete<string>(
+      `${this.rootUrl}/references/${idRef}`)
+    .pipe(
+      tap(data => console.log("Anlagenstatus Daten:", data)),
+      catchError(this.handleError),
+    )
+  }
+
   /*getReference(idReference: number): Observable<Reference> {
     return this.http.get<Project[]>(
       `${this.rootUrl}/reference?idReference=${idReference}`, this.setHttpHeader())

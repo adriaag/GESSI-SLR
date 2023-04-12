@@ -27,7 +27,7 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   references: Reference[] = [];
   sortedData: Reference[] = [];
   dataSource!: MatTableDataSource<Reference>;
-  displayedColumns: string[] = ['doi','ref', 'dl', 'year', 'auth', 'tit', 'ven', 'sta', 'cri', 'inf', 'cla'];
+  displayedColumns: string[] = ['doi','ref', 'dl', 'year', 'auth', 'tit', 'ven', 'sta', 'cri', 'inf', 'cla', 'del'];
   filterValue: string = ""
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -86,6 +86,19 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
     this.dataService.editReferenceCriteria(id,type,idCriteria).subscribe((resposta) => {
       this.referencesUpdated.emit()
     })
+  }
+
+  requestDeleteReference(reference: Reference) {
+    if(confirm("Are you sure to delete reference "+ reference.art.title + " ?")) {
+      this.deleteReference(reference)
+    }
+  }
+
+  deleteReference(reference: Reference): void {
+    this.dataService.deleteReference(reference.idRef).subscribe((resposta) => {
+      this.referencesUpdated.emit()
+    })
+      
   }
   
   //possible optimització precomputant-ho quan es carreguen les dades

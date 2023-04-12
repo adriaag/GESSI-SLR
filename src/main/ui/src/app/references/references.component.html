@@ -8,7 +8,7 @@
     <h2> All references </h2>
     <h1>
         <div class="d-flex mt-3">
-            <a (click)="downloadExcel()" target="_blank"><button class="btn"><i class="fa fa-download"></i> Download references (.xls)</button></a>
+            <a (click)="downloadExcel()" target="_blank"><button class="btn2"><i class="fa fa-download"></i> Download references (.xls)</button></a>
         </div>
 
         <mat-form-field >
@@ -97,6 +97,14 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Classify</th>
             <td mat-cell *matCellDef="let row">
                 <button id="modalButton" type="button" class="btn btn-primary eBtn" style="font-size:12px" (click)="editReferenceDialog(row)"><i class="fa fa-edit"></i>
+                </button>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="del">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Delete</th>
+            <td mat-cell *matCellDef="let row">
+                <button id="modalButton" type="button" class="btn btn-danger eBtn" style="font-size:12px" (click)="requestDeleteReference(row)"><i class="fa fa-trash"></i>
                 </button>
             </td>
         </ng-container>

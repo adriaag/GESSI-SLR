@@ -1,14 +1,14 @@
-.btn {
-    background-color: DodgerBlue;
-    border: none;
-    color: white;
-    padding: 12px 30px;
-    cursor: pointer;
-    font-size: 20px;
+.btn2 {
+  background-color: DodgerBlue;
+  border: none;
+  color: white;
+  padding: 12px 30px;
+  cursor: pointer;
+  font-size: 20px;
 }
 
 /* Darker background on mouse-over */
-.btn:hover {
+.btn2:hover {
     background-color: RoyalBlue;
 }
 
