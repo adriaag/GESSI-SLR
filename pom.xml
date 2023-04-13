@@ -14,10 +14,20 @@
     <packaging>war</packaging>
 
     <description>TFG project for Spring Boot</description>
+    
+    <repositories>
+	    <repository>
+	    	<id>github</id>
+	    	<name>jbibtex repository</name>
+			<url>https://maven.pkg.github.com./adriaag/jbibtex</url>
+		</repository>
+	</repositories>
+   	
+	
     <properties>
         <java.version>11.0.10.9</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
+	
     </properties>
     <dependencies>
         <dependency>
@@ -91,11 +101,11 @@
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jbibtex/jbibtex -->
-        <dependency>
+        <!-- <dependency>
             <groupId>org.jbibtex</groupId>
             <artifactId>jbibtex</artifactId>
             <version>1.0.19</version>
-        </dependency>
+        </dependency> -->
         <!-- https://mvnrepository.com/artifact/de.undercouch/citeproc-java -->
         <dependency>
             <groupId>de.undercouch</groupId>
@@ -140,6 +150,14 @@
 		    <artifactId>json</artifactId>
 		    <version>20230227</version>
 		</dependency>
+		<dependency>
+    		<groupId>org.jbibtex</groupId>
+    		<artifactId>jbibtex</artifactId>
+    		<version>1.0.21</version>
+		</dependency>
+		
+		
+		
     </dependencies>
 
     <build>
