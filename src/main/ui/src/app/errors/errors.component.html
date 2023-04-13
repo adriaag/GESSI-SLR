@@ -1,0 +1,41 @@
+<div class="m-3">
+    <h2>Importation errors</h2>
+    <h1>
+        <mat-form-field >
+            <mat-label>Filter References</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Search" #input>
+        </mat-form-field>
+
+    </h1>
+    <table mat-table [dataSource]="dataSource" matSort class="table table-striped">
+            
+        <ng-container matColumnDef="dat">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Date&Time</th>
+                <td mat-cell *matCellDef="let row"> {{row.datetime}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="doi">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>#DOI</th>
+            <td mat-cell *matCellDef="let row"> {{row.doi}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="idDL">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>#DL</th>
+            <td mat-cell *matCellDef="let row"> {{row.idDL}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="bibtex">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference's information</th>
+            <td mat-cell *matCellDef="let row"> {{row.bibTex}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    
+        <tr class="mat-row" *matNoDataRow>
+            <td *ngIf="errors.length > 0" class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+            <td *ngIf="errors.length <= 0" class="mat-cell" colspan="4">No data available in table</td>
+        </tr>
+        
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons aria-label="Select page of references"></mat-paginator>

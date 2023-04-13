@@ -1,0 +1,152 @@
+<html>
+<head>
+    <title>All references</title>
+</head>
+<body>
+<br>
+<div class="m-3" >
+    <h2> All references </h2>
+    <h1>
+        <div class="d-flex mt-3">
+            <a (click)="downloadExcel()" target="_blank"><button class="btn2"><i class="fa fa-download"></i> Download references (.xls)</button></a>
+        </div>
+
+        <mat-form-field >
+            <mat-label>Filter References</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Search" #input>
+        </mat-form-field>
+
+    </h1>
+    <table mat-table [dataSource]="dataSource" matSort class="table table-striped" id="dataTable">
+            
+        <ng-container matColumnDef="doi">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>DOI</th>
+                <td mat-cell *matCellDef="let row"> {{row.art.doi}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="ref">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>#ref</th>
+            <td mat-cell *matCellDef="let row">{{row.idRef}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="dl">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>DL</th>
+            <td mat-cell *matCellDef="let row">{{row.dl.name}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="year">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Year</th>
+            <td mat-cell *matCellDef="let row">{{row.art.any}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="auth">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Authors</th>
+            <td mat-cell *matCellDef="let row">
+                <span *ngFor="let researcher of row.art.researchers let i = 'index'; let last = 'last'">
+                    <span *ngIf="i < 1">{{researcher.name}};<br></span>
+                    <span *ngIf="i == 1">{{researcher.name}}</span>
+                    <span *ngIf="i == 1 && !last">...</span>
+                </span>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="tit">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+            <td mat-cell *matCellDef="let row">
+                <div *ngIf="row.art.title.length >= 65">{{row.art.title.substring(0,65)}}...</div> 
+                <div *ngIf="row.art.title.length < 65">{{row.art.title}}</div>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="ven">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Venue</th>
+            <td mat-cell *matCellDef="let row">
+                <div *ngIf="row.art.ven != null">
+                    <div *ngIf="row.art.ven.name.length >=45">{{row.art.ven.name.substring(0,45)}}...</div>
+                    <div *ngIf="row.art.ven.name.length < 45">{{row.art.ven.name}}</div>
+                </div>
+                <div *ngIf="row.art.ven == null"> <p></p></div>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="sta">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>State</th>
+            <td mat-cell *matCellDef="let row">{{row.state}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="cri">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Criteria</th>
+            <td mat-cell *matCellDef="let row">
+                <div *ngIf="row.exclusionDTOList != null">
+                    <div *ngFor="let exlusion of row.exclusionDTOList">{{exlusion.nameICEC}} </div>
+                </div>
+                <div *ngIf="row.exclusionDTOList == null"> </div>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="inf">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Info</th>
+            <td mat-cell *matCellDef="let row">
+                <button class="btn btn-primary" (click)="viewReference(row)"
+                            style="font-size:12px" ><i class="fa fa-info-circle" aria-hidden="true"></i>
+                </button>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="cla">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Classify</th>
+            <td mat-cell *matCellDef="let row">
+                <button id="modalButton" type="button" class="btn btn-primary eBtn" style="font-size:12px" (click)="editReferenceDialog(row)"><i class="fa fa-edit"></i>
+                </button>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="del">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Delete</th>
+            <td mat-cell *matCellDef="let row">
+                <button id="modalButton" type="button" class="btn btn-danger eBtn" style="font-size:12px" (click)="requestDeleteReference(row)"><i class="fa fa-trash"></i>
+                </button>
+            </td>
+        </ng-container>
+
+
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [style]="row.state === 'in' ? 'background-color:  #BDECD6': row.state === 'out' ? 'background-color: #FFEBEE' : 'background-color: #E1F5FE'"></tr>
+    
+        <tr class="mat-row" *matNoDataRow>
+            <td *ngIf="referenceslist.length > 0" class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+            <td *ngIf="referenceslist.length <= 0" class="mat-cell" colspan="4">No data available in table</td>
+        </tr>
+        
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons aria-label="Select page of references"></mat-paginator>
+
+</div>
+<!-- Modal -->
+<div class="modal fade" th:id="createProject" tabindex="-1" role="dialog" aria-labelledby="createProject" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModal">Create Project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModel()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action='#' id="Form" method="post" th:action="@{/newProject}" th:object="${newProject}">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input id="name" required th:field="*{name}" class="form-control">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
