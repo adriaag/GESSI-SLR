@@ -106,13 +106,6 @@ public class article {
             Matcher bibM = patternKey.matcher(data);
             if(bibM.find()) {
                 String citeKey = bibM.group(1).replaceAll("\\{", "").replaceAll(",", "");
-                //Comprobar si hay citekey duplicada
-                if (list.contains(citeKey)) {
-                    importationLogError.insertRow(sta, doi, data, idDL, timesql);
-                    //clave primaria timestamp(fecha y hora , el mismo para 1 importacion)
-                    //System.out.println("insert row bc duplicated cite key: " + citeKey);
-                    //Podria devolver este error?
-                }
                 list.add(citeKey);
             }
         }
