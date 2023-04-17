@@ -12,19 +12,30 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class Reference {
 
     public static int insertRow(Statement s, String doi, String idDL, String estado, int idProject) throws SQLException {
-        String query = "INSERT INTO referencias(doi, idDL, state, idProject) VALUES (?, ?, ?, ?)";
+    	String getIdProjRefAntQuery = "SELECT max(idProjRef) FROM referencias where idProject = ?";
+        String query = "INSERT INTO referencias(doi, idDL, state, idProject, idProjRef) VALUES (?, ?, ?, ?, ?)";
         try {
             Connection conn = s.getConnection();
-            PreparedStatement preparedStatement = conn.prepareStatement(query);
+            PreparedStatement preparedStatement = conn.prepareStatement(getIdProjRefAntQuery);
+            preparedStatement.setInt(1,idProject);
+            preparedStatement.execute();
+            ResultSet getIdProjRefAntRS = preparedStatement.getResultSet();
+            int idProjRef = 1;
+            if(getIdProjRefAntRS.next()) {
+            	idProjRef = getIdProjRefAntRS.getInt(1) + 1;
+            }
+            System.out.println("IdProjRef: "+ idProjRef);
+            
+            preparedStatement = conn.prepareStatement(query);
             preparedStatement.setString(1, doi);
             preparedStatement.setString(2, idDL);
             preparedStatement.setString(3, estado);
             preparedStatement.setInt(4, idProject);
+            preparedStatement.setInt(5, idProjRef);
             preparedStatement.execute();
             System.out.println("Inserted row with doi, idDL.. in referencias");
             conn.commit();
@@ -49,7 +60,8 @@ public class Reference {
             s.execute("create table referencias(" +
                     "idRef INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
                     "doi varchar(50), idDL INT, state VARCHAR(10), idProject INT, " +
-                    "PRIMARY KEY(idRef), unique(doi, idDL, idProject), " +
+                    "idProjRef INT NOT NULL, "+
+                    "PRIMARY KEY(idRef), unique(doi, idDL, idProject), unique(idProjRef,idProject), " +
                     "CONSTRAINT DL_FK_R FOREIGN KEY (idDL) REFERENCES digitalLibraries (idDL) ON DELETE CASCADE," +
                     "CONSTRAINT AR_FK_R FOREIGN KEY (doi) REFERENCES articles (doi) ON DELETE CASCADE," +
                     "CONSTRAINT PR_FK_R FOREIGN KEY (idProject) REFERENCES project (id) ON DELETE CASCADE," +
@@ -106,12 +118,13 @@ public class Reference {
                 String doiR = rs.getString(2);
                 int dlR = rs.getInt(3);
                 String estado = rs.getString(4);
+                int idProjRef = rs.getInt(6);
                 List<ExclusionDTO> exclusionDTOList = null;
                 if (Objects.equals(estado, "out")) {
                     Statement s1 = conn.createStatement();
                     exclusionDTOList = Exclusion.getByIdRef(s1, idR);
                 }
-                referenceDTO NewRef = new referenceDTO( idR, doiR, dlR, idProject, estado, exclusionDTOList);
+                referenceDTO NewRef = new referenceDTO( idR, doiR, dlR, idProject, estado, idProjRef, exclusionDTOList);
                 obtainReferenceDTO(conn, NewRef, doiR, dlR);
 
                 refList.add(NewRef);
@@ -329,7 +342,7 @@ public class Reference {
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.next();
         referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
-                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), null);
+                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), resultSet.getInt("idProjRef"),null);
         List<ExclusionDTO> exclusionDTOList = Exclusion.getByIdRef(conn.createStatement(), idR);
         referenceDTO.setExclusionDTOList(exclusionDTOList);
         return referenceDTO;
@@ -415,7 +428,7 @@ public class Reference {
         List<ExclusionDTO> exclusionDTOList = new ArrayList<>();
         resultSet.next();
         referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
-                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), null);
+                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), resultSet.getInt("idProjRef"),null);
         exclusionDTOList.add(new ExclusionDTO(resultSet.getInt("idRef"), resultSet.getInt("idICEC"), resultSet.getString("name")));
         referenceDTO.setExclusionDTOList(convertResultSetToExclusionDTO(resultSet, exclusionDTOList));
         return referenceDTO;
