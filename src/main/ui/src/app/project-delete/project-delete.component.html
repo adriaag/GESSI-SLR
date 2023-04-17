@@ -1,7 +1,13 @@
 <div class="container">
-    <h2> Reset</h2>
+    <h2> Delete Project</h2>
     <span>Note that if you press the reset button the content of {{nameProject}} will be completely removed. </span>
     <button class="btn btn-primary eBtn" type="button" style="font-size:14px" (click)="deleteProjectConfirm()">
+        <i class="fa fa-refresh">Reset</i>
+    </button>
+    <br><br><br>
+    <h2> Recreate Database</h2>
+    <span>Note that if you press the reset button all the content of the database will be completely removed. </span>
+    <button class="btn btn-primary eBtn" type="button" style="font-size:14px" (click)="deleteDBConfirm()">
         <i class="fa fa-refresh">Reset</i>
     </button>
     <br>
