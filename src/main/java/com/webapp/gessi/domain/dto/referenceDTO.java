@@ -15,17 +15,19 @@ public class referenceDTO implements Serializable {
     private int idDL;
     private int idProject;
     private String state;
+    private int idProjRef;
     private List<ExclusionDTO> exclusionDTOList;
     private articleDTO art;
     private digitalLibraryDTO dl;
 
 
-    public referenceDTO(int idRef, String doi, int idDL, int idProject, String state, List<ExclusionDTO> exclusionDTOList) {
+    public referenceDTO(int idRef, String doi, int idDL, int idProject, String state, int idProjRef, List<ExclusionDTO> exclusionDTOList) {
         this.idRef = idRef;
         this.doi = doi;
         this.idDL = idDL;
         this.idProject = idProject;
         this.state = state;
+        this.idProjRef = idProjRef;
         this.exclusionDTOList = exclusionDTOList;
     }
 
@@ -85,6 +87,13 @@ public class referenceDTO implements Serializable {
         this.state = state;
     }
 
+    public int getIdProjRef() {
+        return idProjRef;
+    }
+
+    public void setdProjRef(int idProjRef) {
+        this.idProjRef = idProjRef;
+    }
     public List<ExclusionDTO> getExclusionDTOList() {
         return exclusionDTOList;
     }

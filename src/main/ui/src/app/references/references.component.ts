@@ -110,7 +110,7 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
             //obtenim una string amb totes les dades de reference que apareixen a la taula 
             var filterText = ""
             filterText += data.doi;
-            filterText += data.idRef;
+            filterText += data.idProjRef;
             filterText += data.dl.name;
             filterText += data.art.any;
             for (let researcher of data.art.researchers){

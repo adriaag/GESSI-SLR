@@ -16,16 +16,16 @@ export class ProjectDeleteComponent {
   operationMsg: string = ""
 
   deleteProjectConfirm() {
-    let message: string = ""
-    if(this.idProject < 0) {
-      message = "Are you sure you wanna reset " + this.nameProject + " ?"
-    }
-    else{
-      message =  "Are you sure you wanna delete the project " + this.nameProject + " and all the references and criterias?"
-    }
-    if(confirm(message)) {
-      
+    let message: string = "Are you sure you wanna reset " + this.nameProject + " ?"
+    if(confirm(message)) {   
       this.deleteProject()
+    }
+  }
+
+  deleteDBConfirm() {
+    let message: string = "Are you sure you want to recreate the database?\nCAUTION!: All stored data will be lost!"
+    if (confirm(message)) {
+      this.deleteDB()
     }
   }
 
@@ -34,6 +34,13 @@ export class ProjectDeleteComponent {
       this.operationMsg = resposta.message
       this.projectDeleted.emit()
     })
+  }
+  
+  deleteDB() {
+      this.dataService.deleteDatabase().subscribe((resposta)=> {
+        this.operationMsg = resposta.message
+        this.projectDeleted.emit()
+      })
 
   }
 

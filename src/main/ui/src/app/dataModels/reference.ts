@@ -8,6 +8,7 @@ export interface Reference {
     idDL: number;
     idProject: number;
     state: string;
+    idProjRef: number;
     exclusionDTOList: Exclusion[];
     art: Article;
     dl: DigitalLibrary;

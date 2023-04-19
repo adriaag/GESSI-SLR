@@ -59,18 +59,11 @@ public class Api{
     @DeleteMapping(value="/projects/{id}", produces = MediaType.APPLICATION_JSON_VALUE +"; charset=utf-8")
     public ResponseEntity<?> deleteProject(@PathVariable("id") int idProj) throws SQLException {
     	JSONObject returnData = new JSONObject();
-        if (idProj < 1) {
-            ReferenceController.reset();
-            returnData.put("message", "The database has been reset!");
-            
-        }
-        else {
-        	ProjectDTO projectDTO = ProjectController.getById(idProj);
-            List<ProjectDTO> projectDTOList = new ArrayList<>();
-            projectDTOList.add(projectDTO);
-            ProjectController.deleteRows(projectDTOList);
-            returnData.put("message", "The project has been deleted!");
-        }
+    	ProjectDTO projectDTO = ProjectController.getById(idProj);
+        List<ProjectDTO> projectDTOList = new ArrayList<>();
+        projectDTOList.add(projectDTO);
+        ProjectController.deleteRows(projectDTOList);
+        returnData.put("message", "The project has been deleted!");
         return ResponseEntity.ok(returnData.toString());
     }
     
@@ -191,6 +184,14 @@ public class Api{
     public ResponseEntity<?> deleteCriteria(@PathVariable("id") int idICEC) throws SQLException {
         criteriaController.deleteCriteria(idICEC);
         return ResponseEntity.ok(""); 
+    }
+    
+    @DeleteMapping(value = "/")
+    public ResponseEntity<?> deleteDB() {
+        ReferenceController.reset();
+        JSONObject returnData = new JSONObject();
+        returnData.put("message", "The database has been reset!");
+        return ResponseEntity.ok(returnData.toString());
     }
     
     /*@GetMapping(value = "/reference", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")

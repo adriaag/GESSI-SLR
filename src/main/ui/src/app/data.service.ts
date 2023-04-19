@@ -171,6 +171,15 @@ export class DataService {
     )
   }
 
+  deleteDatabase(): Observable<{message: string}> {
+    return this.http.delete<{message: string}>(
+      `${this.rootUrl}/`)
+      .pipe(
+        tap(data => console.log("Anlagenstatus Daten:", data)),
+        catchError(this.handleError),
+      )
+  }
+
   private setHttpHeader() {
     const headers = new HttpHeaders().set('Accept', 'application/json').set('Content-Type', 'application/json');
     let options = { headers: headers };
