@@ -29,7 +29,9 @@ public class ExclusionController {
         Connection conn = ctx.getBean(Connection.class);
         Statement s;
         s = conn.createStatement();
-        exclusionDTOList.forEach(value -> Exclusion.deleteRow(s, value.getIdICEC(), value.getIdRef()));
+        for (ExclusionDTO value: exclusionDTOList) {
+        	Exclusion.deleteRow(s, value.getIdICEC(), value.getIdRef());
+        }
         s.getConnection().commit();
     }
 
@@ -41,7 +43,7 @@ public class ExclusionController {
         Exclusion.addCriteriaFK();
     }
 
-    public static List<ExclusionDTO> getByIdRef(Statement s, int idRef) {
+    public static List<ExclusionDTO> getByIdRef(Statement s, int idRef) throws SQLException {
         return Exclusion.getByIdRef(s, idRef);
     }
 

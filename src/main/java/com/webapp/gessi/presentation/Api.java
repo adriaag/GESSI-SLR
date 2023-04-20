@@ -94,59 +94,89 @@ public class Api implements ErrorController{
     
     @GetMapping(value = "/projects/{id}/references", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public ResponseEntity<?> getReferences(@PathVariable("id") Integer idProject){
-        List<referenceDTO> referenceDTOList = ReferenceController.getReferences(idProject);
-        //model.addAttribute("ECCriteria", criteriaController.getCriteriasEC(auxIdProject));
-        return ResponseEntity.ok(referenceDTOList);
+    	try {
+	        List<referenceDTO> referenceDTOList = ReferenceController.getReferences(idProject);
+	        //model.addAttribute("ECCriteria", criteriaController.getCriteriasEC(auxIdProject));
+	        return ResponseEntity.ok(referenceDTOList);
+    	}
+    	catch (SQLException e) {
+	    	sqlExcHandler(e);	    	
+	    }
+    	return internalServerError();
     }
     
     @PutMapping(value=("/projects/{id}/references/{idRef}"))
-    public ResponseEntity<?> editReference(@PathVariable("idRef") int idRef, @RequestParam(name = "state") String state, @RequestParam(name = "criteria") List<Integer> criteria) throws SQLException {
-        ReferenceController.updateReference(idRef, state, criteria);
-        return ResponseEntity.ok(""); 
+    public ResponseEntity<?> editReference(@PathVariable("idRef") int idRef, @RequestParam(name = "state") String state, @RequestParam(name = "criteria") List<Integer> criteria) {
+        try {
+	    	ReferenceController.updateReference(idRef, state, criteria);
+	        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        }
+        catch (SQLException e) {
+	    	sqlExcHandler(e);	    	
+	    }
+    	return internalServerError();
     }
     
     @PostMapping(value = "/projects/{id}/references", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> submitFile(@PathVariable(name = "id") String idProject, @RequestParam(name = "dlNum") String dlNum, @RequestParam(name = "file") MultipartFile file)
-            throws ParseException, SQLException, IOException {
+            throws SQLException, IOException {
     	
-    	
-    	formDTO form = new formDTO();
-    	form.setdlNum(dlNum);
-    	form.setFile(file);
-    	form.setIdProject(Integer.parseInt(idProject));
-    	
-        List<String> names = digitalLibraryController.getNames();
-        List<importErrorDTO> errors;
-        
-        String nameFile = form.getFile().getOriginalFilename();
-        JSONObject returnData = new JSONObject();
-        /*if(!nameFile.matches(PATH_PATTERN)) {
-        	returnData.put("errorFile", "The file selected has to be a BIB file.");
-        	returnData.put("importBool", false);
-        }
-        else {*/
-            errors = ReferenceController.addReference(form.getdlNum(), form.getIdProject(), form.getFile());
-            int num = Integer.parseInt(form.getdlNum());
-            returnData.put("newDL", form.getdlNum());
-            returnData.put("newName", StringUtils.cleanPath(nameFile));
-            returnData.put("errors", errors);
-       
-            if (ReferenceController.getReferencesImport() > 0) {
-            	returnData.put("refsImp", ReferenceController.getReferencesImport());
-                ReferenceController.resetReferencesImport();
-            }
-            returnData.put("DLnew", names.get(num - 1));
-            returnData.put("importBool", true);            
-        //}
-        return ResponseEntity.ok(returnData.toString());
+    	try {
+	    	formDTO form = new formDTO();
+	    	form.setdlNum(dlNum);
+	    	form.setFile(file);
+	    	form.setIdProject(Integer.parseInt(idProject));
+	    	
+	        List<String> names = digitalLibraryController.getNames();
+	        List<importErrorDTO> errors;
+	        
+	        String nameFile = form.getFile().getOriginalFilename();
+	        JSONObject returnData = new JSONObject();
+	        /*if(!nameFile.matches(PATH_PATTERN)) {
+	        	returnData.put("errorFile", "The file selected has to be a BIB file.");
+	        	returnData.put("importBool", false);
+	        }
+	        else {*/
+	            errors = ReferenceController.addReference(form.getdlNum(), form.getIdProject(), form.getFile());
+	            int num = Integer.parseInt(form.getdlNum());
+	            returnData.put("newDL", form.getdlNum());
+	            returnData.put("newName", StringUtils.cleanPath(nameFile));
+	            returnData.put("errors", errors);
+	       
+	            if (ReferenceController.getReferencesImport() > 0) {
+	            	returnData.put("refsImp", ReferenceController.getReferencesImport());
+	                ReferenceController.resetReferencesImport();
+	            }
+	            returnData.put("importBool", true);            
+	        //}
+	        return ResponseEntity.status(HttpStatus.CREATED).body(returnData.toString());
+	        
+    	}
+    	catch (SQLException e) {
+	    	sqlExcHandler(e);
+	    	return internalServerError();
+	    }
+    	catch (IOException e) {
+    		JSONObject returnData = new JSONObject();
+    		returnData.put("message", "Invalid BiB file");
+    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnData.toString());
+    		
+    	}
     }
     
     @DeleteMapping(value="/projects/{id}/references/{idRef}", produces = MediaType.APPLICATION_JSON_VALUE +"; charset=utf-8")
-    public ResponseEntity<?> deleteReference(@PathVariable("id") int idRef) throws SQLException {
-    	JSONObject returnData = new JSONObject();
-    	ReferenceController.deleteReference(idRef);
-        returnData.put("message", "The reference has been deleted!");
-        return ResponseEntity.ok(returnData.toString());
+    public ResponseEntity<?> deleteReference(@PathVariable("id") int idRef) {
+    	try {
+	    	JSONObject returnData = new JSONObject();
+	    	ReferenceController.deleteReference(idRef);
+	        returnData.put("message", "The reference has been deleted!");
+	        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(returnData.toString());
+    	}
+    	catch (SQLException e) {
+	    	sqlExcHandler(e);
+	    	return internalServerError();
+	    }
+    	
     }
     
     @GetMapping(value = "/projects/{id}/export/references")
@@ -168,47 +198,84 @@ public class Api implements ErrorController{
     
     
     @GetMapping(value = "/digitalLibraries", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public ResponseEntity<?> getDLs() throws SQLException{
-    	List<String> dlNames = digitalLibraryController.getNames();
-        return ResponseEntity.ok(dlNames);
+    public ResponseEntity<?> getDLs(){
+    	try {
+	    	List<String> dlNames = digitalLibraryController.getNames();
+	        return ResponseEntity.ok(dlNames);
+    	}
+    	catch (SQLException e) {
+	    	sqlExcHandler(e);
+	    	return internalServerError();
+	    }
     }
     
     
     @GetMapping(value = "/projects/{id}/errors", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public ResponseEntity<?> importErrors(@PathVariable("id") Integer idProject) throws SQLException, IOException, ParseException {
-        List<importErrorDTO> errors = ReferenceController.getErrors(idProject);
-        return ResponseEntity.ok(errors);
+    public ResponseEntity<?> importErrors(@PathVariable("id") Integer idProject) {
+    	try {
+	        List<importErrorDTO> errors = ReferenceController.getErrors(idProject);
+	        return ResponseEntity.ok(errors);
+    	}
+    	catch (SQLException e) {
+	    	sqlExcHandler(e);
+	    	return internalServerError();
+	    }
     }
     
     @GetMapping(value = "/projects/{id}/criterias", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public ResponseEntity<?> getCriteria(@PathVariable("id") Integer idProject) {
-        List<CriteriaDTO> lIC = criteriaController.getCriteriasIC(idProject);
-        List<CriteriaDTO> lEC = criteriaController.getCriteriasEC(idProject);
-        JSONObject returnData = new JSONObject();
-        returnData.put("inclusionCriteria", lIC);
-        returnData.put("exclusionCriteria", lEC);
-        return ResponseEntity.ok(returnData.toString());
+    	try {
+	        List<CriteriaDTO> lIC = criteriaController.getCriteriasIC(idProject);
+	        List<CriteriaDTO> lEC = criteriaController.getCriteriasEC(idProject);
+	        JSONObject returnData = new JSONObject();
+	        returnData.put("inclusionCriteria", lIC);
+	        returnData.put("exclusionCriteria", lEC);
+	        return ResponseEntity.ok(returnData.toString());
+    	}
+    	catch (SQLException e) {
+	    	sqlExcHandler(e);
+	    	return internalServerError();
+	    }
     }
     
     @PostMapping(value=("/projects/{id}/criterias"))
     public ResponseEntity<?> newCriteria(@RequestParam(name = "name") String name, @RequestParam(name = "text") String text, @RequestParam(name = "type") String type, @PathVariable("id") Integer idProject) {
-        String messageError = criteriaController.addCriteria(name, text, type, idProject);
-        JSONObject returnData = new JSONObject();
-        returnData.put("message",messageError);
-        return ResponseEntity.ok(returnData.toString());
+        try {
+	    	String messageError = criteriaController.addCriteria(name, text, type, idProject);
+	        JSONObject returnData = new JSONObject();
+	        returnData.put("message",messageError);
+	        return ResponseEntity.status(HttpStatus.CREATED).body(returnData.toString());
+    	}
+    	catch (SQLException e) {
+	    	sqlExcHandler(e);
+	    	return internalServerError();
+	    }
     }
     
     @PutMapping(value = "/projects/{id}/criterias/{idCri}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public ResponseEntity<?> updateCriteria(@PathVariable("idCri") int idCri, @RequestParam(name = "name") String name, @RequestParam(name = "text") String text, @RequestParam(name = "type") String type, @PathVariable(name = "id") Integer idProject) {
-    	CriteriaDTO criteria = new CriteriaDTO(idCri, name, text, type, idProject);
-        criteriaController.updateCriteria(idCri, criteria);
-        return ResponseEntity.ok("");   
+    	try {
+	    	CriteriaDTO criteria = new CriteriaDTO(idCri, name, text, type, idProject);
+	        criteriaController.updateCriteria(idCri, criteria);
+	        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    	}
+    	catch (SQLException e) {
+	    	sqlExcHandler(e);
+	    	return internalServerError();
+	    }
+    	
     }
     
     @DeleteMapping(value = "/projects/{id}/criterias/{idCri}", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public ResponseEntity<?> deleteCriteria(@PathVariable("idCri") int idICEC) throws SQLException {
-        criteriaController.deleteCriteria(idICEC);
-        return ResponseEntity.ok(""); 
+    public ResponseEntity<?> deleteCriteria(@PathVariable("idCri") int idICEC) {
+    	try {
+	        criteriaController.deleteCriteria(idICEC);
+	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    	}
+	    catch (SQLException e) {
+	    	sqlExcHandler(e);
+	    	return internalServerError();
+		}
     }
     
     @DeleteMapping(value = "/")
@@ -216,7 +283,7 @@ public class Api implements ErrorController{
         ReferenceController.reset();
         JSONObject returnData = new JSONObject();
         returnData.put("message", "The database has been reset!");
-        return ResponseEntity.ok(returnData.toString());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(returnData.toString());
     }
     
     @RequestMapping(value = "/error") 

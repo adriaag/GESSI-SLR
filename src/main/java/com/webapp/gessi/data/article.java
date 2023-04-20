@@ -32,7 +32,7 @@ public class article {
     static Key articleKey = new Key("article");
     static Key affiliationKey = new Key("affiliation");
 
-    public static Timestamp importar(String idDL, ProjectDTO project, Statement s, MultipartFile file) throws IOException{
+    public static Timestamp importar(String idDL, ProjectDTO project, Statement s, MultipartFile file) throws IOException, SQLException{
 
         //Reader reader = new FileReader(path);
         //Parametro MultipartFile file
@@ -75,14 +75,13 @@ public class article {
             }
             reader.close();
         }
-        catch (ParseException | SQLException e) {
+        catch (ParseException e) {
         	if (myString.length() > 10000) {
         		myString = myString.substring(0,9999);
         	}
         	importationLogError.insertRow(s, doi, myString, idDL, project.getId(), time);
         	System.err.println("  Error d'importació");
             System.err.println("  Message:    " + e.getMessage());
-        	return time;
         }
         
         return time;
@@ -414,7 +413,7 @@ public class article {
         }
     }
 
-    public static void dropTable(Statement s) throws SQLException {
+    public static void dropTable(Statement s) {
         try {
             s.execute("drop table articles");
             System.out.println("Dropped table articles");

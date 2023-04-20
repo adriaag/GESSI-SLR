@@ -29,25 +29,13 @@ public class venue {
     }
 
     public static int insertRow(Statement s, String nameVenue) throws SQLException {
-        try{
-            String query = "INSERT INTO venues(name) VALUES (\'" + nameVenue + "\')";
-            //System.out.println(query);
-            s.execute(query);
-            System.out.println("Inserted row with idVenue, name, acr in venues");
-            s.getConnection().commit();
-        } catch (SQLException e) {
-            if (e.getSQLState().equals("23505"))
-                System.out.println("Company exists");
-            else {
-                while (e != null) {
-                    System.err.println("\n----- SQLException -----");
-                    System.err.println("  SQL State:  " + e.getSQLState());
-                    System.err.println("  Error Code: " + e.getErrorCode());
-                    System.err.println("  Message:    " + e.getMessage());
-                    e = e.getNextException();
-                }
-            }
-        }
+    	
+        String query = "INSERT INTO venues(name) VALUES (\'" + nameVenue + "\')";
+        //System.out.println(query);
+        s.execute(query);
+        System.out.println("Inserted row with idVenue, name, acr in venues");
+        s.getConnection().commit();
+        
         ResultSet rs = s.executeQuery("SELECT idVen FROM venues where name = '" + nameVenue + "'");
         rs.next();
         return rs.getInt(1);

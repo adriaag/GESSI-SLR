@@ -40,8 +40,8 @@ public class importationLogError {
         return rs.next();
     }
 
-    public static void insertRow(Statement s, String doi, String data, String idDL, int idProject, Timestamp timesql) {
-        try {
+    public static void insertRow(Statement s, String doi, String data, String idDL, int idProject, Timestamp timesql) throws SQLException {
+
             PreparedStatement prepStatement = s.getConnection().
                     prepareStatement("INSERT INTO ImportationLogError(time, doi, idDL, idProject, BibTex) VALUES (?,?,?,?,?)");
             prepStatement.setTimestamp(1, timesql);
@@ -55,15 +55,6 @@ public class importationLogError {
 
             prepStatement.close(); // close PreparedStatement
             System.out.println("Inserted row in importation log error");
-        } catch (SQLException e) {
-            while (e != null) {
-                System.err.println("\n----- SQLException -----");
-                System.err.println("  SQL State:  " + e.getSQLState());
-                System.err.println("  Error Code: " + e.getErrorCode());
-                System.err.println("  Message:    " + e.getMessage());
-                e = e.getNextException();
-            }
-        }
     }
 
     public static List<importErrorDTO> getErrors(Statement s, Timestamp timesql) throws SQLException {

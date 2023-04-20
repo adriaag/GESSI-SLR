@@ -41,25 +41,13 @@ public class researcher implements Serializable {
     }
 
     public static int insertRow(Statement s, String name) throws SQLException {
-        try{
-            String query = "INSERT INTO researchers(name) VALUES ('" + name + "')";
-            //System.out.println(query);
-            s.execute(query);
-            System.out.println("Inserted row with idRes " + name + " in researchers");
-            s.getConnection().commit();
-        } catch (SQLException e) {
-            if (e.getSQLState().equals("23505"))
-                System.out.println("Researcher exists");
-            else {
-                while (e != null) {
-                    System.err.println("\n----- SQLException -----");
-                    System.err.println("  SQL State:  " + e.getSQLState());
-                    System.err.println("  Error Code: " + e.getErrorCode());
-                    System.err.println("  Message:    " + e.getMessage());
-                    e = e.getNextException();
-                }
-            }
-        }
+
+        String query = "INSERT INTO researchers(name) VALUES ('" + name + "')";
+        //System.out.println(query);
+        s.execute(query);
+        System.out.println("Inserted row with idRes " + name + " in researchers");
+        s.getConnection().commit();
+        
         ResultSet rs = s.executeQuery("SELECT idRes FROM researchers where name = '" + name + "'");
         rs.next();
         return rs.getInt(1);

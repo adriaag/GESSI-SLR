@@ -18,20 +18,13 @@ public class author {
             else System.out.println("Error en la creación de table authors");
         }
     }
-    public static void insertRows(Integer[] ids, String idA, Statement s) {
+    public static void insertRows(Integer[] ids, String idA, Statement s) throws SQLException {
         String queryRow = "INSERT INTO authors(idRes,idA) VALUES (";
         String query;
         for(int x : ids) {
             query = queryRow + x + ", '" + idA + "')";
-            try {
-                s.execute(query);
+             s.execute(query);
                 //System.out.println("Inserted row with idRes and idA in Authors");
-            }
-            catch (SQLException e) {
-                if (e.getSQLState().equals("23505"))
-                    System.out.println("Author exists");
-                else System.out.println("Error en insertRow Author");
-            }
         }
     }
 

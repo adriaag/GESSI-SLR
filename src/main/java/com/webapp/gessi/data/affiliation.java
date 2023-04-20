@@ -31,20 +31,14 @@ public class affiliation {
 
 
     public static Integer insertRow(Statement s, int idCom, String idA) throws SQLException {
-        try {
-            String queryRow = "INSERT INTO affiliations(idCom, idA) VALUES (";
-            String query;
-            query = queryRow + idCom + ", '" + idA + "')";
-            //System.out.println(query);
-            s.execute(query);
-            System.out.println("Inserted row with idCom and idA in affiliations");
-            s.getConnection().commit();
-        }
-        catch(SQLException e) {
-            if (e.getSQLState().equals("23505"))
-                System.out.println("Affiliation exists");
-            else System.out.println("Error en insertRow Affiliation");
-        }
+        String queryRow = "INSERT INTO affiliations(idCom, idA) VALUES (";
+        String query;
+        query = queryRow + idCom + ", '" + idA + "')";
+        //System.out.println(query);
+        s.execute(query);
+        System.out.println("Inserted row with idCom and idA in affiliations");
+        s.getConnection().commit();
+      
         ResultSet rs = s.executeQuery("SELECT idCom FROM affiliations where idCom = " + idCom + " and idA='" + idA+ "'");
         rs.next();
         return rs.getInt(1);
