@@ -16,7 +16,9 @@ public class ProjectController {
     public static void insertRows(List<ProjectDTO> projectDTOList) throws SQLException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
-        projectDTOList.forEach(value -> Project.insertRow(conn, value.getName()));
+        for(ProjectDTO project: projectDTOList) {
+        	Project.insertRow(conn, project.getName());
+        }
         conn.commit();
     }
 
@@ -24,27 +26,29 @@ public class ProjectController {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         Statement s = conn.createStatement();
-        projectDTOList.forEach(value -> Project.deleteRow(s, value.getId()));
+        for(ProjectDTO project: projectDTOList) {
+        	Project.deleteRow(s, project.getId());
+        }
         conn.commit();
     }
 
-    public static List<ProjectDTO> getAll() {
+    public static List<ProjectDTO> getAll() throws SQLException {
         return Project.getAll();
     }
 
-    public static ProjectDTO getById(int id) {
+    public static ProjectDTO getById(int id) throws SQLException {
         return Project.getById(id);
     }
 
-    public static ProjectDTO getByName(String name) {
+    public static ProjectDTO getByName(String name) throws SQLException {
         return Project.getByName(name);
     }
 
-    public static void updateName(int id, String name) {
+    public static void updateName(int id, String name) throws SQLException {
         Project.updateName(id, name);
     }
 
-    public static void updateName(int id, int idICEC) {
+    public static void updateName(int id, int idICEC) throws SQLException {
         Project.updateIdDuplicateCriteria(id, idICEC);
     }
 }

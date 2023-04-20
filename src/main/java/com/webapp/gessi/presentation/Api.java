@@ -8,6 +8,7 @@ import com.webapp.gessi.domain.controllers.digitalLibraryController;
 import com.webapp.gessi.domain.dto.*;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jbibtex.ParseException;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,49 +27,73 @@ import org.json.JSONObject;
 @RestController
 @RequestMapping("/api/")
 @CrossOrigin(origins = {"http://localhost:4200","http://localhost:1025"})
-public class Api{
+public class Api implements ErrorController{
     private static final String PATH_PATTERN = "^([A-z0-9-_+\\.]+.(bib))$";
 
-    @GetMapping(value=("/projects"))
-    public ResponseEntity<?> getProjects() {
-    	List<ProjectDTO> resource = ProjectController.getAll();
-        return ResponseEntity.ok(resource);
-    }
+	
+	@GetMapping(value=("/projects")) 
+	public ResponseEntity<?> getProjects() {
+		try {
+			List<ProjectDTO> resource = ProjectController.getAll(); 
+			if (resource != null) {
+				return ResponseEntity.ok(resource); 
+			}
+		}
+		catch (SQLException e) {
+	    	sqlExcHandler(e);	    	
+	    }
+    	return internalServerError();
+		
+	}
+
     
     @PostMapping(value = "/projects")
-    public ResponseEntity<?> newProject(@RequestParam("name") String name) throws SQLException {
-        ProjectDTO exist = ProjectController.getByName(name);
-        if (exist != null) {
-        	JSONObject returnData = new JSONObject();
-        	returnData.put("error", "The project " + name + " already exist");
-        	return ResponseEntity.status(HttpStatus.CONFLICT).body(returnData.toString());
-        }
-        else {
-        	ProjectDTO newProject = new ProjectDTO();
-        	newProject.setName(name);
-        			
-        	List<ProjectDTO> projectDTOList = new ArrayList<>();
-            projectDTOList.add(newProject);
-            ProjectController.insertRows(projectDTOList);
-            ProjectDTO insertedProject = ProjectController.getByName(name);
-            return ResponseEntity.ok(insertedProject);
-        }
+    public ResponseEntity<?> newProject(@RequestParam("name") String name) {
+    	try {
+	        ProjectDTO exist = ProjectController.getByName(name);
+	        if (exist != null) {
+	        	JSONObject returnData = new JSONObject();
+	        	returnData.put("message", "The project " + name + " already exists");
+	        	return ResponseEntity.status(HttpStatus.CONFLICT).body(returnData.toString());
+	        }
+	        else {
+	        	ProjectDTO newProject = new ProjectDTO();
+	        	newProject.setName(name);
+	        			
+	        	List<ProjectDTO> projectDTOList = new ArrayList<>();
+	            projectDTOList.add(newProject);
+	            ProjectController.insertRows(projectDTOList);
+	            ProjectDTO insertedProject = ProjectController.getByName(name);
+	            return ResponseEntity.status(HttpStatus.CREATED).body(insertedProject);
+	        }
+    	}
+	    catch (SQLException e) {
+	    	sqlExcHandler(e);	    	
+	    }
+    	return internalServerError();
+	    	
 		
     }
     
     @DeleteMapping(value="/projects/{id}", produces = MediaType.APPLICATION_JSON_VALUE +"; charset=utf-8")
-    public ResponseEntity<?> deleteProject(@PathVariable("id") int idProj) throws SQLException {
-    	JSONObject returnData = new JSONObject();
-    	ProjectDTO projectDTO = ProjectController.getById(idProj);
-        List<ProjectDTO> projectDTOList = new ArrayList<>();
-        projectDTOList.add(projectDTO);
-        ProjectController.deleteRows(projectDTOList);
-        returnData.put("message", "The project has been deleted!");
-        return ResponseEntity.ok(returnData.toString());
+    public ResponseEntity<?> deleteProject(@PathVariable("id") int idProj) {
+    	try {
+	    	JSONObject returnData = new JSONObject();
+	    	ProjectDTO projectDTO = ProjectController.getById(idProj);
+	        List<ProjectDTO> projectDTOList = new ArrayList<>();
+	        projectDTOList.add(projectDTO);
+	        ProjectController.deleteRows(projectDTOList);
+	        returnData.put("message", "The project has been deleted!");
+	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    	}
+    	catch (SQLException e) {
+	    	sqlExcHandler(e);	    	
+	    }
+    	return internalServerError();
     }
     
     @GetMapping(value = "/projects/{id}/references", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public ResponseEntity<?> getReferences(@PathVariable("idProject") Integer idProject){
+    public ResponseEntity<?> getReferences(@PathVariable("id") Integer idProject){
         List<referenceDTO> referenceDTOList = ReferenceController.getReferences(idProject);
         //model.addAttribute("ECCriteria", criteriaController.getCriteriasEC(auxIdProject));
         return ResponseEntity.ok(referenceDTOList);
@@ -80,8 +105,8 @@ public class Api{
         return ResponseEntity.ok(""); 
     }
     
-    @PostMapping(value = "/projects/{id}/references/", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> submitFile(@RequestParam(name = "idProject") String idProject, @RequestParam(name = "dlNum") String dlNum, @RequestParam(name = "file") MultipartFile file)
+    @PostMapping(value = "/projects/{id}/references", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> submitFile(@PathVariable(name = "id") String idProject, @RequestParam(name = "dlNum") String dlNum, @RequestParam(name = "file") MultipartFile file)
             throws ParseException, SQLException, IOException {
     	
     	
@@ -193,12 +218,35 @@ public class Api{
         returnData.put("message", "The database has been reset!");
         return ResponseEntity.ok(returnData.toString());
     }
+    
+    @RequestMapping(value = "/error") 
+    public ResponseEntity<?> errorPage() {
+    	JSONObject returnData = new JSONObject();
+    	returnData.put("message", "Resource not found");
+    	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(returnData.toString());	
+    }
 
     /*@GetMapping(value = "/reference", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public ResponseEntity<?> getReference(@RequestParam(name= "idReference") int idR){
         referenceDTO r = ReferenceController.getReference(idR);
         return ResponseEntity.ok(r);
     }*/
+    
+    private void sqlExcHandler(SQLException e) {
+        while (e != null) {
+            System.err.println("\n----- SQLException -----");
+            System.err.println("  SQL State:  " + e.getSQLState());
+            System.err.println("  Error Code: " + e.getErrorCode());
+            System.err.println("  Message:    " + e.getMessage());
+            e = e.getNextException();
+        }
+    }
+    
+    private ResponseEntity<?> internalServerError() {
+    	JSONObject returnData = new JSONObject();
+    	returnData.put("message", "Resource not found");
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(returnData.toString());
+    }
     
 
 }

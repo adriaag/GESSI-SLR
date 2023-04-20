@@ -18,7 +18,9 @@ public class ExclusionController {
         Connection conn = ctx.getBean(Connection.class);
         Statement s;
         s = conn.createStatement();
-        exclusionDTOList.forEach(value -> Exclusion.insertRow(s, value.getIdICEC(), value.getIdRef()));
+        for(ExclusionDTO value: exclusionDTOList) {
+        	Exclusion.insertRow(s, value.getIdICEC(), value.getIdRef());	
+        }
         s.getConnection().commit();
     }
 

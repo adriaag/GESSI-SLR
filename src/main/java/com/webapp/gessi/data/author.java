@@ -25,7 +25,7 @@ public class author {
             query = queryRow + x + ", '" + idA + "')";
             try {
                 s.execute(query);
-                System.out.println("Inserted row with idRes and idA in Authors");
+                //System.out.println("Inserted row with idRes and idA in Authors");
             }
             catch (SQLException e) {
                 if (e.getSQLState().equals("23505"))

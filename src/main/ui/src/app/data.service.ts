@@ -184,16 +184,13 @@ export class DataService {
   }
 
   private handleError(error: HttpErrorResponse): Observable<any> {
-    console.error("S'ha produït un error")
-    console.error(error.status)
-    switch(error.status) {
-      case 403:
-        console.log("403")
-        break
-      case 404:
-        console.log("404")
-
+    if(error.status === 0) {
+      alert("Database not reacheable")
     }
+    else {
+      alert(error.error.message)
+    }
+    //console.error(error)
     return throwError(() => (error.statusText));
   }
 }
