@@ -95,11 +95,11 @@ public class Api{
         
         String nameFile = form.getFile().getOriginalFilename();
         JSONObject returnData = new JSONObject();
-        if(!nameFile.matches(PATH_PATTERN)) {
+        /*if(!nameFile.matches(PATH_PATTERN)) {
         	returnData.put("errorFile", "The file selected has to be a BIB file.");
         	returnData.put("importBool", false);
         }
-        else {
+        else {*/
             errors = ReferenceController.addReference(form.getdlNum(), form.getIdProject(), form.getFile());
             int num = Integer.parseInt(form.getdlNum());
             returnData.put("newDL", form.getdlNum());
@@ -112,7 +112,7 @@ public class Api{
             }
             returnData.put("DLnew", names.get(num - 1));
             returnData.put("importBool", true);            
-        }
+        //}
         return ResponseEntity.ok(returnData.toString());
     }
     
@@ -151,7 +151,7 @@ public class Api{
     
     @GetMapping(value = "/errors", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public ResponseEntity<?> importErrors(@RequestParam(value = "idProject") Integer idProject) throws SQLException, IOException, ParseException {
-        List<importErrorDTO> errors = ReferenceController.getAllErrors();
+        List<importErrorDTO> errors = ReferenceController.getErrors(idProject);
         return ResponseEntity.ok(errors);
     }
     

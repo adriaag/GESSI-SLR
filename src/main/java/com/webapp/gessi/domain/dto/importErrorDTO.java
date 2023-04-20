@@ -7,18 +7,20 @@ import java.time.format.DateTimeFormatter;
 public class importErrorDTO {
     private String datetime;
     private int idDL;
+    private int idProject;
     private String doi;
     private String BibTex;
 
     public importErrorDTO() {}
 
-    public importErrorDTO(Timestamp t, int idDL, String doi, String bibTex) {
+    public importErrorDTO(Timestamp t, int idDL, String doi, String bibTex, int idProject) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
         LocalDateTime ldt = t.toLocalDateTime();
         this.datetime = ldt.format(dateTimeFormatter);
         this.idDL = idDL;
         this.doi = doi;
         this.BibTex = bibTex;
+        this.idProject = idProject;
     }
 
     static importErrorDTO of() {
@@ -56,4 +58,13 @@ public class importErrorDTO {
     public void setDatetime(String datetime) {
         this.datetime = datetime;
     }
+    
+    public int getIdProject() {
+        return idProject;
+    }
+
+    public void setIdProject(int idProject) {
+        this.idProject = idProject;
+    }
+
 }

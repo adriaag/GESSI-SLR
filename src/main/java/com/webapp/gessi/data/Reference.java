@@ -251,7 +251,7 @@ public class Reference {
         Project.dropTable(s);
     }
 
-    public static List<importErrorDTO> importar(String idDL, ProjectDTO project, MultipartFile file) throws SQLException, IOException, ParseException {
+    public static List<importErrorDTO> importar(String idDL, ProjectDTO project, MultipartFile file) throws SQLException, IOException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         conn.setAutoCommit(false);
@@ -268,6 +268,16 @@ public class Reference {
         conn.setAutoCommit(false);
         Statement s = conn.createStatement();
         List<importErrorDTO> r = importationLogError.getAllErrors(s);
+        conn.commit();
+        return r;
+    }
+    
+    public static List<importErrorDTO> getErrors(int idProject) throws SQLException {
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Connection conn = ctx.getBean(Connection.class);
+        conn.setAutoCommit(false);
+        Statement s = conn.createStatement();
+        List<importErrorDTO> r = importationLogError.getErrorsFromProject(s,idProject);
         conn.commit();
         return r;
     }

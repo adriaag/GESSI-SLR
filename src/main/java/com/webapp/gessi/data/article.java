@@ -32,41 +32,56 @@ public class article {
     static Key articleKey = new Key("article");
     static Key affiliationKey = new Key("affiliation");
 
-    public static Timestamp importar(String idDL, ProjectDTO project, Statement s, MultipartFile file) throws IOException, ParseException,SQLException {
+    public static Timestamp importar(String idDL, ProjectDTO project, Statement s, MultipartFile file) throws IOException,SQLException {
 
         //Reader reader = new FileReader(path);
         //Parametro MultipartFile file
         ByteArrayInputStream stream0 = new ByteArrayInputStream(file.getBytes());
         String myString = IOUtils.toString(stream0, StandardCharsets.UTF_8);
         BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(myString.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
-
-        BibTeXParser bibtexParser = new BibTeXParser(); //add Exception
-        BibTeXDatabase database = bibtexParser.parse(reader);
-        Map<Key, BibTeXEntry> entryMap = database.getEntries();
-        Collection<BibTeXEntry> entries = entryMap.values();
-        Timestamp time = iniCheck(s,idDL,file);
-        // add rows of file
-        //Buscar prioridad de la idDL de la que estoy importando al inicio de la importacion
-        int entriesPriority = digitalLibrary.getPriority(s,idDL);
-        if(!entries.isEmpty()) referencesImported = entries.size();
-        for(BibTeXEntry entry : entries){
-            System.out.println("Cite key:" + entry.getKey());
-            String doi = addArticle(idDL, project, s, entry, entriesPriority);
-            if (!doi.contains("ERROR")) {
-                if (authorsToInsert != null) {
-                    Integer[] idsResearchers = researcher.insertRows(authorsToInsert, s);
-                    s.getConnection().commit();
-                    author.insertRows(idsResearchers, doi, s);
+        
+        Timestamp time = new Timestamp(new java.util.Date().getTime());
+        String doi = "";
+        //Timestamp time = iniCheck(s,idDL,file);
+        
+        try {
+        	BibTeXParser bibtexParser = new BibTeXParser(); //add Exception
+        	BibTeXDatabase database = bibtexParser.parse(reader);
+        	Map<Key, BibTeXEntry> entryMap = database.getEntries();
+            Collection<BibTeXEntry> entries = entryMap.values();
+            
+            // add rows of file
+            //Buscar prioridad de la idDL de la que estoy importando al inicio de la importacion
+            int entriesPriority = digitalLibrary.getPriority(s,idDL);
+            if(!entries.isEmpty()) referencesImported = entries.size();
+            for(BibTeXEntry entry : entries){
+                System.out.println("Cite key:" + entry.getKey());
+                doi = addArticle(idDL, project, s, entry, entriesPriority);
+                if (!doi.contains("ERROR")) {
+                    if (authorsToInsert != null) {
+                        Integer[] idsResearchers = researcher.insertRows(authorsToInsert, s);
+                        s.getConnection().commit();
+                        author.insertRows(idsResearchers, doi, s);
+                    }
+                    if (affiliationToInsert !=  null) {
+                        Integer[] idsComps = company.insertRows(s, affiliationToInsert);
+                        s.getConnection().commit();
+                        affiliation.insertRows(s, idsComps, doi);
+                    }
                 }
-                if (affiliationToInsert !=  null) {
-                    Integer[] idsComps = company.insertRows(s, affiliationToInsert);
-                    s.getConnection().commit();
-                    affiliation.insertRows(s, idsComps, doi);
-                }
+                else System.out.println(doi);
             }
-            else System.out.println(doi);;
+            reader.close();
         }
-        reader.close();
+        catch (ParseException e) {
+        	if (myString.length() > 10000) {
+        		myString = myString.substring(0,9999);
+        	}
+        	importationLogError.insertRow(s, doi, myString, idDL, project.getId(), time);
+        	System.out.println("Error d'importació");
+        	return time;
+        }
+        
         return time;
     }
 

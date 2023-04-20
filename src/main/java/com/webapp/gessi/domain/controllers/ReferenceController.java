@@ -84,6 +84,10 @@ public class ReferenceController {
     public static List<importErrorDTO> getAllErrors() throws SQLException {
         return Reference.getAllErrors();
     }
+    
+    public static List<importErrorDTO> getErrors(int idProject) throws SQLException {
+        return Reference.getErrors(idProject);
+    }
 
     public static void updateState(int idRef, String state) {
         Reference.update(idRef, state);
