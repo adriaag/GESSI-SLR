@@ -84,7 +84,7 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   }
 
   updateReference(id: number, type: string, idCriteria: number[]) {
-    this.dataService.editReferenceCriteria(id,type,idCriteria).subscribe((resposta) => {
+    this.dataService.editReferenceCriteria(id,this.idProject,type,idCriteria).subscribe((resposta) => {
       this.referencesUpdated.emit()
     })
   }
@@ -96,7 +96,7 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   }
 
   deleteReference(reference: Reference): void {
-    this.dataService.deleteReference(reference.idRef).subscribe((resposta) => {
+    this.dataService.deleteReference(reference.idRef, this.idProject).subscribe((resposta) => {
       this.referencesUpdated.emit()
     })
       
