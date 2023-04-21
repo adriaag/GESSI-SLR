@@ -43,7 +43,6 @@ public class article {
         Timestamp time = new Timestamp(new java.util.Date().getTime());
         String doi = "";
         //Timestamp time = iniCheck(s,idDL,file);
-        referencesImported = 0;
         
         try {
         	BibTeXParser bibtexParser = new BibTeXParser(); //add Exception
@@ -75,7 +74,7 @@ public class article {
             }
             reader.close();
         }
-        catch (ParseException e) {
+        catch (ParseException | SQLException e) {
         	if (myString.length() > 10000) {
         		myString = myString.substring(0,9999);
         	}

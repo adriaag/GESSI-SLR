@@ -1,5 +1,8 @@
 package com.webapp.gessi.data;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -22,9 +25,14 @@ public class author {
         String queryRow = "INSERT INTO authors(idRes,idA) VALUES (";
         String query;
         for(int x : ids) {
-            query = queryRow + x + ", '" + idA + "')";
-             s.execute(query);
-                //System.out.println("Inserted row with idRes and idA in Authors");
+        	if(!authorExists(s, x, idA)) {
+	            query = queryRow + x + ", '" + idA + "')";
+	             s.execute(query);
+	             System.out.println("Inserted row with idRes and idA in Authors");
+        	}
+        	else {
+        		System.out.println("Author exists");
+        	}
         }
     }
 
@@ -36,6 +44,18 @@ public class author {
         catch (SQLException sqlException) {
             System.out.println("Tabla authors not exist");
         }
+    }
+    
+    public static boolean authorExists(Statement s, int ids, String idA) throws SQLException {
+    	String query ="SELECT * FROM AUTHORS WHERE idRes = ? and idA = ?";
+    	Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setInt(1,ids);
+        preparedStatement.setString(2,idA);
+        preparedStatement.execute();
+        ResultSet rs = preparedStatement.getResultSet();
+        return rs.next();
+    	
     }
 
 }

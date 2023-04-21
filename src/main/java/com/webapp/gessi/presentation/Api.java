@@ -78,12 +78,11 @@ public class Api implements ErrorController{
     @DeleteMapping(value="/projects/{id}", produces = MediaType.APPLICATION_JSON_VALUE +"; charset=utf-8")
     public ResponseEntity<?> deleteProject(@PathVariable("id") int idProj) {
     	try {
-	    	JSONObject returnData = new JSONObject();
 	    	ProjectDTO projectDTO = ProjectController.getById(idProj);
+	    	System.out.println(projectDTO);
 	        List<ProjectDTO> projectDTOList = new ArrayList<>();
 	        projectDTOList.add(projectDTO);
 	        ProjectController.deleteRows(projectDTOList);
-	        returnData.put("message", "The project has been deleted!");
 	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     	}
     	catch (SQLException e) {
@@ -147,6 +146,9 @@ public class Api implements ErrorController{
 	            	returnData.put("refsImp", ReferenceController.getReferencesImport());
 	                ReferenceController.resetReferencesImport();
 	            }
+	            else {
+	            	returnData.put("refsImp",0);
+	            }
 	            returnData.put("importBool", true);            
 	        //}
 	        return ResponseEntity.status(HttpStatus.CREATED).body(returnData.toString());
@@ -164,8 +166,8 @@ public class Api implements ErrorController{
     	}
     }
     
-    @DeleteMapping(value="/projects/{id}/references/{idRef}", produces = MediaType.APPLICATION_JSON_VALUE +"; charset=utf-8")
-    public ResponseEntity<?> deleteReference(@PathVariable("id") int idRef) {
+    @DeleteMapping(value="/projects/{idProj}/references/{idRef}", produces = MediaType.APPLICATION_JSON_VALUE +"; charset=utf-8")
+    public ResponseEntity<?> deleteReference(@PathVariable("idProj") int idProj,@PathVariable("idRef") int idRef) {
     	try {
 	    	JSONObject returnData = new JSONObject();
 	    	ReferenceController.deleteReference(idRef);
@@ -314,6 +316,13 @@ public class Api implements ErrorController{
     	returnData.put("message", "Resource not found");
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(returnData.toString());
     }
+
+
+	@Override
+	public String getErrorPath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
 
 }

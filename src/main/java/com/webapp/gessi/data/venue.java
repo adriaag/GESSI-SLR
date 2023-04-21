@@ -1,5 +1,7 @@
 package com.webapp.gessi.data;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -29,18 +31,39 @@ public class venue {
     }
 
     public static int insertRow(Statement s, String nameVenue) throws SQLException {
+    	int id = getByName(s,nameVenue);
     	
-        String query = "INSERT INTO venues(name) VALUES (\'" + nameVenue + "\')";
-        //System.out.println(query);
-        s.execute(query);
-        System.out.println("Inserted row with idVenue, name, acr in venues");
-        s.getConnection().commit();
-        
-        ResultSet rs = s.executeQuery("SELECT idVen FROM venues where name = '" + nameVenue + "'");
-        rs.next();
-        return rs.getInt(1);
+    	if (id == -1) {
+	        String query = "INSERT INTO venues(name) VALUES (\'" + nameVenue + "\')";
+	        //System.out.println(query);
+	        s.execute(query);
+	        System.out.println("Inserted row with idVenue, name, acr in venues");
+	        s.getConnection().commit();
+	        
+	        ResultSet rs = s.executeQuery("SELECT idVen FROM venues where name = '" + nameVenue + "'");
+	        rs.next();
+	        return rs.getInt(1);
+    	}
+    	System.out.println("Venue exists");
+    	return id;
     }
     public static ResultSet getVenue(Statement s, int idVen) throws SQLException {
         return s.executeQuery("SELECT * FROM venues where idVen = " + idVen);
+    }
+    
+    public static int getByName(Statement s, String name) throws SQLException {
+    	String query ="SELECT idVen FROM VENUES WHERE name = ?";
+    	Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1,name);
+        preparedStatement.execute();
+        ResultSet rs = preparedStatement.getResultSet();
+        if(rs.next()) {
+        	return rs.getInt(1);
+        }
+        else {
+        	return -1;
+        }
+    	
     }
 }

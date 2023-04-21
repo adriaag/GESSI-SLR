@@ -1,5 +1,7 @@
 package com.webapp.gessi.data;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -31,17 +33,23 @@ public class affiliation {
 
 
     public static Integer insertRow(Statement s, int idCom, String idA) throws SQLException {
-        String queryRow = "INSERT INTO affiliations(idCom, idA) VALUES (";
-        String query;
-        query = queryRow + idCom + ", '" + idA + "')";
-        //System.out.println(query);
-        s.execute(query);
-        System.out.println("Inserted row with idCom and idA in affiliations");
-        s.getConnection().commit();
-      
-        ResultSet rs = s.executeQuery("SELECT idCom FROM affiliations where idCom = " + idCom + " and idA='" + idA+ "'");
-        rs.next();
-        return rs.getInt(1);
+        int id = getByPK(s,idCom,idA);
+    	
+        if (id == -1) {
+	    	String queryRow = "INSERT INTO affiliations(idCom, idA) VALUES (";
+	        String query;
+	        query = queryRow + idCom + ", '" + idA + "')";
+	        //System.out.println(query);
+	        s.execute(query);
+	        System.out.println("Inserted row with idCom and idA in affiliations");
+	        s.getConnection().commit();
+	      
+	        ResultSet rs = s.executeQuery("SELECT idCom FROM affiliations where idCom = " + idCom + " and idA='" + idA+ "'");
+	        rs.next();
+	        return rs.getInt(1);
+        }
+    	System.out.println("Affiliation exists");
+    	return id;
     }
 
     public static void insertRows(Statement s, Integer[] idCom, String doi) throws SQLException {
@@ -59,5 +67,22 @@ public class affiliation {
                 else System.out.println("Error en insertRow Affiliation");
             }
         }
+    }
+    
+    public static int getByPK(Statement s, int idCom, String idA) throws SQLException {
+    	String query ="SELECT idCom FROM AFFILIATIONS WHERE idCom = ? and idA = ?";
+    	Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setInt(1,idCom);
+        preparedStatement.setString(2,idA);
+        preparedStatement.execute();
+        ResultSet rs = preparedStatement.getResultSet();
+        if(rs.next()) {
+        	return rs.getInt(1);
+        }
+        else {
+        	return -1;
+        }
+    	
     }
 }

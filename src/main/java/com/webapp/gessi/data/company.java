@@ -1,5 +1,7 @@
 package com.webapp.gessi.data;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -29,15 +31,21 @@ public class company {
 
 
     public static int insertRow(Statement s, String name) throws SQLException {
-        String query = "INSERT INTO companies(name) VALUES (\'" + name + "\')";
-        //System.out.println(query);
-        s.execute(query);
-        System.out.println("Inserted row with idCom, name in companies");
-        s.getConnection().commit();
-      
-        ResultSet rs = s.executeQuery("SELECT idCom FROM companies where name = '" + name + "'");
-        rs.next();
-        return rs.getInt(1);
+    	int id = getByName(s,name);
+    	
+    	if (id == -1) {
+	    	String query = "INSERT INTO companies(name) VALUES (\'" + name + "\')";
+	        //System.out.println(query);
+	        s.execute(query);
+	        System.out.println("Inserted row with idCom, name in companies");
+	        s.getConnection().commit();
+	      
+	        ResultSet rs = s.executeQuery("SELECT idCom FROM companies where name = '" + name + "'");
+	        rs.next();
+	        return rs.getInt(1);
+    	}
+    	System.out.println("Company exists");
+    	return id;
     }
 
     public static ResultSet getCompanies(Statement s, String doi) throws SQLException {
@@ -55,5 +63,21 @@ public class company {
             ret[i++] = insertRow(s,x);
         }
         return ret;
+    }
+    
+    public static int getByName(Statement s, String name) throws SQLException {
+    	String query ="SELECT idCom FROM COMPANIES WHERE name = ?";
+    	Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1,name);
+        preparedStatement.execute();
+        ResultSet rs = preparedStatement.getResultSet();
+        if(rs.next()) {
+        	return rs.getInt(1);
+        }
+        else {
+        	return -1;
+        }
+    	
     }
 }

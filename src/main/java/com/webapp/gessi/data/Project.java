@@ -93,7 +93,7 @@ public class Project {
         preparedStatement.setString(1, name);
         ResultSet resultSet = preparedStatement.executeQuery();
         List<ProjectDTO> projectDTOList = convertResultSetToProjectDTO(resultSet);
-        return projectDTOList.size() > 0 ? projectDTOList.get(0) : new ProjectDTO();
+        return projectDTOList.size() > 0 ? projectDTOList.get(0) : null;
     }
 
     public static void updateName(int id, String name) throws SQLException {

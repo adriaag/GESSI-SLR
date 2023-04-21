@@ -1,6 +1,8 @@
 package com.webapp.gessi.data;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,16 +43,21 @@ public class researcher implements Serializable {
     }
 
     public static int insertRow(Statement s, String name) throws SQLException {
-
-        String query = "INSERT INTO researchers(name) VALUES ('" + name + "')";
-        //System.out.println(query);
-        s.execute(query);
-        System.out.println("Inserted row with idRes " + name + " in researchers");
-        s.getConnection().commit();
-        
-        ResultSet rs = s.executeQuery("SELECT idRes FROM researchers where name = '" + name + "'");
-        rs.next();
-        return rs.getInt(1);
+    	int id = getByName(s,name);
+    	
+    	if (id == -1) {
+	        String query = "INSERT INTO researchers(name) VALUES ('" + name + "')";
+	        //System.out.println(query);
+	        s.execute(query);
+	        System.out.println("Inserted row with idRes " + name + " in researchers");
+	        s.getConnection().commit();
+	        
+	        ResultSet rs = s.executeQuery("SELECT idRes FROM researchers where name = '" + name + "'");
+	        rs.next();
+	        return rs.getInt(1);
+    	}
+    	System.out.println("Researcher exists");
+    	return id;
     }
 
     public static Integer[] insertRows(String names, Statement s) throws SQLException {
@@ -68,5 +75,21 @@ public class researcher implements Serializable {
         rs = s3.executeQuery("select rss.IDRES , rss.NAME from RESEARCHERS rss, AUTHORS au, ARTICLES ar \n" +
                 "where ar.DOI = '" + doi.replaceAll("'", "''") + "' AND au.IDA = ar.DOI and au.IDRES = rss.IDRES" );
         return rs;
+    }
+    
+    public static int getByName(Statement s, String name) throws SQLException {
+    	String query ="SELECT idRes FROM RESEARCHERS WHERE name = ?";
+    	Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1,name);
+        preparedStatement.execute();
+        ResultSet rs = preparedStatement.getResultSet();
+        if(rs.next()) {
+        	return rs.getInt(1);
+        }
+        else {
+        	return -1;
+        }
+    	
     }
 }
