@@ -149,7 +149,7 @@ export class DataService {
 
   deleteCriteria(id: number, idProject:number): Observable<string> {
     return this.http.delete<string>(
-      `${this.rootUrl}/projects/${idProject}/criteria/${id}`)
+      `${this.rootUrl}/projects/${idProject}/criterias/${id}`)
     .pipe(
       tap(data => console.log("Anlagenstatus Daten:", data)),
       catchError(this.handleError),
