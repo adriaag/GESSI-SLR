@@ -81,6 +81,7 @@ public class article {
         	importationLogError.insertRow(s, doi, myString, idDL, project.getId(), time);
         	System.err.println("  Error d'importació");
             System.err.println("  Message:    " + e.getMessage());
+            e.printStackTrace();
         }
         
         return time;
@@ -135,7 +136,12 @@ public class article {
     }
 
     public static ResultSet getArticle(Statement s, String doi) throws SQLException {
-        return s.executeQuery("SELECT * FROM articles where doi = '" + doi.replaceAll("'", "''") + "' ");
+        Connection conn = s.getConnection();
+        String query = "SELECT * FROM articles where doi = ?";
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1, doi);
+        preparedStatement.execute();
+        return preparedStatement.getResultSet();
     }
 
 //Devuelve un string de todos los autores de la referencia
@@ -163,7 +169,7 @@ public class article {
         }
 
         if (doi != null) {
-            doi = doi.replaceAll("[{-}]", "").replaceAll("'", "''");
+            doi = doi.replaceAll("[{-}]", "");//.replaceAll("'", "''");
             ResultSet rs = getArticle(s, doi);
             String estado = null;
             int apCriteria = 0;
@@ -216,13 +222,13 @@ public class article {
 
         preparedStatement.setString(1, doi);
         preparedStatement.setString(2, String.valueOf(type));
-        preparedStatement.setString(3, entry.getKey().toString().replaceAll("'", "''"));
+        preparedStatement.setString(3, entry.getKey().toString());
 
         if (booktitle != null || article != null || journal != null) {
             String ven;
             if (booktitle != null) ven = booktitle.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
             else if (journal != null) ven = journal.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
-            else ven = article.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
+            else ven = article.toUserString().replaceAll("[{-}]", "");//.replaceAll("'", "''");
             int idVen = venue.insertRow(s, ven);
             preparedStatement.setInt(4, idVen);
         }
@@ -231,60 +237,60 @@ public class article {
         }
 
         if (title != null) {
-            preparedStatement.setString(5, title.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+            preparedStatement.setString(5, title.toUserString().replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
         } else {
             preparedStatement.setString(5, null);
         }
 
         if (keywords != null) {
-            preparedStatement.setString(6, keywords.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+            preparedStatement.setString(6, keywords.toUserString().replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
         } else {
             preparedStatement.setString(6, null);
         }
 
         if (number != null && !number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")) {
-            preparedStatement.setString(7, number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+            preparedStatement.setString(7, number.toUserString().replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
         } else {
             preparedStatement.setString(7, null);
         }
 
         if (numpages != null) {
-            preparedStatement.setString(8, numpages.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+            preparedStatement.setString(8, numpages.toUserString().replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
         } else {
             preparedStatement.setString(8, null);
         }
 
         if (pages != null) {
-            preparedStatement.setString(9, pages.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+            preparedStatement.setString(9, pages.toUserString().replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
         } else {
             preparedStatement.setString(9, null);
         }
 
         if (volume != null && !volume.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")) {
-            preparedStatement.setString(10, volume.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+            preparedStatement.setString(10, volume.toUserString().replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
         } else {
             preparedStatement.setString(10, null);
         }
 
         if (year != null) {
-            preparedStatement.setString(11, year.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"));
+            preparedStatement.setString(11, year.toUserString().replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
         } else {
             preparedStatement.setString(11, null);
         }
 
         if (abstractE != null) {
-            preparedStatement.setString(12, abstractE.toUserString().replaceAll("[']", "").replaceAll("[{-}]", "").replaceAll("'", "''"));
+            preparedStatement.setString(12, abstractE.toUserString().replaceAll("[']", "").replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
         } else {
             preparedStatement.setString(12, null);
         }
 
         authorsToInsert = null;
         if (authors != null)
-            authorsToInsert = authors.toUserString().replaceAll("[\n]", " ").replaceAll("[{-}]", "").replaceAll("'", "''");
+            authorsToInsert = authors.toUserString().replaceAll("[\n]", " ").replaceAll("[{-}]", "");//.replaceAll("'", "''");
 
         affiliationToInsert = null;
         if (affil != null) {
-            affiliationToInsert = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "").replaceAll("'", "''");
+            affiliationToInsert = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "");//.replaceAll("'", "''");
         }
 
         preparedStatement.execute();
@@ -319,9 +325,9 @@ public class article {
 
         if ((rs.getString(4) == null ) & (booktitle != null || article != null || (journal != null))) {
             String ven;
-            if (booktitle != null) ven = booktitle.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
-            if (journal != null) ven = journal.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
-            else ven = article.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
+            if (booktitle != null) ven = booktitle.toUserString().replaceAll("[{-}]", "");//.replaceAll("'", "''");
+            if (journal != null) ven = journal.toUserString().replaceAll("[{-}]", "");//.replaceAll("'", "''");
+            else ven = article.toUserString().replaceAll("[{-}]", "");//.replaceAll("'", "''");
             int idVen = venue.insertRow(s, ven);
             first = false;
             queryIni.append(" idVen = ").append(idVen);

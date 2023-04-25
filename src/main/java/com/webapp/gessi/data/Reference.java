@@ -36,9 +36,14 @@ public class Reference {
         preparedStatement.setInt(4, idProject);
         preparedStatement.setInt(5, idProjRef);
         preparedStatement.execute();
-        System.out.println("Inserted row with doi, idDL.. in referencias");
+        System.out.println("Inserted row with doi "+ doi +", idDL.. in referencias");
         conn.commit();
-        ResultSet rs = s.executeQuery("SELECT idRef FROM referencias where doi = '" + doi + "' and idDL =" + idDL);
+        query = "SELECT idRef FROM referencias where doi = ? and idDL = ?";
+        preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1, doi);
+        preparedStatement.setString(2, idDL);
+        preparedStatement.execute();
+        ResultSet rs = preparedStatement.getResultSet();
         if (rs.next())
             return rs.getInt("idRef");
         return -2;
@@ -101,7 +106,7 @@ public class Reference {
         int number = 1;
         refList = new ArrayList<>();
         while(rs.next()) {
-            System.out.println(number++);
+            //System.out.println(number++);
 
             int idR = rs.getInt(1);
             String doiR = rs.getString(2);

@@ -22,12 +22,14 @@ public class author {
         }
     }
     public static void insertRows(Integer[] ids, String idA, Statement s) throws SQLException {
-        String queryRow = "INSERT INTO authors(idRes,idA) VALUES (";
-        String query;
+    	Connection conn = s.getConnection();
+    	String queryRow = "INSERT INTO authors(idRes,idA) VALUES (?, ?)";
+        PreparedStatement preparedStatement = conn.prepareStatement(queryRow);
+        preparedStatement.setString(2, idA);
         for(int x : ids) {
         	if(!authorExists(s, x, idA)) {
-	            query = queryRow + x + ", '" + idA + "')";
-	             s.execute(query);
+        		preparedStatement.setInt(1, x);
+        		preparedStatement.execute();
 	             System.out.println("Inserted row with idRes and idA in Authors");
         	}
         	else {
