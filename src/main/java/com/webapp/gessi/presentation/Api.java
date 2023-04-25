@@ -7,7 +7,6 @@ import com.webapp.gessi.domain.controllers.criteriaController;
 import com.webapp.gessi.domain.controllers.digitalLibraryController;
 import com.webapp.gessi.domain.dto.*;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.jbibtex.ParseException;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;

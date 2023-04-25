@@ -2,12 +2,12 @@ package com.webapp.gessi.data;
 
 import com.webapp.gessi.domain.dto.ProjectDTO;
 import org.apache.commons.io.IOUtils;
-import org.jbibtex.BibTeXDatabase;
-import org.jbibtex.BibTeXParser;
-import org.jbibtex.Key;
-import org.jbibtex.ParseException;
-import org.jbibtex.BibTeXEntry;
-import org.jbibtex.Value;
+import com.github.adriaag.jbibtex.BibTeXDatabase;
+import com.github.adriaag.jbibtex.BibTeXParser;
+import com.github.adriaag.jbibtex.Key;
+import com.github.adriaag.jbibtex.ParseException;
+import com.github.adriaag.jbibtex.BibTeXEntry;
+import com.github.adriaag.jbibtex.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
