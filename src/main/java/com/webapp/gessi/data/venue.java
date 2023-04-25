@@ -34,9 +34,13 @@ public class venue {
     	int id = getByName(s,nameVenue);
     	
     	if (id == -1) {
-	        String query = "INSERT INTO venues(name) VALUES (\'" + nameVenue + "\')";
+    		
+	        String query = "INSERT INTO venues(name) VALUES (?)";
 	        //System.out.println(query);
-	        s.execute(query);
+	        Connection conn = s.getConnection();
+	        PreparedStatement preparedStatement = conn.prepareStatement(query);
+	        preparedStatement.setString(1,nameVenue);
+	        preparedStatement.execute();
 	        System.out.println("Inserted row with idVenue, name, acr in venues");
 	        s.getConnection().commit();
 	        
