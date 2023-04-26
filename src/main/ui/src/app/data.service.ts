@@ -184,13 +184,31 @@ export class DataService {
   }
 
   private handleError(error: HttpErrorResponse): Observable<any> {
-    if(error.status === 0) {
-      alert("Database not reacheable")
+    switch (error.status){
+      case 0:
+        alert("Database not reacheable")
+        break;
+      case 400:
+        alert("Bad request")
+        break;
+      case 401:
+        alert("You are not allowed to perform this action")
+        break;
+      case 403:
+        alert("Request not allowed")
+        break;
+      case 404:
+        alert("Resource not found")
+        break;
+      case 409:
+        alert("Entity already exists")
+        break;
+      case 500:
+        alert("Internal server error")
+        break;
+      default:
+        alert("Unkown error")
     }
-    else {
-      alert(error.error.message)
-    }
-    //console.error(error)
     return throwError(() => (error.statusText));
   }
 }

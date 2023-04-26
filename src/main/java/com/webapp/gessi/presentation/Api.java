@@ -39,9 +39,9 @@ public class Api implements ErrorController{
 			}
 		}
 		catch (SQLException e) {
-	    	sqlExcHandler(e);	    	
+	    	return sqlExcHandler(e);	    	
 	    }
-    	return internalServerError();
+    	
 		
 	}
 
@@ -67,9 +67,9 @@ public class Api implements ErrorController{
 	        }
     	}
 	    catch (SQLException e) {
-	    	sqlExcHandler(e);	    	
+	    	return sqlExcHandler(e);	    	
 	    }
-    	return internalServerError();
+
 	    	
 		
     }
@@ -85,9 +85,9 @@ public class Api implements ErrorController{
 	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     	}
     	catch (SQLException e) {
-	    	sqlExcHandler(e);	    	
+	    	return sqlExcHandler(e);	    	
 	    }
-    	return internalServerError();
+
     }
     
     @GetMapping(value = "/projects/{id}/references", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
@@ -98,9 +98,9 @@ public class Api implements ErrorController{
 	        return ResponseEntity.ok(referenceDTOList);
     	}
     	catch (SQLException e) {
-	    	sqlExcHandler(e);	    	
+	    	return sqlExcHandler(e);	    	
 	    }
-    	return internalServerError();
+    	
     }
     
     @PutMapping(value=("/projects/{id}/references/{idRef}"))
@@ -110,9 +110,9 @@ public class Api implements ErrorController{
 	        return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
         catch (SQLException e) {
-	    	sqlExcHandler(e);	    	
+	    	return sqlExcHandler(e);	    	
 	    }
-    	return internalServerError();
+   
     }
     
     @PostMapping(value = "/projects/{id}/references", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -154,8 +154,8 @@ public class Api implements ErrorController{
 	        
     	}
     	catch (SQLException e) {
-	    	sqlExcHandler(e);
-	    	return internalServerError();
+	    	return sqlExcHandler(e);
+
 	    }
     	catch (IOException e) {
     		JSONObject returnData = new JSONObject();
@@ -174,8 +174,8 @@ public class Api implements ErrorController{
 	        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(returnData.toString());
     	}
     	catch (SQLException e) {
-	    	sqlExcHandler(e);
-	    	return internalServerError();
+	    	return sqlExcHandler(e);
+
 	    }
     	
     }
@@ -205,8 +205,8 @@ public class Api implements ErrorController{
 	        return ResponseEntity.ok(dlNames);
     	}
     	catch (SQLException e) {
-	    	sqlExcHandler(e);
-	    	return internalServerError();
+	    	return sqlExcHandler(e);
+	    	
 	    }
     }
     
@@ -218,8 +218,8 @@ public class Api implements ErrorController{
 	        return ResponseEntity.ok(errors);
     	}
     	catch (SQLException e) {
-	    	sqlExcHandler(e);
-	    	return internalServerError();
+	    	return sqlExcHandler(e);
+	    	
 	    }
     }
     
@@ -234,8 +234,8 @@ public class Api implements ErrorController{
 	        return ResponseEntity.ok(returnData.toString());
     	}
     	catch (SQLException e) {
-	    	sqlExcHandler(e);
-	    	return internalServerError();
+	    	return sqlExcHandler(e);
+	
 	    }
     }
     
@@ -248,8 +248,8 @@ public class Api implements ErrorController{
 	        return ResponseEntity.status(HttpStatus.CREATED).body(returnData.toString());
     	}
     	catch (SQLException e) {
-	    	sqlExcHandler(e);
-	    	return internalServerError();
+	    	return sqlExcHandler(e);
+
 	    }
     }
     
@@ -261,8 +261,8 @@ public class Api implements ErrorController{
 	        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     	}
     	catch (SQLException e) {
-	    	sqlExcHandler(e);
-	    	return internalServerError();
+	    	return sqlExcHandler(e);
+
 	    }
     	
     }
@@ -274,8 +274,8 @@ public class Api implements ErrorController{
 	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     	}
 	    catch (SQLException e) {
-	    	sqlExcHandler(e);
-	    	return internalServerError();
+	    	return sqlExcHandler(e);
+
 		}
     }
     
@@ -300,13 +300,27 @@ public class Api implements ErrorController{
         return ResponseEntity.ok(r);
     }*/
     
-    private void sqlExcHandler(SQLException e) {
+    private ResponseEntity<?> sqlExcHandler(SQLException e) {
+    	boolean conflict = false;
         while (e != null) {
             System.err.println("\n----- SQLException -----");
             System.err.println("  SQL State:  " + e.getSQLState());
             System.err.println("  Error Code: " + e.getErrorCode());
             System.err.println("  Message:    " + e.getMessage());
+            
+            switch(e.getSQLState()) {
+            case "23505": //duplicate key contraint violation
+            	conflict = true;
+            	break;
+            //més casos si es desitja
+            }
             e = e.getNextException();
+        }
+        if (conflict) {
+        	return ResponseEntity.status(HttpStatus.CONFLICT).body("");	
+        }
+        else {
+        	return internalServerError();
         }
     }
     
