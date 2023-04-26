@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class Reference {
+	
+	private static final int doiMaxLength = 50;
 
     public static int insertRow(Statement s, String doi, String idDL, String estado, int idProject) throws SQLException {
     	String getIdProjRefAntQuery = "SELECT max(idProjRef) FROM referencias where idProject = ?";
@@ -30,7 +32,7 @@ public class Reference {
         System.out.println("IdProjRef: "+ idProjRef);
         
         preparedStatement = conn.prepareStatement(query);
-        preparedStatement.setString(1, doi);
+        preparedStatement.setString(1, truncate(doi, doiMaxLength));
         preparedStatement.setString(2, idDL);
         preparedStatement.setString(3, estado);
         preparedStatement.setInt(4, idProject);
@@ -40,7 +42,7 @@ public class Reference {
         conn.commit();
         query = "SELECT idRef FROM referencias where doi = ? and idDL = ?";
         preparedStatement = conn.prepareStatement(query);
-        preparedStatement.setString(1, doi);
+        preparedStatement.setString(1, truncate(doi, doiMaxLength));
         preparedStatement.setString(2, idDL);
         preparedStatement.execute();
         ResultSet rs = preparedStatement.getResultSet();
@@ -339,7 +341,12 @@ public class Reference {
     }
 
     public static int getDL(String doi,Statement s) throws SQLException {
-        ResultSet r = s.executeQuery("select idDL from referencias where doi = '" + doi + "'");
+    	String query = "select idDL from referencias where doi = ?";
+    	Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1, doi);
+        preparedStatement.execute();
+        ResultSet r = preparedStatement.getResultSet();
         r.next();
         return r.getInt(1);
     }
@@ -370,11 +377,21 @@ public class Reference {
     ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
     Connection conn = ctx.getBean(Connection.class);
     Statement s = conn.createStatement();
+    
+    String query = "update referencias set state = ? WHERE idRef = ?";
+    conn = s.getConnection();
+    PreparedStatement preparedStatement = conn.prepareStatement(query);
+    preparedStatement.setInt(2, idRef);
+    
     if ((estado == null || estado.isEmpty()))
-        s.execute("update referencias set state = " + null + " WHERE idRef = " + idRef );
+    	preparedStatement.setString(2, null);
     else
-        s.execute("update referencias set state = '" + estado + "' WHERE idRef = " + idRef );
+    	preparedStatement.setString(2, estado);
+    preparedStatement.execute();
+    conn.commit();
     }
+    
+    
 
     private static List<ExclusionDTO> convertResultSetToExclusionDTO(ResultSet resultSet, List<ExclusionDTO> exclusionDTOList) throws SQLException {
         while (resultSet.next()) {
@@ -391,5 +408,12 @@ public class Reference {
         exclusionDTOList.add(new ExclusionDTO(resultSet.getInt("idRef"), resultSet.getInt("idICEC"), resultSet.getString("name")));
         referenceDTO.setExclusionDTOList(convertResultSetToExclusionDTO(resultSet, exclusionDTOList));
         return referenceDTO;
+    }
+    
+    private static String truncate(String text, int maxValue) {
+    	if (text.length() > maxValue) {
+        	text = text.substring(0, maxValue - 1);	
+        }
+    	return text;
     }
 }

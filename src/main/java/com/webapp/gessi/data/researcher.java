@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class researcher implements Serializable {
+	
+	private static final int nameMaxLength = 50;
 
     public static void createTable(Statement s) {
         try {
@@ -49,7 +51,7 @@ public class researcher implements Serializable {
 	        String query = "INSERT INTO researchers(name) VALUES (?)";
 	        Connection conn = s.getConnection();
 	        PreparedStatement preparedStatement = conn.prepareStatement(query);
-	        preparedStatement.setString(1, name);
+	        preparedStatement.setString(1, truncate(name, nameMaxLength));
 	        //System.out.println(query);
 	        preparedStatement.execute();
 	        System.out.println("Inserted row with idRes " + name + " in researchers");
@@ -57,7 +59,7 @@ public class researcher implements Serializable {
 	        
 	        query = "SELECT idRes FROM researchers where name = ?";
 	        preparedStatement = conn.prepareStatement(query);
-	        preparedStatement.setString(1, name);
+	        preparedStatement.setString(1, truncate(name, nameMaxLength));
 	        preparedStatement.execute();
 	        ResultSet rs = preparedStatement.getResultSet();
 	        rs.next();
@@ -91,7 +93,7 @@ public class researcher implements Serializable {
     	String query ="SELECT idRes FROM RESEARCHERS WHERE name = ?";
     	Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
-        preparedStatement.setString(1,name);
+        preparedStatement.setString(1,truncate(name, nameMaxLength));
         preparedStatement.execute();
         ResultSet rs = preparedStatement.getResultSet();
         if(rs.next()) {
@@ -101,5 +103,12 @@ public class researcher implements Serializable {
         	return -1;
         }
     	
+    }
+    
+    private static String truncate(String text, int maxValue) {
+    	if (text.length() > maxValue) {
+        	text = text.substring(0, maxValue - 1);	
+        }
+    	return text;
     }
 }

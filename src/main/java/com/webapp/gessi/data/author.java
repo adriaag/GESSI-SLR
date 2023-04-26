@@ -9,6 +9,8 @@ import java.sql.Statement;
 public class author {
     /* create table authors( name varchar(50),
     PRIMARY KEY (name));*/
+	private static final int idAMaxLength = 50;
+	
     public static void createTable(Statement s) {
         try {
             s.execute("CREATE TABLE authors( idRes int , idA varchar(50) , PRIMARY KEY (idRes, idA)," +
@@ -25,7 +27,7 @@ public class author {
     	Connection conn = s.getConnection();
     	String queryRow = "INSERT INTO authors(idRes,idA) VALUES (?, ?)";
         PreparedStatement preparedStatement = conn.prepareStatement(queryRow);
-        preparedStatement.setString(2, idA);
+        preparedStatement.setString(2, truncate(idA, idAMaxLength));
         for(int x : ids) {
         	if(!authorExists(s, x, idA)) {
         		preparedStatement.setInt(1, x);
@@ -53,11 +55,18 @@ public class author {
     	Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setInt(1,ids);
-        preparedStatement.setString(2,idA);
+        preparedStatement.setString(2,truncate(idA, idAMaxLength));
         preparedStatement.execute();
         ResultSet rs = preparedStatement.getResultSet();
         return rs.next();
     	
+    }
+    
+    private static String truncate(String text, int maxValue) {
+    	if (text.length() > maxValue) {
+        	text = text.substring(0, maxValue - 1);	
+        }
+    	return text;
     }
 
 }

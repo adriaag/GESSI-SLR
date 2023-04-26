@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Project {
+	
+	private static final int nameMaxLength = 10000;
+	
     public static boolean createTable (Statement s) {
         try {
             s.execute("create TABLE project(" +
@@ -49,7 +52,7 @@ public class Project {
     public static void insertRow(Connection conn, String name) throws SQLException {
         String query = "INSERT INTO project(name) VALUES (?)";
         PreparedStatement preparedStatement = conn.prepareStatement(query);
-        preparedStatement.setString(1, name);
+        preparedStatement.setString(1, truncate(name, nameMaxLength));
         preparedStatement.execute();
         System.out.println("Inserted row " + name + " in Project");
         ProjectDTO projectDTO = getByName(name);
@@ -101,7 +104,7 @@ public class Project {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         PreparedStatement preparedStatement = conn.prepareStatement(query);
-        preparedStatement.setString(1, name);
+        preparedStatement.setString(1, truncate(name, nameMaxLength));
         preparedStatement.setInt(2, id);
         preparedStatement.execute();
         conn.commit();
@@ -124,5 +127,12 @@ public class Project {
             projectDTOList.add(new ProjectDTO(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getInt("idDuplicateCriteria")));
         }
         return projectDTOList;
+    }
+    
+    private static String truncate(String text, int maxValue) {
+    	if (text.length() > maxValue) {
+        	text = text.substring(0, maxValue - 1);	
+        }
+    	return text;
     }
 }

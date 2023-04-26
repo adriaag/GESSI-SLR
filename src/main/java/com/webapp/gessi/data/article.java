@@ -31,6 +31,19 @@ public class article {
     static Key numpagesKey = new Key("numpages");
     static Key articleKey = new Key("article");
     static Key affiliationKey = new Key("affiliation");
+    
+    private static final int doiMaxLength = 50;
+    private static final int typeMaxLength = 50;
+    private static final int citeKeyMaxLength = 50;
+    private static final int titleMaxLength = 200;
+    private static final int keywordsMaxLength = 1000;
+    private static final int numberMaxLength = 10;
+    private static final int numpagesMaxValue = Integer.MAX_VALUE;
+    private static final int pagesMaxLength = 20;
+    private static final int volumeMaxLength = 20;
+    private static final int anyMaxValue = Integer.MAX_VALUE;
+    private static final int abstractMaxLength = 6000;
+    
 
     public static Timestamp importar(String idDL, ProjectDTO project, Statement s, MultipartFile file) throws IOException, SQLException{
 
@@ -75,9 +88,6 @@ public class article {
             reader.close();
         }
         catch (ParseException | SQLException e) {
-        	if (myString.length() > 10000) {
-        		myString = myString.substring(0,9999);
-        	}
         	importationLogError.insertRow(s, doi, myString, idDL, project.getId(), time);
         	System.err.println("  Error d'importació");
             System.err.println("  Message:    " + e.getMessage());
@@ -169,7 +179,7 @@ public class article {
         }
 
         if (doi != null) {
-            doi = doi.replaceAll("[{-}]", "");//.replaceAll("'", "''");
+            //doi = doi.replaceAll("[{-}]", "");//.replaceAll("'", "''");
             ResultSet rs = getArticle(s, doi);
             String estado = null;
             int apCriteria = 0;
@@ -219,15 +229,15 @@ public class article {
         Value numpages = entry.getField(numpagesKey);
         Value article = entry.getField(articleKey);
         Value affil = entry.getField(affiliationKey);
-
-        preparedStatement.setString(1, doi);
-        preparedStatement.setString(2, String.valueOf(type));
-        preparedStatement.setString(3, entry.getKey().toString());
+        
+        preparedStatement.setString(1, truncate(doi,doiMaxLength));
+        preparedStatement.setString(2, truncate(String.valueOf(type), typeMaxLength));
+        preparedStatement.setString(3, truncate(entry.getKey().toString(), citeKeyMaxLength));
 
         if (booktitle != null || article != null || journal != null) {
             String ven;
-            if (booktitle != null) ven = booktitle.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
-            else if (journal != null) ven = journal.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''");
+            if (booktitle != null) ven = booktitle.toUserString().replaceAll("[{-}]", "");//.replaceAll("'", "''");
+            else if (journal != null) ven = journal.toUserString().replaceAll("[{-}]", "");//.replaceAll("'", "''");
             else ven = article.toUserString().replaceAll("[{-}]", "");//.replaceAll("'", "''");
             int idVen = venue.insertRow(s, ven);
             preparedStatement.setInt(4, idVen);
@@ -237,49 +247,49 @@ public class article {
         }
 
         if (title != null) {
-            preparedStatement.setString(5, title.toUserString().replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
+            preparedStatement.setString(5, truncate(title.toUserString(), titleMaxLength));
         } else {
             preparedStatement.setString(5, null);
         }
 
         if (keywords != null) {
-            preparedStatement.setString(6, keywords.toUserString().replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
+            preparedStatement.setString(6, truncate(keywords.toUserString(), keywordsMaxLength));
         } else {
             preparedStatement.setString(6, null);
         }
 
         if (number != null && !number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")) {
-            preparedStatement.setString(7, number.toUserString().replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
+            preparedStatement.setString(7, truncate(number.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''"),numberMaxLength));
         } else {
             preparedStatement.setString(7, null);
         }
 
         if (numpages != null) {
-            preparedStatement.setString(8, numpages.toUserString().replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
+            preparedStatement.setInt(8, Integer.parseInt(numpages.toUserString().replaceAll("[{-}]", "")));//.replaceAll("'", "''"));
         } else {
-            preparedStatement.setString(8, null);
+            preparedStatement.setNull(8, java.sql.Types.INTEGER);
         }
 
         if (pages != null) {
-            preparedStatement.setString(9, pages.toUserString().replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
+            preparedStatement.setString(9, truncate(pages.toUserString(), pagesMaxLength));
         } else {
             preparedStatement.setString(9, null);
         }
 
-        if (volume != null && !volume.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''").equals("")) {
-            preparedStatement.setString(10, volume.toUserString().replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
+        if (volume != null && !volume.toUserString().equals("")) {
+            preparedStatement.setString(10, truncate(volume.toUserString(), volumeMaxLength));
         } else {
             preparedStatement.setString(10, null);
         }
 
         if (year != null) {
-            preparedStatement.setString(11, year.toUserString().replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
+            preparedStatement.setInt(11, Integer.parseInt(year.toUserString().replaceAll("[{-}]", "").replaceAll("'", "''")));
         } else {
-            preparedStatement.setString(11, null);
+            preparedStatement.setNull(11, java.sql.Types.INTEGER);
         }
 
         if (abstractE != null) {
-            preparedStatement.setString(12, abstractE.toUserString().replaceAll("[']", "").replaceAll("[{-}]", ""));//.replaceAll("'", "''"));
+            preparedStatement.setString(12, truncate(abstractE.toUserString().replaceAll("[']", ""), abstractMaxLength));
         } else {
             preparedStatement.setString(12, null);
         }
@@ -434,5 +444,12 @@ public class article {
 
     public static void setReferencesImported(int i) {
         referencesImported = i;
+    }
+    
+    private static String truncate(String text, int maxValue) {
+    	if (text.length() > maxValue) {
+        	text = text.substring(0, maxValue - 1);	
+        }
+    	return text;
     }
 }

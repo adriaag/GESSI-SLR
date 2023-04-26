@@ -11,6 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Criteria {
+	
+	private static final int nameMaxLength = 500;
+	private static final int textMaxLength = 1000;
+	private static final int typeMaxLength = 9;
+	
+	
     public static boolean createTable(Statement s) {
         try {
             s.execute("create TABLE criteria(" +
@@ -55,9 +61,9 @@ public class Criteria {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         PreparedStatement preparedStatement = conn.prepareStatement(query);
-        preparedStatement.setString(1, name);
-        preparedStatement.setString(2, text);
-        preparedStatement.setString(3, type);
+        preparedStatement.setString(1, truncate(name, nameMaxLength));
+        preparedStatement.setString(2, truncate(text, textMaxLength));
+        preparedStatement.setString(3, truncate(type, typeMaxLength));
         preparedStatement.setInt(4, idProject);
         preparedStatement.execute();
         conn.commit();
@@ -113,8 +119,8 @@ public class Criteria {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         PreparedStatement preparedStatement = conn.prepareStatement(query);
-        preparedStatement.setString(1, name);
-        preparedStatement.setString(2, text);
+        preparedStatement.setString(1, truncate(name, nameMaxLength));
+        preparedStatement.setString(2, truncate(text, textMaxLength));
         preparedStatement.setInt(3, id);
         preparedStatement.execute();
         System.out.println("Updated " + id + " row in criteria");
@@ -139,5 +145,12 @@ public class Criteria {
                     resultSet.getString("text"), resultSet.getString("type"), resultSet.getInt("idProject")));
         }
         return criteriaDTOList;
+    }
+    
+    private static String truncate(String text, int maxValue) {
+    	if (text.length() > maxValue) {
+        	text = text.substring(0, maxValue - 1);	
+        }
+    	return text;
     }
 }

@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class importationLogError {
+	
+	private static final int doiMaxLength = 100;
+	private static final int bibtexMaxLength = 10000;
+	
     public static boolean createTable(Statement s) {
         try {
             s.execute("create TABLE ImportationLogError(" +
@@ -36,7 +40,12 @@ public class importationLogError {
     public static boolean ifExistsDOI(Statement s, String key) throws SQLException {
         //ejemplo key = 8984351
         System.out.println("DOI exists in articles");
-        ResultSet rs = s.executeQuery("SELECT * FROM referencias r INNER JOIN articles a on r.DOI = a.DOI AND a.CITEKEY ='" + key + "'");
+        String query = "SELECT * FROM referencias r INNER JOIN articles a on r.DOI = a.DOI AND a.CITEKEY = ? ";
+        Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1, key);
+        preparedStatement.execute();
+        ResultSet rs = preparedStatement.getResultSet();
         return rs.next();
     }
 
@@ -45,10 +54,10 @@ public class importationLogError {
             PreparedStatement prepStatement = s.getConnection().
                     prepareStatement("INSERT INTO ImportationLogError(time, doi, idDL, idProject, BibTex) VALUES (?,?,?,?,?)");
             prepStatement.setTimestamp(1, timesql);
-            prepStatement.setString(2, doi);
+            prepStatement.setString(2, truncate(doi, doiMaxLength));
             prepStatement.setInt(3, Integer.parseInt(idDL));
             prepStatement.setInt(4, idProject);
-            prepStatement.setString(5, data);
+            prepStatement.setString(5, truncate(data, bibtexMaxLength));
 
             int numberOfRowsInserted = prepStatement.executeUpdate();
             System.out.println("numberOfRowsInserted=" + numberOfRowsInserted);
@@ -59,7 +68,12 @@ public class importationLogError {
 
     public static List<importErrorDTO> getErrors(Statement s, Timestamp timesql) throws SQLException {
         ResultSet rs;
-        rs = s.executeQuery("SELECT time, idDL,doi,BibTex, idProject FROM IMPORTATIONLOGERROR WHERE time=TIMESTAMP('"+ timesql.toString()+"')");
+        String query = "SELECT time, idDL,doi,BibTex, idProject FROM IMPORTATIONLOGERROR WHERE time=?";
+        Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setTimestamp(1, timesql);
+        preparedStatement.execute();
+        rs = preparedStatement.getResultSet();
         ArrayList<importErrorDTO> ret = new ArrayList<importErrorDTO>();
         while (rs.next()) {
             ret.add(new importErrorDTO(rs.getTimestamp(1),rs.getInt(2),rs.getString(3),rs.getString(4),rs.getInt(5)));
@@ -89,6 +103,13 @@ public class importationLogError {
         }
         prepStatement.close();
         return ret;
+    }
+    
+    private static String truncate(String text, int maxValue) {
+    	if (text.length() > maxValue) {
+        	text = text.substring(0, maxValue - 1);	
+        }
+    	return text;
     }
 
 
