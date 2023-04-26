@@ -352,11 +352,11 @@ public class Reference {
     }
 
     static ResultSet isDuplicate(Statement s, String doi, int idProject) throws SQLException {
-        String query = "select * from REFERENCIAS r, DIGITALLIBRARIES dl where r.DOI = ? and r.IDDL = dl.IDDL and IDPROJECT = ? and STATE IS NULL";
+        String query = "select * from REFERENCIAS r, DIGITALLIBRARIES dl where r.DOI = ? and r.IDDL = dl.IDDL and IDPROJECT = ?";
         
         Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
-        preparedStatement.setString(1, doi);
+        preparedStatement.setString(1, truncate(doi, doiMaxLength));
         preparedStatement.setInt(2, idProject);
         ResultSet resultSet = preparedStatement.executeQuery();
         conn.commit();
@@ -369,6 +369,7 @@ public class Reference {
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setInt(1, idRef);
         preparedStatement.execute();
+        conn.commit();
         Exclusion.insertRow(s, idDuplicateCriteria, idRef);
     }
 
@@ -384,9 +385,9 @@ public class Reference {
     preparedStatement.setInt(2, idRef);
     
     if ((estado == null || estado.isEmpty()))
-    	preparedStatement.setString(2, null);
+    	preparedStatement.setString(1, null);
     else
-    	preparedStatement.setString(2, estado);
+    	preparedStatement.setString(1, estado);
     preparedStatement.execute();
     conn.commit();
     }

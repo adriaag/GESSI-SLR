@@ -41,6 +41,7 @@ public class Api implements ErrorController{
 		catch (SQLException e) {
 	    	return sqlExcHandler(e);	    	
 	    }
+		return internalServerError();
     	
 		
 	}
@@ -147,6 +148,13 @@ public class Api implements ErrorController{
 	            }
 	            else {
 	            	returnData.put("refsImp",0);
+	            }
+	            if (ReferenceController.getReferencesDuplicated() > 0) {
+	            	returnData.put("refsDupl", ReferenceController.getReferencesDuplicated());
+	                ReferenceController.resetReferencesDuplicated();
+	            }
+	            else {
+	            	returnData.put("refsDupl",0);
 	            }
 	            returnData.put("importBool", true);            
 	        //}
@@ -307,6 +315,7 @@ public class Api implements ErrorController{
             System.err.println("  SQL State:  " + e.getSQLState());
             System.err.println("  Error Code: " + e.getErrorCode());
             System.err.println("  Message:    " + e.getMessage());
+            e.printStackTrace();
             
             switch(e.getSQLState()) {
             case "23505": //duplicate key contraint violation

@@ -20,6 +20,7 @@ export class ReferenceImportComponent {
   newName: string = "";
   errors: ImportError[] = [];
   refsImp: number = NaN;
+  refsDupl: number = NaN;
   DLnew: string = "";
   errorFile: string = "";
   importBool: boolean = false;
@@ -42,6 +43,7 @@ export class ReferenceImportComponent {
       this.newName = resposta.newName;
       this.errors = resposta.errors;
       this.refsImp = resposta.refsImp;
+      this.refsDupl = resposta.refsDupl;
       this.DLnew = resposta.DLnew;
 
       if(this.importBool) {

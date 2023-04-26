@@ -31,7 +31,8 @@
             <div *ngIf="importBool == true">
                 <div><b>Imported file name: </b><span id="pathNEW"> {{newName}} </span></div>
                 <div><b>Number of references imported: </b><span id="numRNEW"> {{refsImp}}</span></div>
-                <div><b>Digital library of imported file: </b><span id="DLNEW"> {{DLnew}}</span></div>
+                <div><b>Number of references already in the project: </b><span id="numRNEW"> {{refsDupl}}</span></div>
+                <div><b>Digital library of imported file: </b><span id="DLNEW"> {{digitalLibraryId}}</span></div>
                 <div *ngIf="errors.length == 0">
                     <b>Import process successfully.</b>
                 </div>

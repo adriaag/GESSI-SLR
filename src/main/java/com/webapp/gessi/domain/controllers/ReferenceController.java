@@ -45,6 +45,14 @@ public class ReferenceController {
     public static void resetReferencesImport(){
         article.setReferencesImported(0);
     }
+    
+    public static int getReferencesDuplicated(){
+        return article.getReferencesDuplicated();
+    }
+
+    public static void resetReferencesDuplicated(){
+        article.setReferencesDuplicated(0);
+    }
 
     public static void reset() {
         Reference.delete();

@@ -25,6 +25,7 @@ public class article {
     private static String authorsToInsert = null;
     private static String affiliationToInsert = null;
     private static int referencesImported = 0;
+    private static int referencesDuplicated = 0;
 
     static Key abstractKey = new Key("abstract");
     static Key keywordsKey = new Key("keywords");
@@ -83,7 +84,6 @@ public class article {
                     }
                 }
                 else System.out.println(doi);
-               referencesImported += 1;
             }
             reader.close();
         }
@@ -188,23 +188,62 @@ public class article {
                 ResultSet duplicate = Reference.isDuplicate(s, doi, project.getId());
                 if (duplicate == null)
                     System.err.println("Error Duplicate");
-                else if (duplicate.next()) {
-                    if (entriesPriority > duplicate.getInt("priority")) {
-                        estado = "out";
-                        apCriteria = project.getIdDuplicateCriteria();
-                    }
-                    else
-                        Reference.updateEstateReferences(s, duplicate.getInt("idRef"), project.getIdDuplicateCriteria());
-                }
-            }
-            else
-                insertRow(s, entry, doi);                                       //create article nuevo
+                else {
+                	boolean duplicatedLibrary = false;
+                	int priority = 1000;
+                	int idRefMaxPriority = -1;
+                	
+                	while (duplicate.next()) {            		
+                		if (duplicate.getInt("priority") < priority && (duplicate.getString("state") == null || !duplicate.getString("state").equals("out"))) {
+                			priority = duplicate.getInt("priority");
+                			idRefMaxPriority = duplicate.getInt("idRef");
+                			
+                		}                		
+                		if (duplicate.getInt("priority") == entriesPriority) {
+                			duplicatedLibrary = true;//assumim que no hi 2 DLs amb la mateix prioritat               		
+                		}
+                		
+                	}
+                	
+                	System.out.println(priority);
 
-            int idRef = Reference.insertRow(s, doi, idDL, estado, project.getId());
-            if (idRef == -1) return "ERROR: This reference already exists";
-            else if (idRef == -2) return "ERROR: The reference had problems";
-            else if (apCriteria != 0)
-                Exclusion.insertRow(s, apCriteria, idRef);
+                	if (!duplicatedLibrary && priority < 1000) {
+	                    if (entriesPriority > priority) {
+	                        estado = "out";
+	                        apCriteria = project.getIdDuplicateCriteria();
+	                        
+	                        int idRef = Reference.insertRow(s, doi, idDL, estado, project.getId());
+	                        if (idRef == -2) return "ERROR: The reference had problems";
+	                        referencesImported += 1;
+	                        
+		                    Exclusion.insertRow(s, apCriteria, idRef);
+	                        
+	                    }
+	                    else {	                  
+	                        Reference.updateEstateReferences(s, idRefMaxPriority, project.getIdDuplicateCriteria());
+	                    	int idRef = Reference.insertRow(s, doi, idDL, estado, project.getId());
+	                    	if (idRef == -2) return "ERROR: The reference had problems";
+	                    	referencesImported += 1;	
+	                    }
+                	}               	
+	                else {
+	                	if(duplicatedLibrary) referencesDuplicated += 1;	
+	                	else {
+	                		int idRef = Reference.insertRow(s, doi, idDL, estado, project.getId());
+	                        referencesImported += 1;
+	                        if (idRef == -2) return "ERROR: The reference had problems";                		
+	                	}
+	                }
+	            }                
+            }
+            else {
+                insertRow(s, entry, doi);                                       //create article nuevo
+                int idRef = Reference.insertRow(s, doi, idDL, estado, project.getId());
+                referencesImported += 1;
+                if (idRef == -2) return "ERROR: The reference had problems";
+            }
+
+                
             return doi;
         }
         else
@@ -446,10 +485,22 @@ public class article {
         referencesImported = i;
     }
     
+    public static int getReferencesDuplicated() {
+        return referencesDuplicated;
+    }
+
+    public static void setReferencesDuplicated(int i) {
+        referencesDuplicated = i;
+    }
+    
     private static String truncate(String text, int maxValue) {
     	if (text.length() > maxValue) {
         	text = text.substring(0, maxValue - 1);	
         }
     	return text;
+    }
+    
+    private static int max(int a, int b) {
+    	return (a > b ? a : b);
     }
 }
