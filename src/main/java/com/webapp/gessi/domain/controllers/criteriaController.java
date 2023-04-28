@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/criteria")
 public class criteriaController {
     private static Connection iniConnection() throws SQLException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
@@ -26,19 +24,18 @@ public class criteriaController {
         return conn;
     }
 
-    @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static String addCriteria(String idICEC, String text, String type, int idProject) {
+    public static String addCriteria(String idICEC, String text, String type, int idProject) throws SQLException {
         System.out.println("add criteria en controller criteria");
         return Criteria.insert(idICEC, text, type, idProject);
     }
 
-    public static int insertDuplicateCriteria(int idProject) {
+    public static int insertDuplicateCriteria(int idProject) throws SQLException {
         System.out.println("add criteria en controller criteria");
         Criteria.insert("EC1", "Duplicated publication.", "exclusion", idProject);
         return Criteria.getCriteria("EC1", idProject).getId();
     }
 
-    public static void updateCriteria(int id, CriteriaDTO f) {
+    public static void updateCriteria(int id, CriteriaDTO f) throws SQLException {
         Criteria.update(f.getName(), f.getText(), id);
     }
 
@@ -54,18 +51,20 @@ public class criteriaController {
 
     }
 
-    public static List<CriteriaDTO> getCriteriasIC(int idProject) {
+    public static List<CriteriaDTO> getCriteriasIC(int idProject) throws SQLException {
         return Criteria.getAllCriteria("inclusion", idProject);
     }
-    public static List<CriteriaDTO> getCriteriasEC(int idProject) { return Criteria.getAllCriteria("exclusion", idProject); }
+    public static List<CriteriaDTO> getCriteriasEC(int idProject) throws SQLException { 
+    	return Criteria.getAllCriteria("exclusion", idProject); 
+    }
 
 
-    public static List<String> getStringListCriteriasEC(int idProject) {
+    public static List<String> getStringListCriteriasEC(int idProject) throws SQLException {
         List<CriteriaDTO> list = Criteria.getAllCriteria("exclusion", idProject);
         return list.stream().map(CriteriaDTO::getName).collect(Collectors.toList());
     }
 
-    public static List<String> getAllCriteria(int idProject) {
+    public static List<String> getAllCriteria(int idProject) throws SQLException {
         ArrayList<String> r = new ArrayList<>();
         List<CriteriaDTO> list = Criteria.getAllCriteria(null, idProject);
         for (CriteriaDTO i : list) {

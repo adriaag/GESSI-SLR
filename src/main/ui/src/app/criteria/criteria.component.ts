@@ -51,7 +51,7 @@ export class CriteriaComponent {
   }
 
   deleteCriteria(criteria: Criteria): void {
-    this.dataService.deleteCriteria(criteria.id).subscribe((resposta) => {
+    this.dataService.deleteCriteria(criteria.id,this.idProject).subscribe((resposta) => {
       this.criteriaUpdated.emit()
     })
       

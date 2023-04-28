@@ -47,101 +47,61 @@ public class Exclusion {
         }
     }
 
-    public static void insertRow(Statement s, int idICEC, int idRef) {
+    public static void insertRow(Statement s, int idICEC, int idRef) throws SQLException {
         String query;
-        try {
-            Connection conn = s.getConnection();
-            CriteriaDTO criteriaDTO = Criteria.getById(conn, idICEC);
-            referenceDTO referenceDTO = Reference.getReference(conn, idRef);
-            if (criteriaDTO != null && referenceDTO != null) {
-                query = "INSERT INTO exclusion(idICEC, idRef) VALUES (?, ?)";
-                PreparedStatement preparedStatement = conn.prepareStatement(query);
-                preparedStatement.setInt(1, idICEC);
-                preparedStatement.setInt(2, idRef);
-                preparedStatement.execute();
-                System.out.println("Inserted row " + idICEC + ", " + idRef + " in exclusion");
-            }
-            else {
-                if (criteriaDTO == null)
-                    System.out.println("idICEC doesn't exist " + idICEC);
-                if (referenceDTO == null)
-                    System.out.println("idRef doesn't exist " + idRef);
-            }
-        } catch (SQLException e) {
-            while (e != null) {
-                System.err.println("\n----- SQLException -----");
-                System.err.println("  SQL State:  " + e.getSQLState());
-                System.err.println("  Error Code: " + e.getErrorCode());
-                System.err.println("  Message:    " + e.getMessage());
-                e = e.getNextException();
-            }
-        }
-    }
-
-    public static void deleteRow(Statement s, int idICEC, int idRef) {
-        String query = "DELETE FROM exclusion where idICEC = ? AND idRef = ?";
-        try {
-            Connection conn = s.getConnection();
+        Connection conn = s.getConnection();
+        CriteriaDTO criteriaDTO = Criteria.getById(conn, idICEC);
+        referenceDTO referenceDTO = Reference.getReference(conn, idRef);
+        if (criteriaDTO != null && referenceDTO != null) {
+            query = "INSERT INTO exclusion(idICEC, idRef) VALUES (?, ?)";
             PreparedStatement preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, idICEC);
             preparedStatement.setInt(2, idRef);
             preparedStatement.execute();
-            System.out.println("Deleted row " + idICEC + ", " + idRef + " in exclusion");
-        } catch (SQLException e) {
-            while (e != null) {
-                System.err.println("\n----- SQLException -----");
-                System.err.println("  SQL State:  " + e.getSQLState());
-                System.err.println("  Error Code: " + e.getErrorCode());
-                System.err.println("  Message:    " + e.getMessage());
-                e = e.getNextException();
-            }
+            System.out.println("Inserted row " + idICEC + ", " + idRef + " in exclusion");
         }
+        else {
+            if (criteriaDTO == null)
+                System.out.println("idICEC doesn't exist " + idICEC);
+            if (referenceDTO == null)
+                System.out.println("idRef doesn't exist " + idRef);
+        }
+
     }
 
-    public static List<ExclusionDTO> getByIdRef(Statement s, int idRef) {
+    public static void deleteRow(Statement s, int idICEC, int idRef) throws SQLException {
+        String query = "DELETE FROM exclusion where idICEC = ? AND idRef = ?";
+        Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setInt(1, idICEC);
+        preparedStatement.setInt(2, idRef);
+        preparedStatement.execute();
+        System.out.println("Deleted row " + idICEC + ", " + idRef + " in exclusion");
+    }
+
+    public static List<ExclusionDTO> getByIdRef(Statement s, int idRef) throws SQLException {
         String query = "SELECT * FROM exclusion WHERE IDREF = ?";
-        try {
-            Connection conn = s.getConnection();
-            PreparedStatement preparedStatement = conn.prepareStatement(query);
-            preparedStatement.setInt(1, idRef);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            List<ExclusionDTO> exclusionDTOList = convertResultSetToExclusionDTO(resultSet, null);
-            exclusionDTOList.forEach(value -> {
-                CriteriaDTO criteriaDTO = Criteria.getById(conn, value.getIdICEC());
-                value.setNameICEC(criteriaDTO.getName());
-            });
-            return exclusionDTOList;
-        } catch (SQLException e) {
-            while (e != null) {
-                System.err.println("\n----- SQLException -----");
-                System.err.println("  SQL State:  " + e.getSQLState());
-                System.err.println("  Error Code: " + e.getErrorCode());
-                System.err.println("  Message:    " + e.getMessage());
-                e = e.getNextException();
-            }
+        Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setInt(1, idRef);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        List<ExclusionDTO> exclusionDTOList = convertResultSetToExclusionDTO(resultSet, null);
+        for (ExclusionDTO value: exclusionDTOList) {
+            CriteriaDTO criteriaDTO = Criteria.getById(conn, value.getIdICEC());
+            value.setNameICEC(criteriaDTO.getName());
         }
-        return null;
+
+        return exclusionDTOList;
     }
 
-    public static List<ExclusionDTO> getByIdICEC(Statement s, int idICEC) {
+    public static List<ExclusionDTO> getByIdICEC(Statement s, int idICEC) throws SQLException {
         String query = "SELECT * FROM exclusion WHERE IDICEC = ?";
-        try {
-            Connection conn = s.getConnection();
-            PreparedStatement preparedStatement = conn.prepareStatement(query);
-            preparedStatement.setInt(1, idICEC);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            CriteriaDTO criteriaDTO = Criteria.getById(conn, idICEC);
-            return convertResultSetToExclusionDTO(resultSet, criteriaDTO.getName());
-        } catch (SQLException e) {
-            while (e != null) {
-                System.err.println("\n----- SQLException -----");
-                System.err.println("  SQL State:  " + e.getSQLState());
-                System.err.println("  Error Code: " + e.getErrorCode());
-                System.err.println("  Message:    " + e.getMessage());
-                e = e.getNextException();
-            }
-        }
-        return null;
+        Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setInt(1, idICEC);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        CriteriaDTO criteriaDTO = Criteria.getById(conn, idICEC);
+        return convertResultSetToExclusionDTO(resultSet, criteriaDTO.getName());
     }
 
     public static void deleteCriteriaFK() {

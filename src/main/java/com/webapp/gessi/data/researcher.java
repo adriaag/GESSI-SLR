@@ -1,12 +1,16 @@
 package com.webapp.gessi.data;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
 public class researcher implements Serializable {
+	
+	private static final int nameMaxLength = 50;
 
     public static void createTable(Statement s) {
         try {
@@ -41,28 +45,28 @@ public class researcher implements Serializable {
     }
 
     public static int insertRow(Statement s, String name) throws SQLException {
-        try{
-            String query = "INSERT INTO researchers(name) VALUES ('" + name + "')";
-            //System.out.println(query);
-            s.execute(query);
-            System.out.println("Inserted row with idRes " + name + " in researchers");
-            s.getConnection().commit();
-        } catch (SQLException e) {
-            if (e.getSQLState().equals("23505"))
-                System.out.println("Researcher exists");
-            else {
-                while (e != null) {
-                    System.err.println("\n----- SQLException -----");
-                    System.err.println("  SQL State:  " + e.getSQLState());
-                    System.err.println("  Error Code: " + e.getErrorCode());
-                    System.err.println("  Message:    " + e.getMessage());
-                    e = e.getNextException();
-                }
-            }
-        }
-        ResultSet rs = s.executeQuery("SELECT idRes FROM researchers where name = '" + name + "'");
-        rs.next();
-        return rs.getInt(1);
+    	int id = getByName(s,name);
+    	
+    	if (id == -1) {
+	        String query = "INSERT INTO researchers(name) VALUES (?)";
+	        Connection conn = s.getConnection();
+	        PreparedStatement preparedStatement = conn.prepareStatement(query);
+	        preparedStatement.setString(1, truncate(name, nameMaxLength));
+	        //System.out.println(query);
+	        preparedStatement.execute();
+	        System.out.println("Inserted row with idRes " + name + " in researchers");
+	        s.getConnection().commit();
+	        
+	        query = "SELECT idRes FROM researchers where name = ?";
+	        preparedStatement = conn.prepareStatement(query);
+	        preparedStatement.setString(1, truncate(name, nameMaxLength));
+	        preparedStatement.execute();
+	        ResultSet rs = preparedStatement.getResultSet();
+	        rs.next();
+	        return rs.getInt(1);
+    	}
+    	System.out.println("Researcher exists");
+    	return id;
     }
 
     public static Integer[] insertRows(String names, Statement s) throws SQLException {
@@ -76,9 +80,35 @@ public class researcher implements Serializable {
     }
 
     static ResultSet getResearchers(Statement s3, String doi) throws SQLException {
-        ResultSet rs;
-        rs = s3.executeQuery("select rss.IDRES , rss.NAME from RESEARCHERS rss, AUTHORS au, ARTICLES ar \n" +
-                "where ar.DOI = '" + doi.replaceAll("'", "''") + "' AND au.IDA = ar.DOI and au.IDRES = rss.IDRES" );
-        return rs;
+    	Connection conn = s3.getConnection();
+    	String query = "select rss.IDRES , rss.NAME from RESEARCHERS rss, AUTHORS au, "+
+    	"ARTICLES ar where ar.DOI = ?  AND au.IDA = ar.DOI and au.IDRES = rss.IDRES";
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1, doi);
+        preparedStatement.execute();
+        return preparedStatement.getResultSet();
+    }
+    
+    public static int getByName(Statement s, String name) throws SQLException {
+    	String query ="SELECT idRes FROM RESEARCHERS WHERE name = ?";
+    	Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1,truncate(name, nameMaxLength));
+        preparedStatement.execute();
+        ResultSet rs = preparedStatement.getResultSet();
+        if(rs.next()) {
+        	return rs.getInt(1);
+        }
+        else {
+        	return -1;
+        }
+    	
+    }
+    
+    private static String truncate(String text, int maxValue) {
+    	if (text.length() > maxValue) {
+        	text = text.substring(0, maxValue - 1);	
+        }
+    	return text;
     }
 }

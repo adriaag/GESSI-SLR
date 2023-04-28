@@ -3,4 +3,5 @@ export interface ImportError {
     idDL: number;
     doi: String;
     bibTex: String;
+    idProject: number;
 }

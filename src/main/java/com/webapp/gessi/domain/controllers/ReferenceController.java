@@ -9,7 +9,6 @@ import com.webapp.gessi.domain.dto.referenceDTO;
 import org.jbibtex.ParseException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,28 +17,24 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/references")
 public class ReferenceController {
 
-    @GetMapping(value = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static List<referenceDTO> getReferences(int idProject) { return Reference.getAllReferences(idProject); }
+    public static List<referenceDTO> getReferences(int idProject) throws SQLException { 
+    	return Reference.getAllReferences(idProject); 
+    }
 
-    @GetMapping(value = "/get/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static referenceDTO getReference(@RequestParam(name= "id", required=false, defaultValue="1") int id){
+    public static referenceDTO getReference(int id) throws SQLException{
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         return Reference.getReference(conn, id);
     }
 
-    @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
     public static List<importErrorDTO> addReference(String nameDL, int idProject, MultipartFile file)
-            throws ParseException, SQLException, IOException {
+            throws SQLException, IOException {
         return Reference.importar(nameDL, ProjectController.getById(idProject), file);
     }
 
@@ -49,6 +44,14 @@ public class ReferenceController {
 
     public static void resetReferencesImport(){
         article.setReferencesImported(0);
+    }
+    
+    public static int getReferencesDuplicated(){
+        return article.getReferencesDuplicated();
+    }
+
+    public static void resetReferencesDuplicated(){
+        article.setReferencesDuplicated(0);
     }
 
     public static void reset() {
@@ -77,15 +80,19 @@ public class ReferenceController {
         }
     }
     
-    public static void deleteReference(int idRef) {
+    public static void deleteReference(int idRef) throws SQLException {
     	Reference.delete(idRef);
     }
 
     public static List<importErrorDTO> getAllErrors() throws SQLException {
         return Reference.getAllErrors();
     }
+    
+    public static List<importErrorDTO> getErrors(int idProject) throws SQLException {
+        return Reference.getErrors(idProject);
+    }
 
-    public static void updateState(int idRef, String state) {
+    public static void updateState(int idRef, String state) throws SQLException {
         Reference.update(idRef, state);
     }
     

@@ -31,14 +31,14 @@ export class ProjectDeleteComponent {
 
   deleteProject() {
     this.dataService.deleteProject(this.idProject).subscribe((resposta)=> {
-      this.operationMsg = resposta.message
+      this.operationMsg = "Project successfully deleted"
       this.projectDeleted.emit()
     })
   }
   
   deleteDB() {
       this.dataService.deleteDatabase().subscribe((resposta)=> {
-        this.operationMsg = resposta.message
+        this.operationMsg = "Database successfully deleted"
         this.projectDeleted.emit()
       })
 

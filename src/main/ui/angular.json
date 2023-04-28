@@ -16,7 +16,6 @@
             "outputPath": "../resources/static",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "baseHref": "./",
             "polyfills": [
               "zone.js"
             ],
@@ -32,6 +31,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "./",
               "budgets": [
                 {
                   "type": "initial",

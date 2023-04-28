@@ -84,7 +84,7 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   }
 
   updateReference(id: number, type: string, idCriteria: number[]) {
-    this.dataService.editReferenceCriteria(id,type,idCriteria).subscribe((resposta) => {
+    this.dataService.editReferenceCriteria(id,this.idProject,type,idCriteria).subscribe((resposta) => {
       this.referencesUpdated.emit()
     })
   }
@@ -96,7 +96,7 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   }
 
   deleteReference(reference: Reference): void {
-    this.dataService.deleteReference(reference.idRef).subscribe((resposta) => {
+    this.dataService.deleteReference(reference.idRef, this.idProject).subscribe((resposta) => {
       this.referencesUpdated.emit()
     })
       
@@ -109,16 +109,16 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
           if (filter) {
             //obtenim una string amb totes les dades de reference que apareixen a la taula 
             var filterText = ""
-            filterText += data.doi;
-            filterText += data.idProjRef;
-            filterText += data.dl.name;
-            filterText += data.art.any;
-            for (let researcher of data.art.researchers){
+            if(data.doi !== null) filterText += data.doi;
+            if(data.idProjRef !== null)filterText += data.idProjRef;
+            if(data.dl.name !== null)filterText += data.dl.name;
+            if(data.art.any !== null)filterText += data.art.any;
+            if(data.art.researchers !== null)for (let researcher of data.art.researchers){
               filterText += researcher.name;
             }
-            filterText += data.art.title;
-            filterText += data.art.ven.name;
-            filterText += data.state;
+            if(data.art.title !== null)filterText += data.art.title;
+            if(data.art.ven !== null && data.art.ven.name !== null)filterText += data.art.ven.name;
+            if(data.state !== null)filterText += data.state;
             if (data.exclusionDTOList != null) {
               for (let exclusion of data.exclusionDTOList){
                 filterText += exclusion.nameICEC;
@@ -162,6 +162,17 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
           case 'tit':
             return compare(a.art.title, b.art.title, isAsc);
           case 'ven':
+            var elem1 = a.art.ven
+            var elem2 = b.art.ven
+            if (elem1 === null) {
+              if (elem2 === null) {
+                return compare(null, null, isAsc);
+              }
+              return compare(null, elem2.name, isAsc);
+            }
+            if (elem2 == null) {
+              return compare(a.art.ven.name, null, isAsc);
+            }
             return compare(a.art.ven.name, b.art.ven.name, isAsc);
           case 'sta':
             return compare(a.state,b.state, isAsc);
@@ -196,13 +207,16 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   }
 }
 
-function compare(a: Number | String, b: Number | String, isAsc: boolean) {
+function compare(a: Number | String | null, b: Number | String | null, isAsc: boolean) {
+    if (a === null || b === null) {
+      return (a !== null ? -1 : 1) * (isAsc ? 1 : -1);
+    }
     return (a > b ? -1 : 1) * (isAsc ? 1 : -1);
 }
 
 function compareAuthors(a: Researcher[], b: Researcher[], isAsc: boolean) {
-    if (a != null) {
-      if (b == null) {
+    if (a !== null) {
+      if (b === null) {
         return -1 * (isAsc ? 1 : -1)
       }
       else{
@@ -221,7 +235,7 @@ function compareAuthors(a: Researcher[], b: Researcher[], isAsc: boolean) {
 
     }
     else {
-      if (b == null) {
+      if (b === null) {
         return -1 * (isAsc ? 1 : -1)
       }
       else {
@@ -231,8 +245,8 @@ function compareAuthors(a: Researcher[], b: Researcher[], isAsc: boolean) {
 }
 
 function compareCriteria(a: Exclusion[], b: Exclusion[], isAsc: boolean) {
-  if (a != null) {
-    if (b == null) {
+  if (a !== null) {
+    if (b === null) {
       return -1 * (isAsc ? 1 : -1)
     }
     else{
@@ -251,7 +265,7 @@ function compareCriteria(a: Exclusion[], b: Exclusion[], isAsc: boolean) {
 
   }
   else {
-    if (b == null) {
+    if (b === null) {
       return -1 * (isAsc ? 1 : -1)
     }
     else {

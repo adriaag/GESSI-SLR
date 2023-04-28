@@ -99,12 +99,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.jbibtex/jbibtex -->
-        <!-- <dependency>
-            <groupId>org.jbibtex</groupId>
-            <artifactId>jbibtex</artifactId>
-            <version>1.0.19</version>
-        </dependency> -->
         <!-- https://mvnrepository.com/artifact/de.undercouch/citeproc-java -->
         <dependency>
             <groupId>de.undercouch</groupId>
@@ -149,10 +143,11 @@
 		    <artifactId>json</artifactId>
 		    <version>20230227</version>
 		</dependency>
+		
 		<dependency>
 		    <groupId>com.github.adriaag</groupId>
 		    <artifactId>jbibtex</artifactId>
-		    <version>1.0.21</version>
+		    <version>master-SNAPSHOT</version>
 		</dependency>
 		
 		
