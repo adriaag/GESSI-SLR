@@ -4,7 +4,7 @@ services:
     container_name: gessi-derby
     image: opavlova/db-derby
     ports:
-      - "1024:1527"
+      - "1033:1527"
     volumes:
       - db-volume:/dbs/DOCKERDB
     restart: unless-stopped
@@ -15,7 +15,7 @@ services:
     depends_on:
       - derby
     ports:
-      - "1025:8080"
+      - "1034:8080"
 
 networks:
   default:

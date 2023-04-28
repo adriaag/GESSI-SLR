@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiUrl: 'http://localhost:1025/gessi-slr/api'
+    apiUrl: 'http://localhost:1034/gessi-slr/api'
   };

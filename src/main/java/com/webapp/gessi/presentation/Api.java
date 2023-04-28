@@ -25,7 +25,7 @@ import org.json.JSONObject;
 
 @RestController
 @RequestMapping("/api/")
-@CrossOrigin(origins = {"http://localhost:4200","http://localhost:1025"})
+@CrossOrigin(origins = {"http://localhost:1034"}) //"http://localhost:4200",
 public class Api implements ErrorController{
     private static final String PATH_PATTERN = "^([A-z0-9-_+\\.]+.(bib))$";
 
@@ -336,7 +336,7 @@ public class Api implements ErrorController{
     private ResponseEntity<?> internalServerError() {
     	JSONObject returnData = new JSONObject();
     	returnData.put("message", "Resource not found");
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(returnData.toString());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(returnData.toString());
     }
 
 
