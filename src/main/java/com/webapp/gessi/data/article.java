@@ -1,6 +1,7 @@
 package com.webapp.gessi.data;
 
 import com.webapp.gessi.domain.dto.ProjectDTO;
+import com.webapp.gessi.domain.dto.articleDTO;
 import com.webapp.gessi.exceptions.BadBibtexFileException;
 import org.apache.commons.io.IOUtils;
 import com.github.adriaag.jbibtex.BibTeXDatabase;
@@ -259,9 +260,70 @@ public class article {
         else
             return "ERROR: The article does not contain doi or citeKey";
     }
+    
+    public static ResultSet insertRowManually(Statement s, String doi, String type, String nameVen, String title, String keywords, String number, int numpages, String pages, String volume, int any, String resum, String[] authorNames, String[] affiliationNames) throws SQLException {
+    	ResultSet rs = getArticle(s, doi);
+    	if(!rs.next()) { //article amb aquest doi no existeix
+    		String query = "INSERT INTO articles(DOI, TYPE, IDVEN, TITLE, KEYWORDS, NUMBER, NUMPAGES, PAGES, VOLUME, AÑO, ABSTRACT, MANUALLYIMPORTED) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, TRUE)";
+            Connection conn = s.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query);
+            
+            preparedStatement.setString(1, truncate(doi,doiMaxLength));
+            preparedStatement.setString(2, truncate(type, typeMaxLength));
+            preparedStatement.setNull(3, java.sql.Types.VARCHAR);
+    		
+    		if(nameVen != null) {
+    			int idVen = venue.insertRow(s, nameVen);
+    			preparedStatement.setInt(4, idVen);
+    		}preparedStatement.setNull(4, java.sql.Types.INTEGER);
+    		
+    		if (title != null) preparedStatement.setString(5, truncate(title, titleMaxLength));
+            else preparedStatement.setString(5, null);
+
+            if (keywords != null) preparedStatement.setString(6, truncate(keywords, keywordsMaxLength));
+            else preparedStatement.setString(6, null);
+
+            if (number != null && !number.replaceAll("[{-}]", "").equals("")) preparedStatement.setString(7, truncate(number.replaceAll("[{-}]", ""),numberMaxLength));
+            else preparedStatement.setString(7, null);
+
+            if (numpages != -1) preparedStatement.setInt(8, numpages);
+            else preparedStatement.setNull(8, java.sql.Types.INTEGER);
+
+            if (pages != null) preparedStatement.setString(9, truncate(pages, pagesMaxLength));
+            else preparedStatement.setString(9, null);
+
+            if (volume != null && !volume.equals("")) preparedStatement.setString(10, truncate(volume, volumeMaxLength));
+            else preparedStatement.setString(10, null);
+
+            if (any != -1) preparedStatement.setInt(11, any);
+            else preparedStatement.setNull(11, java.sql.Types.INTEGER);
+
+            if (resum != null) preparedStatement.setString(12, truncate(resum, abstractMaxLength));
+            else preparedStatement.setString(12, null);
+            
+            preparedStatement.execute();            
+            rs = preparedStatement.getResultSet();
+            
+            for (String name : authorNames) {
+            	int idResearcher = researcher.insertRow(s, name);
+            	author.insertRows(new Integer[] {idResearcher}, doi, s);            	
+            }
+            
+            for (String name: affiliationNames) {
+            	int idCompany = company.insertRow(s, name);
+            	affiliation.insertRow(s, idCompany, doi);
+            }
+                                                                     
+    		
+    	}
+    	
+    	return rs;
+    	
+    	
+    }
 
     private static void insertRow(Statement s, BibTeXEntry entry, String doi) throws SQLException, NumberFormatException {
-        String query = "INSERT INTO articles(DOI, TYPE, CITEKEY, IDVEN, TITLE, KEYWORDS, NUMBER, NUMPAGES, PAGES, VOLUME, AÑO, ABSTRACT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO articles(DOI, TYPE, CITEKEY, IDVEN, TITLE, KEYWORDS, NUMBER, NUMPAGES, PAGES, VOLUME, AÑO, ABSTRACT, MANUALLYIMPORTED) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, FALSE)";
         Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         Key type = entry.getType();
@@ -440,11 +502,11 @@ public class article {
         }
         authorsToInsert = null;
         if (authors != null)
-            authorsToInsert = authors.toUserString().replaceAll("[\n]", " ").replaceAll("[{-}]", "").replaceAll("'", "''");
+            authorsToInsert = authors.toUserString().replaceAll("[\n]", " ").replaceAll("[{-}]", "");
 
         affiliationToInsert = null;
         if (affil != null) {
-            affiliationToInsert = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "").replaceAll("'", "''");
+            affiliationToInsert = affil.toUserString().replaceAll("[{-}]", "").replaceAll("[']", "");
         }
         query = queryIni.toString() + queryEnd;
 
@@ -459,7 +521,7 @@ public class article {
         try {
             s.execute("create table articles( doi varchar(50), type varchar(50), citeKey varchar(50), " +
                     "idVen int, title varchar(200), keywords varchar(1000), number varchar(10), numpages INT, " +
-                    "pages varchar(20), volume varchar(20), año INT, abstract varchar(6000)," +
+                    "pages varchar(20), volume varchar(20), año INT, abstract varchar(6000), manuallyImported boolean" +
                     "PRIMARY KEY (doi), " +
                     "CONSTRAINT VEN_FK_R FOREIGN KEY (idVen) REFERENCES venues (idVen) ON DELETE CASCADE)");
             //type y citekey not null

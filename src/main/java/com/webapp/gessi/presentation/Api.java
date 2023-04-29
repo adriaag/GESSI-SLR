@@ -178,6 +178,22 @@ public class Api implements ErrorController{
     	
     }
     
+    @PostMapping(value = "/projects/{id}/references", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> addReference(@PathVariable("id") int idProj, @RequestParam("doi") String doi, @RequestParam("type") String type,
+    		@RequestParam("nameVen") String nameVen, @RequestParam("title") String title, @RequestParam("keywords") String keywords, @RequestParam("number") String number,
+    		@RequestParam("numpages") int numpages, @RequestParam("pages") String pages, @RequestParam("volume") String volume, @RequestParam("any") int any,
+    		@RequestParam("resum") String resum, @RequestParam("authorNames") String[] authorNames, @RequestParam("affiliationNames") String[] affiliationNames){
+    	
+    	try {
+    		referenceDTO reference = ReferenceController.addReferenceManually(doi, type, nameVen, title, keywords, number, numpages, pages, volume, any, resum, authorNames, affiliationNames, idProj);
+    		return ResponseEntity.status(HttpStatus.CREATED).body(reference);
+    	}
+    	catch (SQLException e) {
+    		return sqlExcHandler(e);
+    	}
+    	
+    }
+    
     @DeleteMapping(value="/projects/{idProj}/references/{idRef}", produces = MediaType.APPLICATION_JSON_VALUE +"; charset=utf-8")
     public ResponseEntity<?> deleteReference(@PathVariable("idProj") int idProj,@PathVariable("idRef") int idRef) {
     	try {

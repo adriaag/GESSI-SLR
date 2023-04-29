@@ -98,6 +98,15 @@ public class ReferenceController {
         Reference.update(idRef, state);
     }
     
+    public static referenceDTO addReferenceManually (String doi, String type, String nameVen, String title, 
+    		String keywords, String number, int numpages, String pages, 
+    		String volume, int any, String resum, String[] authorNames, 
+    		String[] affiliationNames, int idProject) throws SQLException {
+    	ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Statement s = ctx.getBean(Connection.class).createStatement(); 	
+    	return Reference.addReferenceManually(s, doi, type, nameVen, title, keywords, number, numpages, pages, volume, any, resum, authorNames, affiliationNames, idProject);
+    }
+    
 
     @RequestMapping(value = "/createTables")
     public void createTables(){
