@@ -2,6 +2,8 @@ package com.webapp.gessi.data;
 
 import com.webapp.gessi.config.DBConnection;
 import com.webapp.gessi.domain.dto.*;
+import com.webapp.gessi.exceptions.BadBibtexFileException;
+
 import org.jbibtex.ParseException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -236,7 +238,7 @@ public class Reference {
         Project.dropTable(s);
     }
 
-    public static List<importErrorDTO> importar(String idDL, ProjectDTO project, MultipartFile file) throws SQLException, IOException {
+    public static List<importErrorDTO> importar(String idDL, ProjectDTO project, MultipartFile file) throws SQLException, IOException, BadBibtexFileException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         conn.setAutoCommit(false);

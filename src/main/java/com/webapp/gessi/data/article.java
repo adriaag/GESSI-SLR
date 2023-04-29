@@ -1,11 +1,14 @@
 package com.webapp.gessi.data;
 
 import com.webapp.gessi.domain.dto.ProjectDTO;
+import com.webapp.gessi.exceptions.BadBibtexFileException;
 import org.apache.commons.io.IOUtils;
 import com.github.adriaag.jbibtex.BibTeXDatabase;
 import com.github.adriaag.jbibtex.BibTeXParser;
 import com.github.adriaag.jbibtex.Key;
 import com.github.adriaag.jbibtex.ParseException;
+import com.github.adriaag.jbibtex.TokenMgrException;
+import com.github.adriaag.jbibtex.ObjectResolutionException;
 import com.github.adriaag.jbibtex.BibTeXEntry;
 import com.github.adriaag.jbibtex.Value;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,7 +49,7 @@ public class article {
     private static final int abstractMaxLength = 6000;
     
 
-    public static Timestamp importar(String idDL, ProjectDTO project, Statement s, MultipartFile file) throws IOException, SQLException{
+    public static Timestamp importar(String idDL, ProjectDTO project, Statement s, MultipartFile file) throws SQLException, IOException, BadBibtexFileException{
 
         //Reader reader = new FileReader(path);
         //Parametro MultipartFile file
@@ -87,7 +90,14 @@ public class article {
             }
             reader.close();
         }
-        catch (ParseException | SQLException e) {
+        catch (ParseException | TokenMgrException | ObjectResolutionException e) {
+        	//importationLogError.insertRow(s, doi, myString, idDL, project.getId(), time);
+        	System.err.println("  Error d'importació");
+            System.err.println("  Message:    " + e.getMessage());
+            e.printStackTrace();
+            throw new BadBibtexFileException(e.getMessage(), e);
+        }
+        catch (SQLException e) {
         	importationLogError.insertRow(s, doi, myString, idDL, project.getId(), time);
         	System.err.println("  Error d'importació");
             System.err.println("  Message:    " + e.getMessage());

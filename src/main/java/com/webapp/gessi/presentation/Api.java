@@ -6,6 +6,8 @@ import com.webapp.gessi.domain.controllers.ReferenceController;
 import com.webapp.gessi.domain.controllers.criteriaController;
 import com.webapp.gessi.domain.controllers.digitalLibraryController;
 import com.webapp.gessi.domain.dto.*;
+import com.webapp.gessi.exceptions.BadBibtexFileException;
+
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.core.io.ByteArrayResource;
@@ -25,7 +27,7 @@ import org.json.JSONObject;
 
 @RestController
 @RequestMapping("/api/")
-@CrossOrigin(origins = {"http://localhost:1034"}) //"http://localhost:4200",
+@CrossOrigin(origins = {"http://localhost:4200","http://localhost:1034"}) //
 public class Api implements ErrorController{
     private static final String PATH_PATTERN = "^([A-z0-9-_+\\.]+.(bib))$";
 
@@ -117,8 +119,7 @@ public class Api implements ErrorController{
     }
     
     @PostMapping(value = "/projects/{id}/references", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> submitFile(@PathVariable(name = "id") String idProject, @RequestParam(name = "dlNum") String dlNum, @RequestParam(name = "file") MultipartFile file)
-            throws SQLException, IOException {
+    public ResponseEntity<?> submitFile(@PathVariable(name = "id") String idProject, @RequestParam(name = "dlNum") String dlNum, @RequestParam(name = "file") MultipartFile file) {
     	
     	try {
 	    	formDTO form = new formDTO();
@@ -166,11 +167,15 @@ public class Api implements ErrorController{
 
 	    }
     	catch (IOException e) {
-    		JSONObject returnData = new JSONObject();
-    		returnData.put("message", "Invalid BiB file");
-    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnData.toString());
+    		return internalServerError();    		
     		
     	}
+    	catch(BadBibtexFileException e) {
+    		JSONObject returnData = new JSONObject();
+    		returnData.put("message", e.getMessage());
+    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnData.toString());    		
+    	}
+    	
     }
     
     @DeleteMapping(value="/projects/{idProj}/references/{idRef}", produces = MediaType.APPLICATION_JSON_VALUE +"; charset=utf-8")
@@ -336,7 +341,7 @@ public class Api implements ErrorController{
     private ResponseEntity<?> internalServerError() {
     	JSONObject returnData = new JSONObject();
     	returnData.put("message", "Resource not found");
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(returnData.toString());
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(returnData.toString());
     }
 
 
