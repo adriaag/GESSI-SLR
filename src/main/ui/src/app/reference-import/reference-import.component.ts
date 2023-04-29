@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { DataService } from '../data.service';
 import { ImportError } from '../dataModels/importError';
+import { ReferenceImportManuallyComponent } from '../reference-import-manually/reference-import-manually.component';
 
 @Component({
   selector: 'app-reference-import',
@@ -12,7 +14,7 @@ export class ReferenceImportComponent {
   @Input('idProject') idProject!: Number
   @Output() newReferencesImported = new EventEmitter();
 
-  constructor(private dataService: DataService){}
+  constructor(private dialog: MatDialog, private dataService: DataService){}
 
   fileToUpload!: File;
   digitalLibraryId: Number = NaN;
@@ -51,6 +53,13 @@ export class ReferenceImportComponent {
       }
 
     })
+
+  }
+
+  openImportManuallyDialog(){
+ 
+    const manRefDialog = this.dialog.open(ReferenceImportManuallyComponent, {
+      height: '100%'})
 
   }
 

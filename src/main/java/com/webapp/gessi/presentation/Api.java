@@ -178,7 +178,7 @@ public class Api implements ErrorController{
     	
     }
     
-    @PostMapping(value = "/projects/{id}/references", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/projects/{id}/manualreferences", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> addReference(@PathVariable("id") int idProj, @RequestParam("doi") String doi, @RequestParam("type") String type,
     		@RequestParam("nameVen") String nameVen, @RequestParam("title") String title, @RequestParam("keywords") String keywords, @RequestParam("number") String number,
     		@RequestParam("numpages") int numpages, @RequestParam("pages") String pages, @RequestParam("volume") String volume, @RequestParam("any") int any,

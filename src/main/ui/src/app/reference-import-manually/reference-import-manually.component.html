@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<div class="m-3">
+    <div mat-dialog-title class="dialog-title">
+        <h2>Add Reference</h2>
+        <button class="boto" mat-icon-button aria-label="close dialog" [mat-dialog-close]="">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+    <mat-dialog-content>
+        <form ngNativeValidate #form id="newReferenceForm">
+            <div class="form-group">
+                <label for="doi">DOI</label>
+                <input id="doi" [formControl]="doi" placeholder="Enter DOI" required type="text" maxlength="10" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="author">Author</label>
+                <input id="author" [formControl]="authorNames" placeholder="Enter Authors (format: surname, name; surname, name; ...)" required type="text" maxlength="10" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input id="title" [formControl]="title" placeholder="Enter title" required type="text" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="year">Year</label>
+                <input id="year" [formControl]="any" placeholder="Enter year" required type="text" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="venue">Venue</label>
+                <input id="venue" [formControl]="nameVen" placeholder="Enter venue" required type="text" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="vol">Volume</label>
+                <input id="vol" [formControl]="volume" placeholder="Enter volume" required type="text" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="num">Number</label>
+                <input id="num" [formControl]="number" placeholder="Enter number" required type="text" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="numpages">Number of pages</label>
+                <input id="numpages" [formControl]="numpages" placeholder="Enter number" required type="text" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="pages">Number of pages</label>
+                <input id="pages" [formControl]="pages" placeholder="Enter number" required type="text" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="text">Abstract</label>
+                <textarea rows="4" cols="50" id="abs" placeholder="Enter article's abstract" required
+                            type="text" [formControl]="abstract" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="keywords">Keywords</label>
+                <input id="keywords" [formControl]="keywords" placeholder="Enter keywords (format: keyword1;keyword2;...)" required type="text" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="type">Type</label>
+                <input id="type" [formControl]="type" placeholder="Enter type" required type="text" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="aff">Affiliations</label>
+                <input id="aff" [formControl]="keywords" placeholder="Enter affiliation names (format: name1;name2;...)" required type="text" class="form-control"/>
+            </div>
+        </form>
+
+        <button type="reset" class="btn btn-secondary pull-left">Clear</button>
+        <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right" (click)="form.checkValidity()? close() : null">Create Reference</button>
+        <br>
+        <br>
+        <!--<div> <p style="color:#ff0000">{{errors}}</p> </div>-->
+    </mat-dialog-content>
+</div>

@@ -25,6 +25,7 @@ import { CriteriaEditComponent } from './criteria-edit/criteria-edit.component';
 import { ReferenceClassifyComponent } from './reference-classify/reference-classify.component';
 import { ProjectCreateComponent } from './project-create/project-create.component';
 import { ProjectDeleteComponent } from './project-delete/project-delete.component';
+import { ReferenceImportManuallyComponent } from './reference-import-manually/reference-import-manually.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { ProjectDeleteComponent } from './project-delete/project-delete.componen
     ReferenceClassifyComponent,
     ProjectCreateComponent,
     ProjectDeleteComponent,
+    ReferenceImportManuallyComponent,
   ],
   imports: [
     BrowserModule,

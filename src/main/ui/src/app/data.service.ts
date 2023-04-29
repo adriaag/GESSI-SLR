@@ -8,6 +8,7 @@ import { ImportError } from './dataModels/importError';
 import { ReferenceFromFileResponse } from './dataModels/referenceFromFileResponse';
 import { CriteriaResponse } from './criteriaResponse';
 import { environment } from 'src/environments/environment';
+import { AddReference } from './dataModels/addReference';
 
 @Injectable({
   providedIn: 'root'
@@ -103,6 +104,16 @@ export class DataService {
     const formData: FormData = new FormData();
     formData.append('file', file);
     formData.append('dlNum',idDl);
+    const header = new HttpHeaders()//.set('Content-Type', 'application/x-www-form-urlencoded')
+    return this.http.post<ReferenceFromFileResponse>(
+      `${this.rootUrl}/projects/${idProject}/references`,formData,{headers: header})
+    .pipe(
+      tap(data => console.log("Anlagenstatus Daten:", data)),
+      catchError(this.handleError),
+    )
+  }
+
+  createReferenceFromForm(formData: AddReference, idProject: number): Observable<Reference> {
     const header = new HttpHeaders()//.set('Content-Type', 'application/x-www-form-urlencoded')
     return this.http.post<ReferenceFromFileResponse>(
       `${this.rootUrl}/projects/${idProject}/references`,formData,{headers: header})
