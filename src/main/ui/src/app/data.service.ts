@@ -189,7 +189,7 @@ export class DataService {
         alert("Database not reacheable")
         break;
       case 400:
-        alert("Bad request: "+error.error.message)
+        alert("Bad request:\n"+error.error.message)
         break;
       case 401:
         alert("You are not allowed to perform this action")

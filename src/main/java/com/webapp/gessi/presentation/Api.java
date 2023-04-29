@@ -172,7 +172,7 @@ public class Api implements ErrorController{
     	}
     	catch(BadBibtexFileException e) {
     		JSONObject returnData = new JSONObject();
-    		returnData.put("message", e.getMessage());
+    		returnData.put("message", e.getCause());
     		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnData.toString());    		
     	}
     	
