@@ -1,11 +1,14 @@
 package com.webapp.gessi.data;
 
 import com.webapp.gessi.domain.dto.ProjectDTO;
+import com.webapp.gessi.exceptions.BadBibtexFileException;
 import org.apache.commons.io.IOUtils;
 import com.github.adriaag.jbibtex.BibTeXDatabase;
 import com.github.adriaag.jbibtex.BibTeXParser;
 import com.github.adriaag.jbibtex.Key;
 import com.github.adriaag.jbibtex.ParseException;
+import com.github.adriaag.jbibtex.TokenMgrException;
+import com.github.adriaag.jbibtex.ObjectResolutionException;
 import com.github.adriaag.jbibtex.BibTeXEntry;
 import com.github.adriaag.jbibtex.Value;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,7 +49,7 @@ public class article {
     private static final int abstractMaxLength = 6000;
     
 
-    public static Timestamp importar(String idDL, ProjectDTO project, Statement s, MultipartFile file) throws IOException, SQLException{
+    public static Timestamp importar(String idDL, ProjectDTO project, Statement s, MultipartFile file) throws SQLException, IOException, BadBibtexFileException, NumberFormatException{
 
         //Reader reader = new FileReader(path);
         //Parametro MultipartFile file
@@ -87,7 +90,14 @@ public class article {
             }
             reader.close();
         }
-        catch (ParseException | SQLException e) {
+        catch (ParseException | TokenMgrException | ObjectResolutionException | NumberFormatException e) {
+        	//importationLogError.insertRow(s, doi, myString, idDL, project.getId(), time);
+        	System.err.println("  Error d'importació");
+            System.err.println("  Message:    " + e.getMessage());
+            e.printStackTrace();
+            throw new BadBibtexFileException(e.getMessage(), e);
+        }
+        catch (SQLException e) {
         	importationLogError.insertRow(s, doi, myString, idDL, project.getId(), time);
         	System.err.println("  Error d'importació");
             System.err.println("  Message:    " + e.getMessage());
@@ -155,7 +165,7 @@ public class article {
     }
 
 //Devuelve un string de todos los autores de la referencia
-    static String addArticle(String idDL, ProjectDTO project, Statement s, BibTeXEntry entry, int entriesPriority) throws SQLException {
+    static String addArticle(String idDL, ProjectDTO project, Statement s, BibTeXEntry entry, int entriesPriority) throws SQLException, NumberFormatException {
         String doi;
         if (entry.getField(BibTeXEntry.KEY_DOI) == null) {
             String str = entry.getKey().toString();
@@ -250,7 +260,7 @@ public class article {
             return "ERROR: The article does not contain doi or citeKey";
     }
 
-    private static void insertRow(Statement s, BibTeXEntry entry, String doi) throws SQLException {
+    private static void insertRow(Statement s, BibTeXEntry entry, String doi) throws SQLException, NumberFormatException {
         String query = "INSERT INTO articles(DOI, TYPE, CITEKEY, IDVEN, TITLE, KEYWORDS, NUMBER, NUMPAGES, PAGES, VOLUME, AÑO, ABSTRACT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(query);

@@ -6,6 +6,8 @@ import com.webapp.gessi.data.Reference;
 import com.webapp.gessi.domain.dto.ExclusionDTO;
 import com.webapp.gessi.domain.dto.importErrorDTO;
 import com.webapp.gessi.domain.dto.referenceDTO;
+import com.webapp.gessi.exceptions.BadBibtexFileException;
+
 import org.jbibtex.ParseException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -34,7 +36,7 @@ public class ReferenceController {
     }
 
     public static List<importErrorDTO> addReference(String nameDL, int idProject, MultipartFile file)
-            throws SQLException, IOException {
+            throws SQLException, IOException, BadBibtexFileException {
         return Reference.importar(nameDL, ProjectController.getById(idProject), file);
     }
 
