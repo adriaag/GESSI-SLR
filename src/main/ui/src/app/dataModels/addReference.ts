@@ -1,15 +1,15 @@
 export interface AddReference {
     doi: string,
-    type: string,
-    nameVen: string,
-    title: string,
-    keywords: string,
-    number: string,
+    type: string | null,
+    nameVen: string | null,
+    title: string | null,
+    keywords: string | null,
+    number: string | null,
     numpages: number,
-    pages: string,
-    volume: string,
+    pages: string | null,
+    volume: string | null,
     any: number,
-    abstract: string,
-    authorNames: string[],
-    affiliationNames: string[]
+    abstract: string | null,
+    authorNames: string[] | null,
+    affiliationNames: string[] | null
 }
