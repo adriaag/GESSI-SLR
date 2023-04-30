@@ -18,7 +18,10 @@
         </tr>
         <tr style="border: hidden">
             <td style="border: hidden"><b>DL-name</b></td>
-            <td style="border: hidden">{{reference.dl.name}}</td>
+            <td style="border: hidden">
+                <span *ngIf="reference.dl !== null">{{reference.dl.name}}</span>
+                <span *ngIf="reference.dl === null">Manually imported</span>
+            </td>
         </tr>
         <tr style="border: hidden">
             <td style="border: hidden"><b>Year</b></td>

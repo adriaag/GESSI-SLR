@@ -35,17 +35,22 @@ public class Reference {
         
         preparedStatement = conn.prepareStatement(query);
         preparedStatement.setString(1, truncate(doi, doiMaxLength));
-        preparedStatement.setString(2, idDL);
-        preparedStatement.setString(3, estado);
+        if (idDL != null) preparedStatement.setString(2, idDL);
+        else preparedStatement.setNull(2, java.sql.Types.VARCHAR);
+        if (estado != null) preparedStatement.setString(3, estado);
+        else preparedStatement.setNull(3, java.sql.Types.VARCHAR);
         preparedStatement.setInt(4, idProject);
         preparedStatement.setInt(5, idProjRef);
         preparedStatement.execute();
         System.out.println("Inserted row with doi "+ doi +", idDL.. in referencias");
         conn.commit();
-        query = "SELECT idRef FROM referencias where doi = ? and idDL = ?";
+        
+        if (idDL != null) query = "SELECT idRef FROM referencias where doi = ? and idProject = ? and idDL = ?";
+        else query = "SELECT idRef FROM referencias where doi = ? and idProject = ? and idDL is null";
         preparedStatement = conn.prepareStatement(query);
         preparedStatement.setString(1, truncate(doi, doiMaxLength));
-        preparedStatement.setString(2, idDL);
+        preparedStatement.setInt(2, idProject);
+        if (idDL != null) preparedStatement.setString(3, idDL);
         preparedStatement.execute();
         ResultSet rs = preparedStatement.getResultSet();
         if (rs.next())
@@ -396,7 +401,8 @@ public class Reference {
     
     public static referenceDTO addReferenceManually(Statement s, String doi, String type, String nameVen, String title, String keywords, String number, int numpages, String pages, String volume, int any, String resum, String[] authorNames, String[] affiliationNames, int idProject) throws SQLException {
     	article.insertRowManually(s, doi, type, nameVen, title, keywords, number, numpages, pages, volume, any, resum, authorNames, affiliationNames);
-    	int idRef = insertRow(s, doi, "-1", null, idProject);    	
+    	int idRef = insertRow(s, doi, null, null, idProject);  
+    	System.out.println(idRef);
     	return getReference(s.getConnection(), idRef);
     }
     

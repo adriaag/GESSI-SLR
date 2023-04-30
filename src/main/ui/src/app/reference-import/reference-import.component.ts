@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DataService } from '../data.service';
+import { AddReference } from '../dataModels/addReference';
 import { ImportError } from '../dataModels/importError';
 import { ReferenceImportManuallyComponent } from '../reference-import-manually/reference-import-manually.component';
 
@@ -11,7 +12,7 @@ import { ReferenceImportManuallyComponent } from '../reference-import-manually/r
 })
 export class ReferenceImportComponent {
   @Input('dlNames') DLNames!: String[]
-  @Input('idProject') idProject!: Number
+  @Input('idProject') idProject!: number
   @Output() newReferencesImported = new EventEmitter();
 
   constructor(private dialog: MatDialog, private dataService: DataService){}
@@ -56,11 +57,25 @@ export class ReferenceImportComponent {
 
   }
 
+  createReference(refData: AddReference) {
+    this.dataService.createReferenceFromForm(refData, this.idProject).subscribe((resposta)=> {
+      console.log(resposta)
+      this.newReferencesImported.emit();
+    })
+  }
+
   openImportManuallyDialog(){
  
     const manRefDialog = this.dialog.open(ReferenceImportManuallyComponent, {
-      height: '100%'})
+      height: '100%'}
+    )
 
+    manRefDialog.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+        this.createReference(result)
+      }
+
+    })
   }
 
 }

@@ -31,7 +31,10 @@
 
         <ng-container matColumnDef="dl">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>DL</th>
-            <td mat-cell *matCellDef="let row">{{row.dl.name}}</td>
+            <td mat-cell *matCellDef="let row">
+                <div *ngIf="row.dl !== null">{{row.dl.name}}</div>
+                <div *ngIf="row.dl === null">-</div>
+            </td>
         </ng-container>
 
         <ng-container matColumnDef="year">

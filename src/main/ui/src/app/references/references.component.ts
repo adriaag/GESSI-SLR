@@ -111,7 +111,7 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
             var filterText = ""
             if(data.doi !== null) filterText += data.doi;
             if(data.idProjRef !== null)filterText += data.idProjRef;
-            if(data.dl.name !== null)filterText += data.dl.name;
+            if(data.dl !== null && data.dl.name !== null)filterText += data.dl.name;
             if(data.art.any !== null)filterText += data.art.any;
             if(data.art.researchers !== null)for (let researcher of data.art.researchers){
               filterText += researcher.name;
@@ -154,6 +154,17 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
           case 'ref':
             return compare(a.idRef, b.idRef, isAsc);
           case 'dl':
+            var dl1 = a.dl
+            var dl2 = b.dl
+            if (dl1 === null) {
+              if (dl2 === null) {
+                return compare(null, null, isAsc);
+              }
+              return compare(null, dl2.name, isAsc);
+            }
+            if (dl2 == null) {
+              return compare(a.dl.name, null, isAsc);
+            }
             return compare(a.dl.name, b.dl.name, isAsc);
           case 'year':
             return compare(a.art.any, b.art.any, isAsc);

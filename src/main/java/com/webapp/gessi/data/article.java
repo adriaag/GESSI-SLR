@@ -264,7 +264,7 @@ public class article {
     public static ResultSet insertRowManually(Statement s, String doi, String type, String nameVen, String title, String keywords, String number, int numpages, String pages, String volume, int any, String resum, String[] authorNames, String[] affiliationNames) throws SQLException {
     	ResultSet rs = getArticle(s, doi);
     	if(!rs.next()) { //article amb aquest doi no existeix
-    		String query = "INSERT INTO articles(DOI, TYPE, IDVEN, TITLE, KEYWORDS, NUMBER, NUMPAGES, PAGES, VOLUME, AÑO, ABSTRACT, MANUALLYIMPORTED) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, TRUE)";
+    		String query = "INSERT INTO articles(DOI, TYPE, CITEKEY, IDVEN, TITLE, KEYWORDS, NUMBER, NUMPAGES, PAGES, VOLUME, AÑO, ABSTRACT, MANUALLYIMPORTED) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, TRUE)";
             Connection conn = s.getConnection();
             PreparedStatement preparedStatement = conn.prepareStatement(query);
             
@@ -301,7 +301,7 @@ public class article {
             if (resum != null) preparedStatement.setString(12, truncate(resum, abstractMaxLength));
             else preparedStatement.setString(12, null);
             
-            preparedStatement.execute();            
+            preparedStatement.execute();      
             rs = preparedStatement.getResultSet();
             
             for (String name : authorNames) {
@@ -313,6 +313,7 @@ public class article {
             	int idCompany = company.insertRow(s, name);
             	affiliation.insertRow(s, idCompany, doi);
             }
+            s.getConnection().commit();
                                                                      
     		
     	}
@@ -521,7 +522,7 @@ public class article {
         try {
             s.execute("create table articles( doi varchar(50), type varchar(50), citeKey varchar(50), " +
                     "idVen int, title varchar(200), keywords varchar(1000), number varchar(10), numpages INT, " +
-                    "pages varchar(20), volume varchar(20), año INT, abstract varchar(6000), manuallyImported boolean" +
+                    "pages varchar(20), volume varchar(20), año INT, abstract varchar(6000), manuallyImported boolean, " +
                     "PRIMARY KEY (doi), " +
                     "CONSTRAINT VEN_FK_R FOREIGN KEY (idVen) REFERENCES venues (idVen) ON DELETE CASCADE)");
             //type y citekey not null
