@@ -10,9 +10,10 @@ public class digitalLibrary {
         return rs;
     }
 
+    //obviem maunallyImported
     public static ArrayList<String> getNames(Statement s) throws SQLException {
         ArrayList<String> ret = new ArrayList<String>();
-        ResultSet rs = s.executeQuery("SELECT name FROM digitalLibraries ORDER BY idDL asc ");
+        ResultSet rs = s.executeQuery("SELECT name FROM digitalLibraries WHERE idDl > 0 ORDER BY idDL asc ");
         while(rs.next()) {
             ret.add(rs.getString("name"));
         }
