@@ -23,7 +23,7 @@
                 <mat-label for="author">Author</mat-label>
                 <input matInput [formControl]="authorNames" placeholder="Enter Authors" type="text" pattern="([^,;]+, [^,;]+;)*">
                 <mat-error *ngIf="authorNames.invalid">REMEMBER! surname, name; surname, name; ...</mat-error>
-                <mat-hint>format: surname, name; surname, name; ...</mat-hint>
+                <mat-hint>format: surname, name;surname, name; ...</mat-hint>
             </mat-form-field>
             <br>
             <mat-form-field>
@@ -91,7 +91,7 @@
             </mat-form-field>
         </form>
 
-        <button type="reset" class="btn btn-secondary pull-left">Clear</button>
+        <button type="reset" class="btn btn-secondary pull-left" (click)="reset()">Clear</button>
         <button type="submit" id="createReferenceSubmit" class="btn btn-primary pull-right" (click)="form.checkValidity()? close() : doi.markAsTouched()">Create Reference</button>
     </mat-dialog-content>
 </div>

@@ -75,4 +75,20 @@ getLength(s: FormControl){
   return s.value === null? 0 : s.value.length
 }
 
+reset() {
+  this.doi.reset();
+  this.authorNames.reset();
+  this.type.reset();
+  this.nameVen.reset();
+  this.title.reset();
+  this.keywords.reset();
+  this.number.reset();
+  this.numpages.reset();
+  this.pages.reset();
+  this.volume.reset();
+  this.any.reset();
+  this.abstract.reset();
+  this.affiliationNames.reset();
+}
+
 }
