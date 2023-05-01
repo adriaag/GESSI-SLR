@@ -401,7 +401,7 @@ public class Reference {
     
     public static referenceDTO addReferenceManually(Statement s, String doi, String type, String nameVen, String title, String keywords, String number, int numpages, String pages, String volume, int any, String resum, String[] authorNames, String[] affiliationNames, int idProject) throws SQLException {
     	article.insertRowManually(s, doi, type, nameVen, title, keywords, number, numpages, pages, volume, any, resum, authorNames, affiliationNames);
-    	int idRef = insertRow(s, doi, null, null, idProject);  
+    	int idRef = insertRow(s, doi, "-1", null, idProject);  
     	System.out.println(idRef);
     	return getReference(s.getConnection(), idRef);
     }

@@ -275,7 +275,7 @@ public class article {
     		if(nameVen != null) {
     			int idVen = venue.insertRow(s, nameVen);
     			preparedStatement.setInt(4, idVen);
-    		}preparedStatement.setNull(4, java.sql.Types.INTEGER);
+    		} else preparedStatement.setNull(4, java.sql.Types.INTEGER);
     		
     		if (title != null) preparedStatement.setString(5, truncate(title, titleMaxLength));
             else preparedStatement.setString(5, null);
@@ -302,7 +302,7 @@ public class article {
             else preparedStatement.setString(12, null);
             
             preparedStatement.execute();      
-            rs = preparedStatement.getResultSet();       
+            rs = getArticle(s, doi);    
             
             for (String name : authorNames) {
             	name = name.replace(";", ", ");
@@ -318,14 +318,15 @@ public class article {
                                                                      
     		
     	}
-    	
+    	rs.next();
+    	System.out.println(rs.getInt("idVen"));
     	return rs;
     	
     	
     }
 
     private static void insertRow(Statement s, BibTeXEntry entry, String doi) throws SQLException, NumberFormatException {
-        String query = "INSERT INTO articles(DOI, TYPE, CITEKEY, IDVEN, TITLE, KEYWORDS, NUMBER, NUMPAGES, PAGES, VOLUME, AÑO, ABSTRACT, MANUALLYIMPORTED) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, FALSE)";
+        String query = "INSERT INTO articles(DOI, TYPE, CITEKEY, idVen, TITLE, KEYWORDS, NUMBER, NUMPAGES, PAGES, VOLUME, AÑO, ABSTRACT, MANUALLYIMPORTED) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, FALSE)";
         Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         Key type = entry.getType();

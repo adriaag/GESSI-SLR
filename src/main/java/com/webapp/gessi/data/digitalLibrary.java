@@ -83,6 +83,12 @@ public class digitalLibrary {
         psInsert.setString(3, "https://link.springer.com/");
         psInsert.setString(4, "6");
         psInsert.executeUpdate();
+        
+        psInsert.setString(1, "-1");
+        psInsert.setString(2, "Manually Imorted");
+        psInsert.setNull(3, java.sql.Types.VARCHAR);
+        psInsert.setString(4, "9999");
+        psInsert.executeUpdate();
     }
 
     public static void dropTable(Statement s) throws SQLException {
