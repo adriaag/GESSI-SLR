@@ -115,14 +115,10 @@ export class DataService {
 
   createReferenceFromForm(refData: AddReference, idProject: number): Observable<Reference> {
     const header = new HttpHeaders()//.set('Content-Type', 'application/x-www-form-urlencoded')
-    const formData: FormData = new FormData();
-    for (let [key,value] of Object.entries(refData)) {
-      formData.append(key,value);
-    }
-    
-    
+  
+
     return this.http.post<ReferenceFromFileResponse>(
-      `${this.rootUrl}/projects/${idProject}/manualreferences`,formData,{headers: header})
+      `${this.rootUrl}/projects/${idProject}/manualreferences`,refData,{headers: header})
     .pipe(
       tap(data => console.log("Anlagenstatus Daten:", data)),
       catchError(this.handleError),

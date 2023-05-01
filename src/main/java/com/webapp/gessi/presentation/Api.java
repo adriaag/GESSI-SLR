@@ -178,15 +178,10 @@ public class Api implements ErrorController{
     	
     }
     
-    @PostMapping(value = "/projects/{id}/manualreferences", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-    public ResponseEntity<?> addReference(@PathVariable("id") int idProj, @RequestParam("doi") String doi, @RequestParam("type") String type,
-    		@RequestParam("nameVen") String nameVen, @RequestParam("title") String title, @RequestParam("keywords") String keywords, @RequestParam("number") String number,
-    		@RequestParam("numpages") int numpages, @RequestParam("pages") String pages, @RequestParam("volume") String volume, @RequestParam("any") int any,
-    		@RequestParam("abstract") String resum, @RequestParam("authorNames") String[] authorNames, @RequestParam("affiliationNames") String[] affiliationNames){   	                  
-    	System.out.println(title);
-    	System.out.println(title == null);
+    @PostMapping(value = "/projects/{id}/manualreferences", consumes = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
+    public ResponseEntity<?> addReference(@PathVariable("id") int idProj, @RequestBody referenceDTOadd data){
     	try {
-    		referenceDTO reference = ReferenceController.addReferenceManually(doi, type, nameVen, title, keywords, number, numpages, pages, volume, any, resum, authorNames, affiliationNames, idProj);
+    		referenceDTO reference = ReferenceController.addReferenceManually(data, idProj);
     		return ResponseEntity.status(HttpStatus.CREATED).body(reference);
     	}
     	catch (SQLException e) {

@@ -2,6 +2,7 @@ package com.webapp.gessi.data;
 
 import com.webapp.gessi.domain.dto.ProjectDTO;
 import com.webapp.gessi.domain.dto.articleDTO;
+import com.webapp.gessi.domain.dto.referenceDTOadd;
 import com.webapp.gessi.exceptions.BadBibtexFileException;
 import org.apache.commons.io.IOUtils;
 import com.github.adriaag.jbibtex.BibTeXDatabase;
@@ -261,15 +262,33 @@ public class article {
             return "ERROR: The article does not contain doi or citeKey";
     }
     
-    public static ResultSet insertRowManually(Statement s, String doi, String type, String nameVen, String title, String keywords, String number, int numpages, String pages, String volume, int any, String resum, String[] authorNames, String[] affiliationNames) throws SQLException {
-    	ResultSet rs = getArticle(s, doi);
+    public static ResultSet insertRowManually(Statement s, referenceDTOadd referenceData) throws SQLException {
+    	ResultSet rs = getArticle(s, referenceData.getDoi());
     	if(!rs.next()) { //article amb aquest doi no existeix
+    		
+    		String doi = referenceData.getDoi();
+    		String type = referenceData.getType();
+    		String nameVen = referenceData.getNameVen();
+    		String title = referenceData.getTitle();
+    		String keywords = referenceData.getKeywords();
+    		String number = referenceData.getNumber();
+    		int numpages = referenceData.getNumPages();
+    		String pages = referenceData.getPages();
+    		String volume = referenceData.getVolume();
+    		int any = referenceData.getYear();
+    		String resum = referenceData.getAbstract();
+    		String[] authorNames = referenceData.getAuthorNames();
+    		String[] affiliationNames = referenceData.getAffiliationNames();
+    		
     		String query = "INSERT INTO articles(DOI, TYPE, CITEKEY, IDVEN, TITLE, KEYWORDS, NUMBER, NUMPAGES, PAGES, VOLUME, AÑO, ABSTRACT, MANUALLYIMPORTED) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, TRUE)";
             Connection conn = s.getConnection();
             PreparedStatement preparedStatement = conn.prepareStatement(query);
             
             preparedStatement.setString(1, truncate(doi,doiMaxLength));
-            preparedStatement.setString(2, truncate(type, typeMaxLength));
+            
+            if(type != null) preparedStatement.setString(2, truncate(type, typeMaxLength));
+            else preparedStatement.setString(2, null);
+            
             preparedStatement.setNull(3, java.sql.Types.VARCHAR);
     		
     		if(nameVen != null) {
@@ -302,24 +321,26 @@ public class article {
             else preparedStatement.setString(12, null);
             
             preparedStatement.execute();      
-            rs = getArticle(s, doi);    
+            rs = getArticle(s, doi); 
             
-            for (String name : authorNames) {
-            	name = name.replace(";", ", ");
-            	int idResearcher = researcher.insertRow(s, name);
-            	author.insertRows(new Integer[] {idResearcher}, doi, s); 
-            }
+            if (authorNames != null)
+	            for (String name : authorNames) {
+	            	name = name.replace(";", ", ");
+	            	int idResearcher = researcher.insertRow(s, name);
+	            	author.insertRows(new Integer[] {idResearcher}, doi, s); 
+	            }
             
-            for (String name: affiliationNames) {
-            	int idCompany = company.insertRow(s, name);
-            	affiliation.insertRow(s, idCompany, doi);
-            }
+            if(affiliationNames != null)
+	            for (String name: affiliationNames) {
+	            	int idCompany = company.insertRow(s, name);
+	            	affiliation.insertRow(s, idCompany, doi);
+	            }
+            
             s.getConnection().commit();
                                                                      
     		
     	}
     	rs.next();
-    	System.out.println(rs.getInt("idVen"));
     	return rs;
     	
     	

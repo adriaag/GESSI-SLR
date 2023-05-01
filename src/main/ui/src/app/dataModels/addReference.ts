@@ -9,7 +9,7 @@ export interface AddReference {
     pages: string | null,
     volume: string | null,
     any: number,
-    abstract: string | null,
+    resum: string | null,
     authorNames: string[] | null,
     affiliationNames: string[] | null
 }

@@ -62,7 +62,7 @@ close(){
     pages: this.pages.value,
     volume: this.volume.value,
     any: this.any.value === null? -1: this.any.value,
-    abstract: this.abstract.value,
+    resum: this.abstract.value,
     authorNames: authors,
     affiliationNames: affiliations
   }
