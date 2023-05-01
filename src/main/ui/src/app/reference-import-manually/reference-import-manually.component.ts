@@ -37,14 +37,19 @@ export class ReferenceImportManuallyComponent {
   affiliationNamesMaxLength = 300;
 
 close(){
-  let authors: string[] | null= null;
+  var authors: string[] | null= null;
   if(this.authorNames.value !== null) {
-    authors =  this.authorNames.value.split(";")
+    //Tot això és per evitar problemes a l'enviar la informació. Al transformar-ho tot
+    //a string ' ,' s'interpreta com una separació d'elements i la tupla
+    //cognom, nom; s'interpreta com a dos noms.
+    //Per evitar-ho es canvia la coma per ';' per tal d'evitar tenir més caràcters especials
+    //dels estrictament necessaris
+    authors =  this.authorNames.value.replace(/;/g," ; ").replace(/, /g,';').split(" ; ").slice(0, -1);
   }
 
   let affiliations: string[] | null = null;
   if(this.affiliationNames.value !== null) {
-    affiliations =  this.affiliationNames.value.split(";")
+    affiliations =  this.affiliationNames.value.split(";").slice(0, -1);
   }
   let refData: AddReference = {
     doi: this.doi.value!,

@@ -302,11 +302,12 @@ public class article {
             else preparedStatement.setString(12, null);
             
             preparedStatement.execute();      
-            rs = preparedStatement.getResultSet();
+            rs = preparedStatement.getResultSet();       
             
             for (String name : authorNames) {
+            	name = name.replace(";", ", ");
             	int idResearcher = researcher.insertRow(s, name);
-            	author.insertRows(new Integer[] {idResearcher}, doi, s);            	
+            	author.insertRows(new Integer[] {idResearcher}, doi, s); 
             }
             
             for (String name: affiliationNames) {

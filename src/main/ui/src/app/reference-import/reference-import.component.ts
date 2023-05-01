@@ -67,7 +67,7 @@ export class ReferenceImportComponent {
   openImportManuallyDialog(){
  
     const manRefDialog = this.dialog.open(ReferenceImportManuallyComponent, {
-      height: '100%'}
+      maxHeight: '100vh', height: '100%', width: '60%'}
     )
 
     manRefDialog.afterClosed().subscribe(result => {
