@@ -62,7 +62,7 @@ close(){
     pages: this.pages.value,
     volume: this.volume.value,
     any: this.any.value === null? -1: this.any.value,
-    abstract: this.abstract.value,
+    resum: this.abstract.value,
     authorNames: authors,
     affiliationNames: affiliations
   }
@@ -73,6 +73,22 @@ close(){
 
 getLength(s: FormControl){
   return s.value === null? 0 : s.value.length
+}
+
+reset() {
+  this.doi.reset();
+  this.authorNames.reset();
+  this.type.reset();
+  this.nameVen.reset();
+  this.title.reset();
+  this.keywords.reset();
+  this.number.reset();
+  this.numpages.reset();
+  this.pages.reset();
+  this.volume.reset();
+  this.any.reset();
+  this.abstract.reset();
+  this.affiliationNames.reset();
 }
 
 }

@@ -399,9 +399,9 @@ public class Reference {
     conn.commit();
     }
     
-    public static referenceDTO addReferenceManually(Statement s, String doi, String type, String nameVen, String title, String keywords, String number, int numpages, String pages, String volume, int any, String resum, String[] authorNames, String[] affiliationNames, int idProject) throws SQLException {
-    	article.insertRowManually(s, doi, type, nameVen, title, keywords, number, numpages, pages, volume, any, resum, authorNames, affiliationNames);
-    	int idRef = insertRow(s, doi, null, null, idProject);  
+    public static referenceDTO addReferenceManually(Statement s, referenceDTOadd referenceData, int idProject) throws SQLException {
+    	article.insertRowManually(s, referenceData);
+    	int idRef = insertRow(s, referenceData.getDoi(), "-1", null, idProject);  
     	System.out.println(idRef);
     	return getReference(s.getConnection(), idRef);
     }

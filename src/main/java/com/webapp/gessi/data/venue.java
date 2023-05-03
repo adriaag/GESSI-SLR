@@ -53,7 +53,7 @@ public class venue {
 	        preparedStatement.execute();
 	        ResultSet rs = preparedStatement.getResultSet();
 	        rs.next();
-	        return rs.getInt(1);
+	        return rs.getInt("idVen");
     	}
     	System.out.println("Venue exists");
     	return id;

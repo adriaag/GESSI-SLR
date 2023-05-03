@@ -56,8 +56,8 @@
         <ng-container matColumnDef="tit">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
             <td mat-cell *matCellDef="let row">
-                <div *ngIf="row.art.title.length >= 65">{{row.art.title.substring(0,65)}}...</div> 
-                <div *ngIf="row.art.title.length < 65">{{row.art.title}}</div>
+                <div *ngIf="row.art.title !== null && row.art.title.length >= 65">{{row.art.title.substring(0,65)}}...</div> 
+                <div *ngIf="row.art.title !== null && row.art.title.length < 65">{{row.art.title}}</div>
             </td>
         </ng-container>
 
