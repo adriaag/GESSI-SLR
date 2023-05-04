@@ -10,11 +10,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 public class TokenBuilder {
 	
-	private final static String ACCESS_TOKEN_SECRET = "abcd"; //placeholder
+	private final static String ACCESS_TOKEN_SECRET = "gUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v"; //placeholder
 	private final static Long ACCESS_TOKEN_LIFE_SECONDS = 24*60*60L;
 	
 	public static String buildToken(String username) {
@@ -28,19 +29,24 @@ public class TokenBuilder {
 				.setSubject("proves")
 				.setExpiration(expirationDate)
 				.addClaims(tokenData)
-				.signWith(Keys.hmacShaKeyFor(ACCESS_TOKEN_SECRET.getBytes()))
+				.signWith(Keys.hmacShaKeyFor(ACCESS_TOKEN_SECRET.getBytes()), SignatureAlgorithm.HS256)
 				.compact();			
 	}
 	
-	public static UsernamePasswordAuthenticationToken getAuthenitcation(String token) throws JwtException{
-		Claims claims = Jwts.parserBuilder()
-				.setSigningKey(ACCESS_TOKEN_SECRET.getBytes())
-				.build()
-				.parseClaimsJws(token)
-				.getBody();
-		
-		String nom = claims.getSubject();
-		return new UsernamePasswordAuthenticationToken(nom, null, Collections.emptyList());
+	public static UsernamePasswordAuthenticationToken getAuthenitcation(String token){
+		try {
+			Claims claims = Jwts.parserBuilder()
+					.setSigningKey(ACCESS_TOKEN_SECRET.getBytes())
+					.build()
+					.parseClaimsJws(token)
+					.getBody();
+			
+			String nom = claims.getSubject();
+			return new UsernamePasswordAuthenticationToken(nom, null, Collections.emptyList());
+		}
+		catch(JwtException e) {
+			return null;
+		}
 	}
 
 }

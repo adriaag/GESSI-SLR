@@ -28,7 +28,7 @@ import org.json.JSONObject;
 @RestController
 @RequestMapping("/api/")
 @CrossOrigin(origins = {"http://localhost:4200","http://localhost:1034"}) //
-public class Api implements ErrorController{
+public class Api {
     private static final String PATH_PATTERN = "^([A-z0-9-_+\\.]+.(bib))$";
 
 	
@@ -355,13 +355,6 @@ public class Api implements ErrorController{
     	returnData.put("message", "Resource not found");
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(returnData.toString());
     }
-
-
-	@Override
-	public String getErrorPath() {
-		// TODO Auto-generated method stub
-		return null;
-	}
     
 
 }

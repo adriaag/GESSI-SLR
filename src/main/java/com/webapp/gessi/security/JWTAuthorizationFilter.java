@@ -14,6 +14,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 public class JWTAuthorizationFilter extends OncePerRequestFilter{
+	
+	public JWTAuthorizationFilter() {
+		
+	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

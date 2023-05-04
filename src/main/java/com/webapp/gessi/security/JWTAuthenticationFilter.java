@@ -11,6 +11,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.io.IOException;
@@ -23,9 +25,17 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		
 		try {
 			credentials = new ObjectMapper().readValue(request.getReader(), AuthCredentials.class);
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (java.io.IOException e) {
-			System.out.println("Error");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 		
 		UsernamePasswordAuthenticationToken usernamePAT = new UsernamePasswordAuthenticationToken(
 				credentials.getUsername(), credentials.getPassword(), Collections.emptyList());
@@ -45,7 +55,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		response.addHeader("Authorization", "Bearer "+token);
 		response.getWriter().flush();
 		
-		super.successfulAuthentication(null, response, filter, authResult);
+		
+		super.successfulAuthentication(request, response, filter, authResult);
 		
 	}
 	

@@ -3,10 +3,8 @@ package com.webapp.gessi.security;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserDetailsImpl implements UserDetails{
 
@@ -28,12 +26,12 @@ public class UserDetailsImpl implements UserDetails{
 
 	@Override
 	public String getPassword() {
-		return "123";
+		return "$2a$10$.38ez16c9XD2xWuW0Nchr.S2LTJjclaY0E3S3W/StNdWm3F804m4K";
 	}
 
 	@Override
 	public String getUsername() {
-		return "usuari";
+		return this.usuari;
 	}
 
 	@Override
@@ -48,7 +46,7 @@ public class UserDetailsImpl implements UserDetails{
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return false;
+		return true;
 	}
 
 	@Override
