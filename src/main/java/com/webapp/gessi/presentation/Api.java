@@ -27,7 +27,7 @@ import org.json.JSONObject;
 
 @RestController
 @RequestMapping("/api/")
-@CrossOrigin(origins = {"http://localhost:4200","http://localhost:1034"}) //
+@CrossOrigin(origins = {"http://gessi3.essi.upc.edu:1034"}) //
 public class Api implements ErrorController{
     private static final String PATH_PATTERN = "^([A-z0-9-_+\\.]+.(bib))$";
 
