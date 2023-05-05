@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.webapp.gessi.domain.dto.userDTO;
+
 public class user {
 		
 	private static final int usernameMaxLength = 50;
@@ -35,14 +37,17 @@ public class user {
         }
     }
     
-    public static ResultSet getUser(Statement s, String username) throws SQLException {
+    public static userDTO getUser(Statement s, String username) throws SQLException {
     	String query ="SELECT * FROM AFFILIATIONS WHERE username = ?";
     	Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setString(1,username);
         preparedStatement.execute();
         ResultSet rs = preparedStatement.getResultSet();
-        return rs;
+        if(rs.next()) 
+        	return new userDTO(rs.getString("username"), rs.getString("password"));
+        
+        return null;
     	
     }
    
