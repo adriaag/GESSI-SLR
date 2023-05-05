@@ -35,7 +35,7 @@ public class WebSecurityConfig {
 		try {
 			return http.csrf().disable()
 					.authorizeRequests()
-					.anyRequest()
+					.antMatchers("/api/projects", "/api/projects/**")
 					.authenticated()
 					.and()
 					.httpBasic()
@@ -63,7 +63,7 @@ public class WebSecurityConfig {
 	
 	@Bean
 	PasswordEncoder passwordEncoder() {
-		//System.out.println(new BCryptPasswordEncoder().encode("123"));
+		System.out.println(new BCryptPasswordEncoder().encode("123"));
 		return new BCryptPasswordEncoder();
 	}
 

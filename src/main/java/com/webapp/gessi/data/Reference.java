@@ -226,6 +226,7 @@ public class Reference {
         company.createTable(s);
         affiliation.createTable(s);
         importationLogError.createTable(s);
+        user.createTable(s);
     }
 
     private static void deleteTables(Statement s) throws SQLException {
@@ -241,6 +242,7 @@ public class Reference {
         Criteria.dropTable(s);
         digitalLibrary.dropTable(s);
         Project.dropTable(s);
+        user.dropTable(s);
     }
 
     public static List<importErrorDTO> importar(String idDL, ProjectDTO project, MultipartFile file) throws SQLException, IOException, BadBibtexFileException {

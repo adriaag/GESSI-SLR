@@ -6,6 +6,8 @@ import java.util.Collections;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.webapp.gessi.domain.dto.userDTO;
+
 public class UserDetailsImpl implements UserDetails{
 
 	/**
@@ -13,10 +15,10 @@ public class UserDetailsImpl implements UserDetails{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private String usuari;
+	private userDTO user;
 	
-	public UserDetailsImpl(String usuari) {
-		this.usuari = usuari;
+	public UserDetailsImpl(userDTO user) {
+		this.user = user;
 	}
 
 	@Override
@@ -26,12 +28,12 @@ public class UserDetailsImpl implements UserDetails{
 
 	@Override
 	public String getPassword() {
-		return "$2a$10$.38ez16c9XD2xWuW0Nchr.S2LTJjclaY0E3S3W/StNdWm3F804m4K";
+		return this.user.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		return this.usuari;
+		return this.user.getUsername();
 	}
 
 	@Override
