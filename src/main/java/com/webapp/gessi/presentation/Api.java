@@ -23,12 +23,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONObject;
 
 @RestController
 @RequestMapping("/api/")
-@CrossOrigin(origins = {"http://localhost:4200","http://localhost:1034"}) //
-public class Api {
+//@CrossOrigin(origins = {"http://localhost:4200","http://localhost:1034"}, allowCredentials = "true") //
+public class Api implements ErrorController{
     private static final String PATH_PATTERN = "^([A-z0-9-_+\\.]+.(bib))$";
 
 	
@@ -222,7 +225,7 @@ public class Api {
         }
     }
     
-    
+ 
     @GetMapping(value = "/digitalLibraries", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public ResponseEntity<?> getDLs(){
     	try {
@@ -313,10 +316,26 @@ public class Api {
     }
     
     @RequestMapping(value = "/error") 
-    public ResponseEntity<?> errorPage() {
-    	JSONObject returnData = new JSONObject();
-    	returnData.put("message", "Resource not found");
-    	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(returnData.toString());	
+    public ResponseEntity<?> errorPage(HttpServletRequest request) {
+        Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+        
+        if (status != null) {
+            Integer statusCode = Integer.valueOf(status.toString());
+        
+            if(statusCode == HttpStatus.NOT_FOUND.value()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            else if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            else if (statusCode == HttpStatus.UNAUTHORIZED.value()) {
+            	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);        	
+            }
+            else if (statusCode == HttpStatus.FORBIDDEN.value()) {
+            	return new ResponseEntity<>(HttpStatus.FORBIDDEN); 
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /*@GetMapping(value = "/reference", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
@@ -355,6 +374,13 @@ public class Api {
     	returnData.put("message", "Resource not found");
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(returnData.toString());
     }
+
+
+	@Override
+	public String getErrorPath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
 
 }

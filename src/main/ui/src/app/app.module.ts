@@ -26,6 +26,7 @@ import { ReferenceClassifyComponent } from './reference-classify/reference-class
 import { ProjectCreateComponent } from './project-create/project-create.component';
 import { ProjectDeleteComponent } from './project-delete/project-delete.component';
 import { ReferenceImportManuallyComponent } from './reference-import-manually/reference-import-manually.component';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { ReferenceImportManuallyComponent } from './reference-import-manually/re
     ProjectCreateComponent,
     ProjectDeleteComponent,
     ReferenceImportManuallyComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,

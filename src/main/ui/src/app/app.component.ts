@@ -7,6 +7,8 @@ import { Criteria } from './dataModels/criteria';
 import { MatDialog } from '@angular/material/dialog';
 import { ProjectCreateComponent } from './project-create/project-create.component';
 import { FormControl } from '@angular/forms';
+import { LoginComponent } from './login/login.component';
+import { User } from './dataModels/user';
 
 @Component({
   selector: 'app-root',
@@ -87,10 +89,18 @@ export class AppComponent implements OnInit {
   }
 
   getProjects(): void {
-    this.dataService.getProjects().subscribe((resposta)=> {
+    this.dataService.getProjects().subscribe({
+      next: (resposta)=> {
       //console.log(resposta , 'User resume response');
       this.projects = resposta;
       this.defaultProject()
+      },error: (error) => {
+        console.log(error)
+        if (error == "401") {
+          this.loginDialog()
+          //this.getProjects()
+        }
+      }
     })
   }
 
@@ -129,11 +139,12 @@ export class AppComponent implements OnInit {
   }
 
   getDLNames(): void {
-    this.dataService.getDLNames().subscribe((resposta)=> {
-      console.log(resposta , 'User resume response');
-      this.dlNames = resposta;
-    })
-
+    this.dataService.getDLNames().subscribe({
+      next: (resposta)=> {
+        console.log(resposta , 'DLs');
+        this.dlNames = resposta;
+      }
+  })
   }
 
   //funció temporal. L'ubicació de projects ha de canviar
@@ -161,6 +172,29 @@ export class AppComponent implements OnInit {
         this.createProjectDialogNoProjects()
       }
       
+    })
+
+  }
+
+  loginDialog() {
+    let loginDialog = this.dialog.open(LoginComponent)
+    loginDialog.afterClosed().subscribe((resposta) => {
+      if (resposta != undefined) {
+        this.login(resposta.user)
+      }
+      else {
+        this.loginDialog()
+      }
+      
+    })
+
+  }
+
+  login(user: User) {
+    this.dataService.login(user).subscribe((resposta)=>{
+      console.log(resposta)
+      this.getProjects()
+      this.getDLNames()
     })
 
   }
