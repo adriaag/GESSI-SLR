@@ -31,8 +31,7 @@ export class AppComponent implements OnInit {
   constructor(private dataService: DataService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
-    this.getProjects();
-    this.getDLNames();
+    this.loginDialog();
   }
 
   //funció temporal per permetre resetejar la BD. La gestió de projectes s'ha de modificar
@@ -94,12 +93,6 @@ export class AppComponent implements OnInit {
       //console.log(resposta , 'User resume response');
       this.projects = resposta;
       this.defaultProject()
-      },error: (error) => {
-        console.log(error)
-        if (error == "401") {
-          this.loginDialog()
-          //this.getProjects()
-        }
       }
     })
   }
@@ -191,11 +184,15 @@ export class AppComponent implements OnInit {
   }
 
   login(user: User) {
-    this.dataService.login(user).subscribe((resposta)=>{
+    this.dataService.login(user).subscribe({
+      next: (resposta)=>{
       console.log(resposta)
       this.getProjects()
       this.getDLNames()
-    })
+    },error: (error) => {
+      this.loginDialog()
+
+    }})
 
   }
 

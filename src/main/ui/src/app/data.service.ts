@@ -10,15 +10,15 @@ import { CriteriaResponse } from './criteriaResponse';
 import { environment } from 'src/environments/environment';
 import { AddReference } from './dataModels/addReference';
 import { User } from './dataModels/user';
+import { AuthenticationService } from './authentication.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
   rootUrl: string = environment.apiUrl;
-  token: string | null = null;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,private authService: AuthenticationService) { }
 
   getProjects(): Observable<Project[]> {
     return this.http.get<Project[]>(
@@ -188,22 +188,15 @@ export class DataService {
       )
   }
 
-  login(user: User) {
-    return this.http.post(`${this.rootUrl}/login`,user,{ headers: new HttpHeaders(), observe: 'response' })
-    .pipe(
-      tap(data => {
-        this.token = data.headers.get('Authorization')
-      }),
-      catchError(this.handleError),
-    )
-    
+  login(user:User): Observable<any>{
+    return this.authService.login(user)
   }
 
   private setHttpHeader() {
     //var headers = new HttpHeaders()//.set('Accept', 'application/json')//.set('Content-Type', 'application/json');
     //console.log('token',this.token)
-    if (this.token !== null) {
-      let headers = new HttpHeaders({'Authorization': this.token})
+    if (this.authService.getToken() !== null) {
+      let headers = new HttpHeaders({'Authorization': this.authService.getToken()!})
       let options = { headers: headers };
       console.log('opcions',options)
     return options;
@@ -215,8 +208,8 @@ export class DataService {
 
   private settHttpHeaderBlob() {
     let responseType: any = 'blob'
-    if (this.token !== null) {
-      let headers = new HttpHeaders({'Authorization': this.token})
+    if (this.authService.getToken() !== null) {
+      let headers = new HttpHeaders({'Authorization': this.authService.getToken()!})
       let options = { headers: headers, responseType: responseType}
       console.log('opcions',options)
     return options;
@@ -236,7 +229,7 @@ export class DataService {
         alert("Bad request:\n"+error.error.message)
         break;
       case 401:
-        alert("You are not allowed to perform this action")
+        alert("Login required to perform this action")
         break;
       case 403:
         alert("Request not allowed")

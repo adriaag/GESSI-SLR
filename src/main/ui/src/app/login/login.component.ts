@@ -9,7 +9,9 @@ import { User } from '../dataModels/user';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  constructor(public dialogRef: MatDialogRef<LoginComponent>) {}
+  constructor(public dialogRef: MatDialogRef<LoginComponent>) {
+    dialogRef.disableClose = true;
+  }
 
   username = new FormControl()
   password = new FormControl()
