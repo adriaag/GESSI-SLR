@@ -214,15 +214,15 @@ export class DataService {
   }
 
   private settHttpHeaderBlob() {
-    let rp: "json" = JSON.parse("responseType: 'blob'")
+    let responseType: any = 'blob'
     if (this.token !== null) {
       let headers = new HttpHeaders({'Authorization': this.token})
-      let options = { headers: headers, rp}
+      let options = { headers: headers, responseType: responseType}
       console.log('opcions',options)
     return options;
     }
     else {
-    return {headers: new HttpHeaders(), rp}
+    return {headers: new HttpHeaders(), responseType: responseType}
     }  
 
   }
