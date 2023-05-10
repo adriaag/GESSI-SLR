@@ -35,6 +35,18 @@ export class AuthenticationService {
     )
   }
 
+  logout() {
+    /*return this.http.post(`${this.rootUrl}/logout`,{ headers: new HttpHeaders()})
+    .pipe(
+      tap(data => {
+        console.log("Logout")
+      }),
+      catchError(this.handleError)
+    )*/
+
+    this.token = null
+  }
+
   private handleError(error: HttpErrorResponse): Observable<any> {
     switch (error.status){
       case 0:
