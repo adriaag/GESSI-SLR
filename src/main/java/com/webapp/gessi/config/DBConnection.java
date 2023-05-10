@@ -13,36 +13,19 @@ import java.sql.SQLException;
  * Class that encapsulates the database connection information
  */
 @Configuration
-@PropertySource("classpath:/application.properties")
 public class DBConnection {
-
-    @Value("${spring.datasource.url}")
-    private String url;
-
-    @Value("${spring.datasource.username}")
-    private String username;
-
-    @Value("${spring.datasource.password}")
-    private String password;
-
-
+	
     @Bean
     public Connection getConnection() throws SQLException, ClassNotFoundException {
+    	
+    	ConfigParser conf = ConfigParser.getConfig();
+        //System.out.println(conf.getUrl() + conf.getUsername() + conf.getPassword());
+    	
         Class.forName("org.apache.derby.jdbc.ClientDriver");
         // We use a configuration file for customise the connection to the URL
-        return DriverManager.getConnection(getUrl(), getUsername(), getPassword());
+        return DriverManager.getConnection(conf.getUrl(), conf.getUsername(), conf.getPassword());
 
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
+    
 }
