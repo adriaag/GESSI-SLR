@@ -9,6 +9,7 @@ import { ProjectCreateComponent } from './project-create/project-create.componen
 import { FormControl } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 import { User } from './dataModels/user';
+import { AuthenticationService } from './authentication.service';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +29,7 @@ export class AppComponent implements OnInit {
   EC: Criteria[] = [];
 
 
-  constructor(private dataService: DataService, private dialog: MatDialog) {}
+  constructor(private dataService: DataService, private authService: AuthenticationService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.loginDialog();
@@ -184,7 +185,7 @@ export class AppComponent implements OnInit {
   }
 
   login(user: User) {
-    this.dataService.login(user).subscribe({
+    this.authService.login(user).subscribe({
       next: (resposta)=>{
       console.log(resposta)
       this.getProjects()

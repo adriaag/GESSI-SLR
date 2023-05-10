@@ -18,7 +18,7 @@ import { AuthenticationService } from './authentication.service';
 export class DataService {
   rootUrl: string = environment.apiUrl;
 
-  constructor(private http: HttpClient,private authService: AuthenticationService) { }
+  constructor(private http: HttpClient) { }
 
   getProjects(): Observable<Project[]> {
     return this.http.get<Project[]>(
@@ -77,8 +77,8 @@ export class DataService {
   }*/
 
   getExcelFile(idProject: number): Observable<Blob> {
-    return this.http.get<Blob>(
-      `${this.rootUrl}/projects/${idProject}/export/references`,this.settHttpHeaderBlob())
+    return this.http.get(
+      `${this.rootUrl}/projects/${idProject}/export/references`,{responseType: 'blob'})
       .pipe(
         catchError(this.handleError)
       )
@@ -188,36 +188,8 @@ export class DataService {
       )
   }
 
-  login(user:User): Observable<any>{
-    return this.authService.login(user)
-  }
-
   private setHttpHeader() {
-    //var headers = new HttpHeaders()//.set('Accept', 'application/json')//.set('Content-Type', 'application/json');
-    //console.log('token',this.token)
-    if (this.authService.getToken() !== null) {
-      let headers = new HttpHeaders({'Authorization': this.authService.getToken()!})
-      let options = { headers: headers };
-      console.log('opcions',options)
-    return options;
-    }
-    else {
     return {headers: new HttpHeaders()};
-    }  
-  }
-
-  private settHttpHeaderBlob() {
-    let responseType: any = 'blob'
-    if (this.authService.getToken() !== null) {
-      let headers = new HttpHeaders({'Authorization': this.authService.getToken()!})
-      let options = { headers: headers, responseType: responseType}
-      console.log('opcions',options)
-    return options;
-    }
-    else {
-    return {headers: new HttpHeaders(), responseType: responseType}
-    }  
-
   }
 
   private handleError(error: HttpErrorResponse): Observable<any> {

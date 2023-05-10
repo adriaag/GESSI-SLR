@@ -29,6 +29,7 @@ export class AuthenticationService {
     .pipe(
       tap(data => {
         this.token = data.headers.get('Authorization')
+        console.log(this.token)
       }),
       catchError(this.handleError),
     )
