@@ -17,6 +17,9 @@ public class ConfigParser {
 	@Value("${spring.datasource.password}")
     private String password;
 	
+	@Value("${security.tokenSecret}")
+	private byte[] tokenSecret;
+	
 	private static ConfigParser config;
 
 	@Bean
@@ -37,6 +40,10 @@ public class ConfigParser {
 
     public String getPassword() {
         return password;
+    }
+    
+    public byte[] getSecret() {
+    	return tokenSecret;
     }
 
 }

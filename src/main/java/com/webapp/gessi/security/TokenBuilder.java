@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+import com.webapp.gessi.config.ConfigParser;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -15,7 +17,7 @@ import io.jsonwebtoken.security.Keys;
 
 public class TokenBuilder {
 	
-	private final static String ACCESS_TOKEN_SECRET = "gUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v"; //placeholder
+	private final static byte[] ACCESS_TOKEN_SECRET = ConfigParser.getConfig().getSecret();
 	private final static Long ACCESS_TOKEN_LIFE_SECONDS = 24*60*60L;
 	
 	public static String buildToken(String username) {
@@ -29,14 +31,14 @@ public class TokenBuilder {
 				.setSubject("proves")
 				.setExpiration(expirationDate)
 				.addClaims(tokenData)
-				.signWith(Keys.hmacShaKeyFor(ACCESS_TOKEN_SECRET.getBytes()), SignatureAlgorithm.HS256)
+				.signWith(Keys.hmacShaKeyFor(ACCESS_TOKEN_SECRET), SignatureAlgorithm.HS256)
 				.compact();			
 	}
 	
 	public static UsernamePasswordAuthenticationToken getAuthenitcation(String token){
 		try {
 			Claims claims = Jwts.parserBuilder()
-					.setSigningKey(ACCESS_TOKEN_SECRET.getBytes())
+					.setSigningKey(ACCESS_TOKEN_SECRET)
 					.build()
 					.parseClaimsJws(token)
 					.getBody();
