@@ -54,7 +54,7 @@ public class WebSecurityConfig {
 	SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authManager) {
 		JWTAuthenticationFilter jwtAuthenticationFilter = new JWTAuthenticationFilter();
 		jwtAuthenticationFilter.setAuthenticationManager(authManager);
-		jwtAuthenticationFilter.setFilterProcessesUrl("/api/login");
+		jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
 		
 		
 		try {

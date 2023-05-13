@@ -28,6 +28,8 @@ import { ProjectDeleteComponent } from './project-delete/project-delete.componen
 import { ReferenceImportManuallyComponent } from './reference-import-manually/reference-import-manually.component';
 import { LoginComponent } from './login/login.component';
 import { AuthInterceptor } from './auth.interceptor';
+import { ChangePasswordComponent } from './change-password/change-password.component';
+import { MainComponent } from './main/main.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +46,8 @@ import { AuthInterceptor } from './auth.interceptor';
     ProjectDeleteComponent,
     ReferenceImportManuallyComponent,
     LoginComponent,
+    ChangePasswordComponent,
+    MainComponent,
   ],
   imports: [
     BrowserModule,

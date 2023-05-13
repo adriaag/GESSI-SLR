@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
-import { IndexComponent } from './index/index.component';
+import { ChangePasswordComponent } from './change-password/change-password.component';
+import { MainComponent } from './main/main.component';
 
 const routes: Routes = [
-  {path: '', component: IndexComponent}
-
+  {path: '', component: MainComponent},
+  {path: 'forgotPassword', component: ChangePasswordComponent},
 ];
 
 @NgModule({

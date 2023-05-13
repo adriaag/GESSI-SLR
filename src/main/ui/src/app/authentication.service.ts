@@ -9,7 +9,7 @@ import { User } from './dataModels/user';
   providedIn: 'root'
 })
 export class AuthenticationService {
-  rootUrl: string = environment.apiUrl;
+  rootUrl: string = environment.authUrl;
   token: string | null = null
 
   constructor(private http: HttpClient) { }
@@ -45,6 +45,32 @@ export class AuthenticationService {
     )*/
 
     this.token = null
+  }
+
+  changePasswordRequest(username: string) {
+    const formData: FormData = new FormData();
+    formData.append('username', username)
+    return this.http.post(`${this.rootUrl}/changePasswordRequest`,formData,{ headers: new HttpHeaders()})
+    .pipe(
+      tap(data => {
+        console.log('Data:',data)
+      }),
+      catchError(this.handleError)
+    )
+
+  }
+
+  changePassword(token: string, newPassword: string ) {
+    const formData: FormData = new FormData();
+    formData.append('token', token)
+    formData.append('password', newPassword)
+    return this.http.put(`${this.rootUrl}/password`,formData,{ headers: new HttpHeaders()})
+    .pipe(
+      tap(data => {
+        console.log('Data:',data)
+      }),
+      catchError(this.handleError)
+    )
   }
 
   private handleError(error: HttpErrorResponse): Observable<any> {

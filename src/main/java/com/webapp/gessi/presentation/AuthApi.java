@@ -30,6 +30,9 @@ public class AuthApi {
 	@Autowired
 	private EmailService mailService;
 	
+	@Value("${webapp.frontUrl}")
+	private String frontUrl;
+	
 	@PostMapping(value=("/changePasswordRequest")) 
 	public ResponseEntity<?> changePassword(@RequestParam("username") String username) {
 
@@ -60,11 +63,15 @@ public class AuthApi {
 		try {
 			String username = TokenBuilder.decodeUsername(token);
 			userDTO user = UserController.getUser(username);
-			System.out.println(username);
 			
 			if (user != null) {
 				UserController.changePassword(user, newPassword);
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			}
+			else {
+				JSONObject returnData = new JSONObject();
+	    		returnData.put("message", "Invalid request");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnData.toString());
 			}
 			
 		}
@@ -72,13 +79,12 @@ public class AuthApi {
 			return sqlExcHandler(e);
 		}
 		
-		return internalServerError();
 	}
 	
 	private Boolean sendEmailForgotPassword(String mail, String token) {
 		String subject = "GESSI-SLR password recovery";
 		String body = "You have requested a password recovery from GESSI-SLR webapp."
-				+ "\nClick on the link to proceed:\nhttps://localhost:4200/forgotPassword?token="+token;
+				+ "\nClick the following link to proceed:\n"+frontUrl+"forgotPassword?token="+token;
 	
 		return mailService.sendEmail(mail, body, subject);
 	}
