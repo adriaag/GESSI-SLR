@@ -18,17 +18,33 @@ import io.jsonwebtoken.security.Keys;
 public class TokenBuilder {
 	
 	private final static byte[] ACCESS_TOKEN_SECRET = ConfigParser.getConfig().getSecret();
-	private final static Long ACCESS_TOKEN_LIFE_SECONDS = 24*60*60L;
+	private final static Long AUTH_TOKEN_LIFE_SECONDS = 24*60*60L;
+	private final static Long CHANGE_PASSWORD_TOKEN_LIFE_SECONDS = 1*60*60L;
 	
-	public static String buildToken(String username) {
-		long expirationTime = ACCESS_TOKEN_LIFE_SECONDS * 1000;
+	public static String buildAuthToken(String username) {
+		long expirationTime = AUTH_TOKEN_LIFE_SECONDS * 1000;
 		Date expirationDate = new Date(System.currentTimeMillis() + expirationTime);
 		
 		Map<String, Object> tokenData = new HashMap<>();
 		tokenData.put("username", username);
 		
 		return Jwts.builder()
-				.setSubject("proves")
+				.setSubject("Auth")
+				.setExpiration(expirationDate)
+				.addClaims(tokenData)
+				.signWith(Keys.hmacShaKeyFor(ACCESS_TOKEN_SECRET), SignatureAlgorithm.HS256)
+				.compact();			
+	}
+	
+	public static String buildChangePwdToken(String username) {
+		long expirationTime = CHANGE_PASSWORD_TOKEN_LIFE_SECONDS * 1000;
+		Date expirationDate = new Date(System.currentTimeMillis() + expirationTime);
+		
+		Map<String, Object> tokenData = new HashMap<>();
+		tokenData.put("username", username);
+		
+		return Jwts.builder()
+				.setSubject("Change Password")
 				.setExpiration(expirationDate)
 				.addClaims(tokenData)
 				.signWith(Keys.hmacShaKeyFor(ACCESS_TOKEN_SECRET), SignatureAlgorithm.HS256)
@@ -43,8 +59,24 @@ public class TokenBuilder {
 					.parseClaimsJws(token)
 					.getBody();
 			
-			String nom = claims.getSubject();
+			String nom = (String)claims.get("username");
 			return new UsernamePasswordAuthenticationToken(nom, null, Collections.emptyList());
+		}
+		catch(JwtException e) {
+			return null;
+		}
+	}
+	
+	public static String decodeUsername(String token){
+		try {
+			Claims claims = Jwts.parserBuilder()
+					.setSigningKey(ACCESS_TOKEN_SECRET)
+					.build()
+					.parseClaimsJws(token)
+					.getBody();
+			
+			String user = (String)claims.get("username");
+			return user;
 		}
 		catch(JwtException e) {
 			return null;

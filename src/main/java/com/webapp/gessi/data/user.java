@@ -54,6 +54,16 @@ public class user {
         return null;
     	
     }
+    
+    public static void changePassword(Statement s, userDTO user, String newPassword) throws SQLException {
+    	String query ="UPDATE USERS SET password = ? WHERE username = ?";
+    	Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1,newPassword);
+        preparedStatement.setString(2, user.getUsername());
+        preparedStatement.executeUpdate();
+        conn.commit();
+    }
    
 
 }

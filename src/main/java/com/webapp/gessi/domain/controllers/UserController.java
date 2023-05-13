@@ -6,6 +6,7 @@ import java.sql.Statement;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.webapp.gessi.config.DBConnection;
 import com.webapp.gessi.data.user;
@@ -19,10 +20,19 @@ public class UserController {
         return conn;
     }
 	
-	public userDTO getUser(String username) throws SQLException {
+	public static userDTO getUser(String username) throws SQLException {
 		Connection con = iniConnection();
         Statement s = con.createStatement();
 		return user.getUser(s, username);	
+	}
+	
+	public static void changePassword(userDTO actUser, String newPassword) throws SQLException {
+		Connection con = iniConnection();
+        Statement s = con.createStatement();
+        String encPwd = new BCryptPasswordEncoder().encode(newPassword);
+        System.out.println(newPassword + encPwd);
+        user.changePassword(s, actUser, encPwd);
+		
 	}
 
 }
