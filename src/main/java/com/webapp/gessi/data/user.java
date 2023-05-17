@@ -64,6 +64,6 @@ public class user {
         preparedStatement.executeUpdate();
         conn.commit();
     }
-   
-
+  
+    
 }
