@@ -11,7 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { TooltipModule } from 'ng2-tooltip-directive';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 
 import { AppComponent } from './app.component';
@@ -64,7 +64,8 @@ import { MainComponent } from './main/main.component';
     MatIconModule,
     FormsModule,
     ReactiveFormsModule,
-    MatSelectModule
+    MatSelectModule,
+    MatTooltipModule
   ],
   providers: [
     {

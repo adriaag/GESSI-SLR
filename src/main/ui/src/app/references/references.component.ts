@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild, ViewEncapsulation} from '@angular/core';
 import { DataService } from '../data.service';
 import { Reference } from '../dataModels/reference';
 import { Researcher } from '../dataModels/researcher';
@@ -10,11 +10,24 @@ import { MatDialog} from '@angular/material/dialog';
 import { ReferenceInfoComponent } from '../reference-info/reference-info.component';
 import { ReferenceClassifyComponent } from '../reference-classify/reference-classify.component';
 import { Criteria } from '../dataModels/criteria';
+import { TooltipModule } from 'ng2-tooltip-directive-ngfix';
+import { MatTooltipDefaultOptions, MAT_TOOLTIP_DEFAULT_OPTIONS } from '@angular/material/tooltip';
+
+
+export const tooltipsConf: MatTooltipDefaultOptions = {
+  showDelay: 500,
+  hideDelay: 50,
+  touchendHideDelay: 1000,
+  position: 'below',
+};
+
 
 @Component({
   selector: 'app-references',
   templateUrl: './references.component.html',
-  styleUrls: ['./references.component.css']
+  styleUrls: ['./references.component.css'],
+  providers: [{provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: tooltipsConf}],
+  encapsulation: ViewEncapsulation.None,
 })
 
 export class ReferencesComponent implements OnChanges, AfterViewInit{
@@ -33,6 +46,11 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
+  abstractViewOptions = {
+    placement: 'left',
+    showDelay: 500,
+    width: 2000
+  }
 
   constructor(private dataService: DataService, private dialog: MatDialog) {}
 
