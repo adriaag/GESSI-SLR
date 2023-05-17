@@ -49,7 +49,6 @@ public class DBConnection {
     	
     	Class.forName("org.apache.derby.jdbc.ClientDriver");
     	Connection conn = DriverManager.getConnection(conf.getUrl()+";create = true;user="+conf.getUsername()+";");
-    	conn.setSchema("APP");
     	Statement s = conn.createStatement();
     	s.executeUpdate("call SYSCS_UTIL.SYSCS_CREATE_USER('"+conf.getUsername()+"','"+conf.getPassword()+"' )");
     	s.execute("CREATE SCHEMA "+conf.getUsername().toUpperCase()+" AUTHORIZATION "+conf.getUsername());

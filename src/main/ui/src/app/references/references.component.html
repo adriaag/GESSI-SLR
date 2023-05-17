@@ -112,6 +112,17 @@
             </td>
         </ng-container>
 
+        <ng-container matColumnDef="abs">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Abstract</th>
+            <td mat-cell *matCellDef="let row">
+                <div *ngIf="row.art.abstractA !== null">
+                    <div *ngIf="row.art.abstractA.length >= 100">{{row.art.abstractA.substring(0,50)}}...</div>
+                    <div *ngIf="row.art.abstractA.length < 100">{{row.art.abstractA}}</div>
+                </div>
+                <div *ngIf="row.art.abstractA === null"> <p></p></div>
+            </td>
+        </ng-container>
+
 
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -123,7 +134,7 @@
         </tr>
         
     </table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons aria-label="Select page of references"></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[5000, 500, 100, 50]" showFirstLastButtons aria-label="Select page of references"></mat-paginator>
 
 </div>
 <!-- Modal -->

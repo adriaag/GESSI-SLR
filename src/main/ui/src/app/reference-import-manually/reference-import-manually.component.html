@@ -4,12 +4,6 @@
 </head>
 
 <div class="m-3">
-    <div mat-dialog-title class="dialog-title">
-        <h2>Add Reference</h2>
-        <button class="boto" mat-icon-button aria-label="close dialog" [mat-dialog-close]="">
-            <mat-icon>close</mat-icon>
-        </button>
-    </div>
     <mat-dialog-content>
         <form ngNativeValidate #form id="newReferenceForm">
             <mat-form-field>
@@ -92,6 +86,6 @@
         </form>
 
         <button type="reset" class="btn btn-secondary pull-left" (click)="reset()">Clear</button>
-        <button type="submit" id="createReferenceSubmit" class="btn btn-primary pull-right" (click)="form.checkValidity()? close() : doi.markAsTouched()">Create Reference</button>
+        <button type="submit" id="createReferenceSubmit" class="btn btn-primary pull-right" (click)="form.checkValidity()? close() : doi.markAsTouched()">Import</button>
     </mat-dialog-content>
 </div>

@@ -18,24 +18,24 @@
   
                     </li>
                     <li class="nav-item">
-                      <a *ngIf="this.selectedOption === 'import'" class="nav-link active">Import reference</a>
-                      <a *ngIf="this.selectedOption !== 'import'" class="nav-link" (click)="changeOption('import')">Import reference</a>
+                      <a *ngIf="this.selectedOption === 'import'" class="nav-link active">Import</a>
+                      <a *ngIf="this.selectedOption !== 'import'" class="nav-link" (click)="changeOption('import')">Import</a>
                     </li>
                     <li  class="nav-item">
-                      <a *ngIf="this.selectedOption === 'criteria'" class="nav-link active">Criteria</a>
-                      <a *ngIf="this.selectedOption !== 'criteria'" class="nav-link" (click)="changeOption('criteria')">Criteria</a>
+                      <a *ngIf="this.selectedOption === 'criteria'" class="nav-link active">IC/EC</a>
+                      <a *ngIf="this.selectedOption !== 'criteria'" class="nav-link" (click)="changeOption('criteria')">IC/EC</a>
                     </li>
                     <li class="nav-item">
-                        <a *ngIf="this.selectedOption === 'references'" class="nav-link active">References</a>
-                        <a *ngIf="this.selectedOption !== 'references'" class="nav-link" (click)="changeOption('references')">References</a>
+                        <a *ngIf="this.selectedOption === 'references'" class="nav-link active">Search Result</a>
+                        <a *ngIf="this.selectedOption !== 'references'" class="nav-link" (click)="changeOption('references')">Search Result</a>
                     </li>
                     <li class="nav-item">
                       <a *ngIf="this.selectedOption === 'errors'" class="nav-link active">Errors</a>
                       <a *ngIf="this.selectedOption !== 'errors'" class="nav-link" (click)="changeOption('errors')">Errors</a>
                     </li>
                     <li  class="nav-item">
-                      <a *ngIf="this.selectedOption === 'reset'" class="nav-link active">Reset</a>
-                      <a *ngIf="this.selectedOption !== 'reset'" class="nav-link" (click)="changeOption('reset')">Reset</a>
+                      <a *ngIf="this.selectedOption === 'reset'" class="nav-link active">Administration</a>
+                      <a *ngIf="this.selectedOption !== 'reset'" class="nav-link" (click)="changeOption('reset')">Administration</a>
                     </li>
                 </ul>
   

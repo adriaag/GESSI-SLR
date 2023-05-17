@@ -27,7 +27,7 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   references: Reference[] = [];
   sortedData: Reference[] = [];
   dataSource!: MatTableDataSource<Reference>;
-  displayedColumns: string[] = ['doi','ref', 'dl', 'year', 'auth', 'tit', 'ven', 'sta', 'cri', 'inf', 'cla', 'del'];
+  displayedColumns: string[] = ['doi','ref', 'dl', 'year', 'auth', 'tit', 'ven', 'abs', 'inf', 'del'];
   filterValue: string = ""
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -124,10 +124,11 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
                 filterText += exclusion.nameICEC;
               }
             }
+            if(data.art.abstractA !== null)filterText += data.art.abstractA
 
             filterText = filterText.toLowerCase()
 
-            console.log(filterText, "Text per filtrar")
+            //console.log(filterText, "Text per filtrar")
             
             if (filterText.indexOf(filter) != -1) {
                 return true;
@@ -189,6 +190,8 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
             return compare(a.state,b.state, isAsc);
           case 'cri':
             return compareCriteria(a.exclusionDTOList, b.exclusionDTOList, isAsc);
+          case 'abs':
+            return compare(String(a.art.abstractA),String(b.art.abstractA), isAsc);
           default:
             return 0;
         }

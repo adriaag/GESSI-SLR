@@ -1,6 +1,6 @@
-import { Component, Inject } from '@angular/core';
+import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+//import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AddReference } from '../dataModels/addReference';
 
 @Component({
@@ -9,8 +9,11 @@ import { AddReference } from '../dataModels/addReference';
   styleUrls: ['./reference-import-manually.component.css']
 })
 export class ReferenceImportManuallyComponent {
-  constructor(public dialogRef: MatDialogRef<ReferenceImportManuallyComponent>) {}
+  //constructor(public dialogRef: MatDialogRef<ReferenceImportManuallyComponent>) {}
+  constructor(){}
 
+  @Output() importSubmitted = new EventEmitter<AddReference>();
+  
   doi = new FormControl();
   type = new FormControl();
   nameVen = new FormControl();
@@ -67,7 +70,9 @@ close(){
     affiliationNames: affiliations
   }
 
-  this.dialogRef.close(refData)
+  this.importSubmitted.emit(refData)
+
+  //this.dialogRef.close(refData)
   
 }
 
