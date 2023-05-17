@@ -9,6 +9,8 @@ import { ReferenceFromFileResponse } from './dataModels/referenceFromFileRespons
 import { CriteriaResponse } from './criteriaResponse';
 import { environment } from 'src/environments/environment';
 import { AddReference } from './dataModels/addReference';
+import { User } from './dataModels/user';
+import { AuthenticationService } from './authentication.service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,18 +33,18 @@ export class DataService {
     const formData: FormData = new FormData();
     formData.append('name', nameProject);
     return this.http.post<Project>(
-      `${this.rootUrl}/projects`, formData)
+      `${this.rootUrl}/projects`, formData,this.setHttpHeader())
       .pipe(
-        tap(data => console.log("Anlagenstatus Daten:", data)),
+        tap(data => console.log("Data:", data)),
         catchError(this.handleError),
       )
   }
 
   deleteProject(idProject: number): Observable<{message: string}> {
     return this.http.delete<{message: string}>(
-      `${this.rootUrl}/projects/${idProject}`)
+      `${this.rootUrl}/projects/${idProject}`,this.setHttpHeader())
       .pipe(
-        tap(data => console.log("Anlagenstatus Daten:", data)),
+        tap(data => console.log("Data:", data)),
         catchError(this.handleError),
       )
   }
@@ -51,16 +53,16 @@ export class DataService {
     return this.http.get<Project[]>(
       `${this.rootUrl}/projects/${idProject}/references`, this.setHttpHeader())
       .pipe(
-        tap(data => console.log("Anlagenstatus Daten:", data)),
+        tap(data => console.log("Data:", data)),
         catchError(this.handleError),
       )
   }
 
   deleteReference(idRef: number, idProject: number): Observable<string> {
     return this.http.delete<string>(
-      `${this.rootUrl}/projects/${idProject}/references/${idRef}`)
+      `${this.rootUrl}/projects/${idProject}/references/${idRef}`,this.setHttpHeader())
     .pipe(
-      tap(data => console.log("Anlagenstatus Daten:", data)),
+      tap(data => console.log("Data:", data)),
       catchError(this.handleError),
     )
   }
@@ -76,7 +78,7 @@ export class DataService {
 
   getExcelFile(idProject: number): Observable<Blob> {
     return this.http.get(
-      `${this.rootUrl}/projects/${idProject}/export/references`,{responseType: 'blob' })
+      `${this.rootUrl}/projects/${idProject}/export/references`,{responseType: 'blob'})
       .pipe(
         catchError(this.handleError)
       )
@@ -86,7 +88,7 @@ export class DataService {
     return this.http.get<Project[]>(
       `${this.rootUrl}/projects/${idProject}/errors`, this.setHttpHeader())
       .pipe(
-        tap(data => console.log("Anlagenstatus Daten:", data)),
+        tap(data => console.log("Data:", data)),
         catchError(this.handleError),
       )
   }
@@ -95,7 +97,7 @@ export class DataService {
     return this.http.get<Project[]>(
       `${this.rootUrl}/digitalLibraries`, this.setHttpHeader())
       .pipe(
-        tap(data => console.log("Anlagenstatus Daten:", data)),
+        tap(data => console.log("Data:", data)),
         catchError(this.handleError),
       )
   }
@@ -104,23 +106,19 @@ export class DataService {
     const formData: FormData = new FormData();
     formData.append('file', file);
     formData.append('dlNum',idDl);
-    const header = new HttpHeaders()//.set('Content-Type', 'application/x-www-form-urlencoded')
     return this.http.post<ReferenceFromFileResponse>(
-      `${this.rootUrl}/projects/${idProject}/references`,formData,{headers: header})
+      `${this.rootUrl}/projects/${idProject}/references`,formData,this.setHttpHeader())
     .pipe(
-      tap(data => console.log("Anlagenstatus Daten:", data)),
+      tap(data => console.log("Data:", data)),
       catchError(this.handleError),
     )
   }
 
   createReferenceFromForm(refData: AddReference, idProject: number): Observable<Reference> {
-    const header = new HttpHeaders()//.set('Content-Type', 'application/x-www-form-urlencoded')
-  
-
     return this.http.post<ReferenceFromFileResponse>(
-      `${this.rootUrl}/projects/${idProject}/manualreferences`,refData,{headers: header})
+      `${this.rootUrl}/projects/${idProject}/manualreferences`,refData,this.setHttpHeader())
     .pipe(
-      tap(data => console.log("Anlagenstatus Daten:", data)),
+      tap(data => console.log("Data:", data)),
       catchError(this.handleError),
     )
   }
@@ -129,7 +127,7 @@ export class DataService {
     return this.http.get<CriteriaResponse>(
       `${this.rootUrl}/projects/${idProject}/criterias`, this.setHttpHeader())
       .pipe(
-        tap(data => console.log("Anlagenstatus Daten:", data)),
+        tap(data => console.log("Data:", data)),
         catchError(this.handleError),
       )
   }
@@ -140,9 +138,9 @@ export class DataService {
     formData.append('text', text);
     formData.append('type', type);
     return this.http.post<{message: string}>(
-      `${this.rootUrl}/projects/${idProject}/criterias`,formData)
+      `${this.rootUrl}/projects/${idProject}/criterias`,formData,this.setHttpHeader())
     .pipe(
-      tap(data => console.log("Anlagenstatus Daten:", data)),
+      tap(data => console.log("Data:", data)),
       catchError(this.handleError),
     )
   }
@@ -153,18 +151,18 @@ export class DataService {
     formData.append('text', text);
     formData.append('type', type);
     return this.http.put<string>(
-      `${this.rootUrl}/projects/${idProject}/criterias/${id}`,formData)
+      `${this.rootUrl}/projects/${idProject}/criterias/${id}`,formData,this.setHttpHeader())
     .pipe(
-      tap(data => console.log("Anlagenstatus Daten:", data)),
+      tap(data => console.log("Data:", data)),
       catchError(this.handleError),
     )
   }
 
   deleteCriteria(id: number, idProject:number): Observable<string> {
     return this.http.delete<string>(
-      `${this.rootUrl}/projects/${idProject}/criterias/${id}`)
+      `${this.rootUrl}/projects/${idProject}/criterias/${id}`,this.setHttpHeader())
     .pipe(
-      tap(data => console.log("Anlagenstatus Daten:", data)),
+      tap(data => console.log("Data:", data)),
       catchError(this.handleError),
     )
   }
@@ -174,26 +172,24 @@ export class DataService {
     formData.append('state', state);
     formData.append('criteria', String(criteria));
     return this.http.put<string>(
-      `${this.rootUrl}/projects/${idProject}/references/${idRef}`,formData)
+      `${this.rootUrl}/projects/${idProject}/references/${idRef}`,formData,this.setHttpHeader())
     .pipe(
-      tap(data => console.log("Anlagenstatus Daten:", data)),
+      tap(data => console.log("Data:", data)),
       catchError(this.handleError),
     )
   }
 
   deleteDatabase(): Observable<{message: string}> {
     return this.http.delete<{message: string}>(
-      `${this.rootUrl}/`)
+      `${this.rootUrl}/`,this.setHttpHeader())
       .pipe(
-        tap(data => console.log("Anlagenstatus Daten:", data)),
+        tap(data => console.log("Data:", data)),
         catchError(this.handleError),
       )
   }
 
   private setHttpHeader() {
-    const headers = new HttpHeaders().set('Accept', 'application/json').set('Content-Type', 'application/json');
-    let options = { headers: headers };
-    return options;
+    return {headers: new HttpHeaders()};
   }
 
   private handleError(error: HttpErrorResponse): Observable<any> {
@@ -205,7 +201,7 @@ export class DataService {
         alert("Bad request:\n"+error.error.message)
         break;
       case 401:
-        alert("You are not allowed to perform this action")
+        alert("Login required to perform this action")
         break;
       case 403:
         alert("Request not allowed")
@@ -222,6 +218,6 @@ export class DataService {
       default:
         alert("Unkown error")
     }
-    return throwError(() => (error.statusText));
+    return throwError(() => error.status);
   }
 }

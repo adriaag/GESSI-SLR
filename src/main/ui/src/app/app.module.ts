@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { HttpClientModule, HttpHeaders, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { MatSortModule } from '@angular/material/sort';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -26,6 +26,10 @@ import { ReferenceClassifyComponent } from './reference-classify/reference-class
 import { ProjectCreateComponent } from './project-create/project-create.component';
 import { ProjectDeleteComponent } from './project-delete/project-delete.component';
 import { ReferenceImportManuallyComponent } from './reference-import-manually/reference-import-manually.component';
+import { LoginComponent } from './login/login.component';
+import { AuthInterceptor } from './auth.interceptor';
+import { ChangePasswordComponent } from './change-password/change-password.component';
+import { MainComponent } from './main/main.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +45,9 @@ import { ReferenceImportManuallyComponent } from './reference-import-manually/re
     ProjectCreateComponent,
     ProjectDeleteComponent,
     ReferenceImportManuallyComponent,
+    LoginComponent,
+    ChangePasswordComponent,
+    MainComponent,
   ],
   imports: [
     BrowserModule,
@@ -58,7 +65,11 @@ import { ReferenceImportManuallyComponent } from './reference-import-manually/re
     ReactiveFormsModule,
     MatSelectModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi:true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

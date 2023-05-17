@@ -208,10 +208,9 @@ public class Reference {
         conn.commit();
         System.out.println("deleted row in reference");
     }
-
-
+    
     private static void crearTablas(Statement s, Connection conn, ArrayList<Statement> statements) throws SQLException {
-        // Create table digitalLibraries if not exist
+    	// Create table digitalLibraries if not exist
         if (digitalLibrary.createTable(s))
             //insert rows in table
             digitalLibrary.insertRows(conn, statements);
@@ -226,6 +225,7 @@ public class Reference {
         company.createTable(s);
         affiliation.createTable(s);
         importationLogError.createTable(s);
+        user.createTable(s);
     }
 
     private static void deleteTables(Statement s) throws SQLException {
@@ -241,6 +241,20 @@ public class Reference {
         Criteria.dropTable(s);
         digitalLibrary.dropTable(s);
         Project.dropTable(s);
+        user.dropTable(s);
+    }
+    
+    private static void iniDB() {
+    	try {
+			DBConnection.iniDB();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
     }
 
     public static List<importErrorDTO> importar(String idDL, ProjectDTO project, MultipartFile file) throws SQLException, IOException, BadBibtexFileException {

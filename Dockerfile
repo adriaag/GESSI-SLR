@@ -5,7 +5,7 @@ LABEL APPLICATION="Sample Application"
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 
-RUN mvn package
+RUN mvn package -P prod
 
 FROM tomcat:9.0
 
