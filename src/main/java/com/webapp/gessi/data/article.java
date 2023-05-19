@@ -228,7 +228,7 @@ public class article {
 	                        if (idRef == -2) return "ERROR: The reference had problems";
 	                        referencesImported += 1;
 	                        
-		                    Exclusion.insertRow(s, apCriteria, idRef);
+	                        consensusCriteria.insertRow(s, apCriteria, idRef);
 	                        
 	                    }
 	                    else {	                  

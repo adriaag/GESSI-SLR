@@ -122,10 +122,10 @@ public class Reference {
             int dlR = rs.getInt(3);
             String estado = rs.getString(4);
             int idProjRef = rs.getInt(6);
-            List<ExclusionDTO> exclusionDTOList = null;
+            List<consensusCriteriaDTO> exclusionDTOList = null;
             if (Objects.equals(estado, "out")) {
                 Statement s1 = conn.createStatement();
-                exclusionDTOList = Exclusion.getByIdRef(s1, idR);
+                exclusionDTOList = consensusCriteria.getByIdRef(s1, idR);
             }
             referenceDTO NewRef = new referenceDTO( idR, doiR, dlR, idProject, estado, idProjRef, exclusionDTOList);
             obtainReferenceDTO(conn, NewRef, doiR, dlR);
@@ -220,7 +220,7 @@ public class Reference {
         researcher.createTable(s);
         Criteria.createTable(s);
         Reference.createTable(s);
-        Exclusion.createTable(s);
+        consensusCriteria.createTable(s);
         author.createTable(s);
         company.createTable(s);
         affiliation.createTable(s);
@@ -229,7 +229,7 @@ public class Reference {
     }
 
     private static void deleteTables(Statement s) throws SQLException {
-        Exclusion.dropTable(s);
+    	consensusCriteria.dropTable(s);
         importationLogError.dropTable(s);
         affiliation.dropTable(s);
         company.dropTable(s);
@@ -356,7 +356,7 @@ public class Reference {
         resultSet.next();
         referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
                 resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), resultSet.getInt("idProjRef"),null);
-        List<ExclusionDTO> exclusionDTOList = Exclusion.getByIdRef(conn.createStatement(), idR);
+        List<consensusCriteriaDTO> exclusionDTOList = consensusCriteria.getByIdRef(conn.createStatement(), idR);
         referenceDTO.setExclusionDTOList(exclusionDTOList);
         return referenceDTO;
     }
@@ -391,7 +391,7 @@ public class Reference {
         preparedStatement.setInt(1, idRef);
         preparedStatement.execute();
         conn.commit();
-        Exclusion.insertRow(s, idDuplicateCriteria, idRef);
+        consensusCriteria.insertRow(s, idDuplicateCriteria, idRef);
     }
 
     public static void update(int idRef, String estado) throws SQLException {
@@ -422,19 +422,19 @@ public class Reference {
     
     
 
-    private static List<ExclusionDTO> convertResultSetToExclusionDTO(ResultSet resultSet, List<ExclusionDTO> exclusionDTOList) throws SQLException {
+    private static List<consensusCriteriaDTO> convertResultSetToExclusionDTO(ResultSet resultSet, List<consensusCriteriaDTO> exclusionDTOList) throws SQLException {
         while (resultSet.next()) {
-            exclusionDTOList.add(new ExclusionDTO(resultSet.getInt("idRef"), resultSet.getInt("idICEC"), resultSet.getString("name")));
+            exclusionDTOList.add(new consensusCriteriaDTO(resultSet.getInt("idRef"), resultSet.getInt("idICEC"), resultSet.getString("name")));
         }
         return exclusionDTOList;
     }
 
     private static referenceDTO convertResultSetToReferenceDTO(ResultSet resultSet) throws SQLException {
-        List<ExclusionDTO> exclusionDTOList = new ArrayList<>();
+        List<consensusCriteriaDTO> exclusionDTOList = new ArrayList<>();
         resultSet.next();
         referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
                 resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), resultSet.getInt("idProjRef"),null);
-        exclusionDTOList.add(new ExclusionDTO(resultSet.getInt("idRef"), resultSet.getInt("idICEC"), resultSet.getString("name")));
+        exclusionDTOList.add(new consensusCriteriaDTO(resultSet.getInt("idRef"), resultSet.getInt("idICEC"), resultSet.getString("name")));
         referenceDTO.setExclusionDTOList(convertResultSetToExclusionDTO(resultSet, exclusionDTOList));
         return referenceDTO;
     }

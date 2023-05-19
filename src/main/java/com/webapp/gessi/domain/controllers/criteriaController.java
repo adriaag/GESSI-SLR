@@ -2,8 +2,8 @@ package com.webapp.gessi.domain.controllers;
 
 import com.webapp.gessi.config.DBConnection;
 import com.webapp.gessi.data.Criteria;
-import com.webapp.gessi.domain.dto.ExclusionDTO;
 import com.webapp.gessi.domain.dto.CriteriaDTO;
+import com.webapp.gessi.domain.dto.consensusCriteriaDTO;
 import com.webapp.gessi.domain.dto.referenceDTO;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -41,8 +41,8 @@ public class criteriaController {
 
     public static void deleteCriteria(@PathVariable("id") int id) throws SQLException {
         System.out.println("delete criteria en controller criteria");
-        List<ExclusionDTO> exclusionDTOList = ExclusionController.getByIdICEC(id);
-        for (ExclusionDTO exclusionDTO : exclusionDTOList) {
+        List<consensusCriteriaDTO> exclusionDTOList = ConsensusCriteriaController.getByIdICEC(id);
+        for (consensusCriteriaDTO exclusionDTO : exclusionDTOList) {
             referenceDTO referenceDTO = ReferenceController.getReference(exclusionDTO.getIdRef());
             if (referenceDTO.getExclusionDTOList().size() <= 1)
                 ReferenceController.updateState(referenceDTO.getIdRef(), null);

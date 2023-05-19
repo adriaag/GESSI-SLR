@@ -16,19 +16,19 @@ public class referenceDTO implements Serializable {
     private int idProject;
     private String state;
     private int idProjRef;
-    private List<ExclusionDTO> exclusionDTOList;
+    private List<consensusCriteriaDTO> consensusCriteriaDTOList;
     private articleDTO art;
     private digitalLibraryDTO dl;
 
 
-    public referenceDTO(int idRef, String doi, int idDL, int idProject, String state, int idProjRef, List<ExclusionDTO> exclusionDTOList) {
+    public referenceDTO(int idRef, String doi, int idDL, int idProject, String state, int idProjRef, List<consensusCriteriaDTO> exclusionDTOList) {
         this.idRef = idRef;
         this.doi = doi;
         this.idDL = idDL;
         this.idProject = idProject;
         this.state = state;
         this.idProjRef = idProjRef;
-        this.exclusionDTOList = exclusionDTOList;
+        this.consensusCriteriaDTOList = exclusionDTOList;
     }
 
     public int getIdRef() {
@@ -94,27 +94,27 @@ public class referenceDTO implements Serializable {
     public void setdProjRef(int idProjRef) {
         this.idProjRef = idProjRef;
     }
-    public List<ExclusionDTO> getExclusionDTOList() {
-        return exclusionDTOList;
+    public List<consensusCriteriaDTO> getExclusionDTOList() {
+        return consensusCriteriaDTOList;
     }
 
     public String getApplCriteriaString() {
-       if (this.exclusionDTOList != null) {
-           List<String> exclusionList = this.exclusionDTOList.stream().map(ExclusionDTO::getNameICEC).collect(Collectors.toList());
+       if (this.consensusCriteriaDTOList != null) {
+           List<String> exclusionList = this.consensusCriteriaDTOList.stream().map(consensusCriteriaDTO::getNameICEC).collect(Collectors.toList());
            return String.join(", ", exclusionList);
        }
        return "";
     }
 
     public String getExclusionDTOIdList() {
-        if (this.exclusionDTOList != null) {
-            List<Integer> exclusionList = this.exclusionDTOList.stream().map(ExclusionDTO::getIdICEC).collect(Collectors.toList());
+        if (this.consensusCriteriaDTOList != null) {
+            List<Integer> exclusionList = this.consensusCriteriaDTOList.stream().map(consensusCriteriaDTO::getIdICEC).collect(Collectors.toList());
             return exclusionList.stream().map(String::valueOf).collect(Collectors.joining(", "));
         }
         return "";
     }
 
-    public void setExclusionDTOList(List<ExclusionDTO> exclusionDTOList) {
-        this.exclusionDTOList = exclusionDTOList;
+    public void setExclusionDTOList(List<consensusCriteriaDTO> exclusionDTOList) {
+        this.consensusCriteriaDTOList = exclusionDTOList;
     }
 }

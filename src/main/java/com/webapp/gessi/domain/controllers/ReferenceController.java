@@ -3,7 +3,7 @@ package com.webapp.gessi.domain.controllers;
 import com.webapp.gessi.config.DBConnection;
 import com.webapp.gessi.data.article;
 import com.webapp.gessi.data.Reference;
-import com.webapp.gessi.domain.dto.ExclusionDTO;
+import com.webapp.gessi.domain.dto.consensusCriteriaDTO;
 import com.webapp.gessi.domain.dto.importErrorDTO;
 import com.webapp.gessi.domain.dto.referenceDTO;
 import com.webapp.gessi.domain.dto.referenceDTOadd;
@@ -68,18 +68,18 @@ public class ReferenceController {
         List<Integer> copyApplCriteriaList = new LinkedList<>(applCriteria);
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Statement s = ctx.getBean(Connection.class).createStatement();
-        List<Integer> currentExclusionDTOList = ExclusionController.getByIdRef(s, idRef).stream().map(ExclusionDTO::getIdICEC).collect(Collectors.toCollection(LinkedList::new));
+        List<Integer> currentExclusionDTOList = ConsensusCriteriaController.getByIdRef(s, idRef).stream().map(consensusCriteriaDTO::getIdICEC).collect(Collectors.toCollection(LinkedList::new));
         currentExclusionDTOList.forEach(applCriteriaList::remove);
         copyApplCriteriaList.forEach(currentExclusionDTOList::remove);
         if (!applCriteriaList.isEmpty()) {
-            List<ExclusionDTO> exclusionDTOList = new ArrayList<>();
-            applCriteriaList.forEach(value -> exclusionDTOList.add(new ExclusionDTO(idRef, value, null)));
-            ExclusionController.insertRows(exclusionDTOList);
+            List<consensusCriteriaDTO> exclusionDTOList = new ArrayList<>();
+            applCriteriaList.forEach(value -> exclusionDTOList.add(new consensusCriteriaDTO(idRef, value, null)));
+            ConsensusCriteriaController.insertRows(exclusionDTOList);
         }
         if (!currentExclusionDTOList.isEmpty()) {
-            List<ExclusionDTO> exclusionDTOList = new ArrayList<>();
-            currentExclusionDTOList.forEach(value -> exclusionDTOList.add(new ExclusionDTO(idRef, value, null)));
-            ExclusionController.deleteRows(exclusionDTOList);
+            List<consensusCriteriaDTO> exclusionDTOList = new ArrayList<>();
+            currentExclusionDTOList.forEach(value -> exclusionDTOList.add(new consensusCriteriaDTO(idRef, value, null)));
+            ConsensusCriteriaController.deleteRows(exclusionDTOList);
         }
     }
     

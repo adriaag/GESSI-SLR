@@ -1,19 +1,19 @@
 package com.webapp.gessi.domain.dto;
 
 
-public class ExclusionDTO {
+public class consensusCriteriaDTO {
 
     private int idRef;
     private int idICEC;
     private String nameICEC;
 
-    public ExclusionDTO(int idRef, int idICEC, String nameICEC) {
+    public consensusCriteriaDTO(int idRef, int idICEC, String nameICEC) {
         this.idRef = idRef;
         this.idICEC = idICEC;
         this.nameICEC = nameICEC;
     }
 
-    public ExclusionDTO() {}
+    public consensusCriteriaDTO() {}
 
     public int getIdRef() {
         return idRef;
