@@ -1,37 +1,20 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild, ViewEncapsulation} from '@angular/core';
-import { DataService } from '../data.service';
-import { Reference } from '../dataModels/reference';
-import { Researcher } from '../dataModels/researcher';
-import { MatSort } from '@angular/material/sort';
+import { Component, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Exclusion } from '../dataModels/exclusion';
-import { MatDialog} from '@angular/material/dialog';
-import { ReferenceInfoComponent } from '../reference-info/reference-info.component';
-import { ReferenceClassifyComponent } from '../reference-classify/reference-classify.component';
+import { DataService } from '../data.service';
 import { Criteria } from '../dataModels/criteria';
-import { TooltipModule } from 'ng2-tooltip-directive-ngfix';
-import { MatTooltipDefaultOptions, MAT_TOOLTIP_DEFAULT_OPTIONS } from '@angular/material/tooltip';
-
-
-export const tooltipsConf: MatTooltipDefaultOptions = {
-  showDelay: 500,
-  hideDelay: 50,
-  touchendHideDelay: 1000,
-  position: 'below',
-};
-
+import { Exclusion } from '../dataModels/exclusion';
+import { Reference } from '../dataModels/reference';
+import { ReferenceClassifyComponent } from '../reference-classify/reference-classify.component';
 
 @Component({
-  selector: 'app-references',
-  templateUrl: './references.component.html',
-  styleUrls: ['./references.component.css'],
-  providers: [{provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: tooltipsConf}],
-  encapsulation: ViewEncapsulation.None,
+  selector: 'app-screening',
+  templateUrl: './screening.component.html',
+  styleUrls: ['./screening.component.css']
 })
-
-export class ReferencesComponent implements OnChanges, AfterViewInit{
-
+export class ScreeningComponent {
   @Input('references') referenceslist!: Reference[]
   @Input('idProject') idProject!: number
   @Input('exclusionCriteria') exclusionCriteria!: Criteria[]
@@ -67,20 +50,6 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
     this.dataSource.paginator = this.paginator;
   }
 
-  downloadExcel(): void {
-    this.dataService.getExcelFile(this.idProject).subscribe((resposta) => {
-        var newBlob = new Blob([resposta], { type: "application/vnd.ms-excel" });
-        const url= window.URL.createObjectURL(newBlob);
-        window.open(url);
-    });
-  }
-
-  viewReference(ref: Reference) {
-    this.dialog.open(ReferenceInfoComponent, {
-      data : ref
-    });
-  }
-
   editReferenceDialog(ref: Reference) {
     let referenceEditDialog = this.dialog.open(ReferenceClassifyComponent, {
       data: {
@@ -101,19 +70,6 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
     })
   }
 
-  requestDeleteReference(reference: Reference) {
-    if(confirm("Are you sure to delete reference "+ reference.art.title + " ?")) {
-      this.deleteReference(reference)
-    }
-  }
-
-  deleteReference(reference: Reference): void {
-    this.dataService.deleteReference(reference.idRef, this.idProject).subscribe((resposta) => {
-      this.referencesUpdated.emit()
-    })
-      
-  }
-  
   //possible optimització precomputant-ho quan es carreguen les dades
   filterData() {
     let filterFunction = 
@@ -166,38 +122,8 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
             return compare(a.art.doi, b.art.doi, isAsc);
           case 'ref':
             return compare(a.idRef, b.idRef, isAsc);
-          case 'dl':
-            var dl1 = a.dl
-            var dl2 = b.dl
-            if (dl1 === null) {
-              if (dl2 === null) {
-                return compare(null, null, isAsc);
-              }
-              return compare(null, dl2.name, isAsc);
-            }
-            if (dl2 == null) {
-              return compare(a.dl.name, null, isAsc);
-            }
-            return compare(a.dl.name, b.dl.name, isAsc);
-          case 'year':
-            return compare(a.art.any, b.art.any, isAsc);
-          case 'auth':
-            return compareAuthors(a.art.researchers, b.art.researchers, isAsc);
           case 'tit':
             return compare(a.art.title, b.art.title, isAsc);
-          case 'ven':
-            var elem1 = a.art.ven
-            var elem2 = b.art.ven
-            if (elem1 === null) {
-              if (elem2 === null) {
-                return compare(null, null, isAsc);
-              }
-              return compare(null, elem2.name, isAsc);
-            }
-            if (elem2 == null) {
-              return compare(a.art.ven.name, null, isAsc);
-            }
-            return compare(a.art.ven.name, b.art.ven.name, isAsc);
           case 'sta':
             return compare(a.state,b.state, isAsc);
           case 'cri':
@@ -240,36 +166,6 @@ function compare(a: Number | String | null, b: Number | String | null, isAsc: bo
     return (a > b ? -1 : 1) * (isAsc ? 1 : -1);
 }
 
-function compareAuthors(a: Researcher[], b: Researcher[], isAsc: boolean) {
-    if (a !== null) {
-      if (b === null) {
-        return -1 * (isAsc ? 1 : -1)
-      }
-      else{
-        var nomsA = "";
-        for(let elem of a) {
-          nomsA += elem.name
-        }
-
-        var nomsB = "";
-        for(let elem of b) {
-          nomsB += elem.name
-        }
-
-        return compare(nomsA,nomsB,isAsc)
-      }
-
-    }
-    else {
-      if (b === null) {
-        return -1 * (isAsc ? 1 : -1)
-      }
-      else {
-        return 1 * (isAsc ? 1 : -1)
-      }
-    }
-}
-
 function compareCriteria(a: Exclusion[], b: Exclusion[], isAsc: boolean) {
   if (a !== null) {
     if (b === null) {
@@ -299,5 +195,4 @@ function compareCriteria(a: Exclusion[], b: Exclusion[], isAsc: boolean) {
     }
   }
 }
-
 

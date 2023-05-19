@@ -31,6 +31,7 @@ import { LoginComponent } from './login/login.component';
 import { AuthInterceptor } from './auth.interceptor';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { MainComponent } from './main/main.component';
+import { ScreeningComponent } from './screening/screening.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { MainComponent } from './main/main.component';
     LoginComponent,
     ChangePasswordComponent,
     MainComponent,
+    ScreeningComponent,
   ],
   imports: [
     BrowserModule,
