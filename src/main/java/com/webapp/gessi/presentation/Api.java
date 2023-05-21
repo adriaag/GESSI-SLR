@@ -130,7 +130,7 @@ public class Api implements ErrorController{
     
     @PutMapping(value=("/projects/{id}/references/{idRef}/userDesignations/{numDesignation}"))
     public ResponseEntity<?> setUserDesignationICEC(@PathVariable("idRef") int idRef, @PathVariable("numDesignation") int numDesignation, 
-    		@RequestParam(name = "userDesignation") userDesignationDTO designation) {
+    		@RequestBody userDesignationDTO designation) {
         try {
         	if (numDesignation != 1 && numDesignation != 2) 
         		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -76,7 +76,7 @@ public class userDesignation {
 	    	
 	    	if (userAct != null) 
 	    		deleteRow(s, userAct, idRef);
-			
+
 	    	insertRow(s, username, idRef, numDesignation);	    	
 	    }
 	    
@@ -88,8 +88,7 @@ public class userDesignation {
 	        preparedStatement.setInt(1, idRef);
 	        preparedStatement.setInt(2, numDesignation);
 	        ResultSet resultSet = preparedStatement.executeQuery();
-	        
-	        if(resultSet.next()) return resultSet.getString("userDesignation"+numDesignation);
+	        if(resultSet.next()) return resultSet.getString("username");
 	        return null;	
 	    	
 	    }
@@ -112,7 +111,7 @@ public class userDesignation {
 	    	PreparedStatement preparedStatement = conn.prepareStatement(query);
 	        preparedStatement.setString(1, username);
 	        preparedStatement.setInt(2, idRef);
-	        ResultSet resultSet = preparedStatement.executeQuery();
+	        preparedStatement.execute();
 	    }
 	    
 

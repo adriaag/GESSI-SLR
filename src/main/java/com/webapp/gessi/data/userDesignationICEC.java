@@ -2,9 +2,14 @@ package com.webapp.gessi.data;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.webapp.gessi.domain.dto.CriteriaDTO;
+import com.webapp.gessi.domain.dto.consensusCriteriaDTO;
 import com.webapp.gessi.domain.dto.userDesignationDTO;
 import com.webapp.gessi.domain.dto.userDesignationICECDTO;
 
@@ -67,6 +72,25 @@ public class userDesignationICEC {
         preparedStatement.execute();
         System.out.println("Deleted row in userDesignationICEC");
 
+    }
+    
+    public static List<userDesignationICECDTO> getByPK(Statement s, String username, int idRef) throws SQLException {
+        String query = "SELECT * FROM userDesignationsICEC WHERE username = ? and idRef = ?";
+        Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1, username);
+        preparedStatement.setInt(2, idRef);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return convertResultSetTouserDesignationICECDTO(resultSet);
+    }
+
+
+    private static List<userDesignationICECDTO> convertResultSetTouserDesignationICECDTO(ResultSet resultSet) throws SQLException {
+        List<userDesignationICECDTO> exclusionDTOList = new ArrayList<>();
+        while (resultSet.next()) {
+            exclusionDTOList.add(new userDesignationICECDTO(resultSet.getString("username"), resultSet.getInt("idRef"), resultSet.getInt("idICEC")));
+        }
+        return exclusionDTOList;
     }
 
 }
