@@ -127,7 +127,9 @@ public class Reference {
                 Statement s1 = conn.createStatement();
                 exclusionDTOList = consensusCriteria.getByIdRef(s1, idR);
             }
-            referenceDTO NewRef = new referenceDTO( idR, doiR, dlR, idProject, estado, idProjRef, exclusionDTOList);
+            userDesignationDTO usersCriteria1 = userDesignation.getByIdRefNumDes(s,idR, 1);
+            userDesignationDTO usersCriteria2 = userDesignation.getByIdRefNumDes(s,idR, 2);
+            referenceDTO NewRef = new referenceDTO( idR, doiR, dlR, idProject, estado, idProjRef, exclusionDTOList, usersCriteria1, usersCriteria2);
             obtainReferenceDTO(conn, NewRef, doiR, dlR);
 
             refList.add(NewRef);
@@ -355,7 +357,7 @@ public class Reference {
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.next();
         referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
-                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), resultSet.getInt("idProjRef"),null);
+                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), resultSet.getInt("idProjRef"),null, null, null);
         List<consensusCriteriaDTO> exclusionDTOList = consensusCriteria.getByIdRef(conn.createStatement(), idR);
         referenceDTO.setExclusionDTOList(exclusionDTOList);
         return referenceDTO;
@@ -428,15 +430,6 @@ public class Reference {
         return exclusionDTOList;
     }
 
-    private static referenceDTO convertResultSetToReferenceDTO(ResultSet resultSet) throws SQLException {
-        List<consensusCriteriaDTO> exclusionDTOList = new ArrayList<>();
-        resultSet.next();
-        referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
-                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), resultSet.getInt("idProjRef"),null);
-        exclusionDTOList.add(new consensusCriteriaDTO(resultSet.getInt("idRef"), resultSet.getInt("idICEC"), resultSet.getString("name")));
-        referenceDTO.setExclusionDTOList(convertResultSetToExclusionDTO(resultSet, exclusionDTOList));
-        return referenceDTO;
-    }
     
     private static String truncate(String text, int maxValue) {
     	if (text.length() > maxValue) {

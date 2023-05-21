@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import com.webapp.gessi.domain.dto.userDesignationDTO;
 
@@ -114,5 +115,20 @@ public class userDesignation {
 	        preparedStatement.execute();
 	    }
 	    
-
+	    public static userDesignationDTO getByIdRefNumDes(Statement s, int idRef, int numDesignation) throws SQLException {
+	    	String query = "SELECT * FROM userDesignations WHERE idRef = ? and numDesignation = ?";
+	        
+	        Connection conn = s.getConnection();
+	        PreparedStatement preparedStatement = conn.prepareStatement(query);
+	        preparedStatement.setInt(1, idRef);
+	        preparedStatement.setInt(2, numDesignation);
+	        ResultSet resultSet = preparedStatement.executeQuery();
+	        if(resultSet.next()) {
+	        	String username = resultSet.getString("username");
+	        	boolean processed = resultSet.getBoolean("processed");
+	        	List<Integer> criterias = userDesignationICEC.getICECs(s, username, idRef);
+	        	return new userDesignationDTO(username, idRef, numDesignation, processed, criterias);
+	        }
+	        return null;
+	    }	        	 	  
 }

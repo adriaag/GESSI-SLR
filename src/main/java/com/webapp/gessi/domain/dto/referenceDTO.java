@@ -19,9 +19,12 @@ public class referenceDTO implements Serializable {
     private List<consensusCriteriaDTO> consensusCriteriaDTOList;
     private articleDTO art;
     private digitalLibraryDTO dl;
+    private userDesignationDTO usersCriteria1;
+    private userDesignationDTO usersCriteria2;
 
 
-    public referenceDTO(int idRef, String doi, int idDL, int idProject, String state, int idProjRef, List<consensusCriteriaDTO> exclusionDTOList) {
+    public referenceDTO(int idRef, String doi, int idDL, int idProject, String state, int idProjRef, 
+    		List<consensusCriteriaDTO> exclusionDTOList, userDesignationDTO usersCriteria1, userDesignationDTO usersCriteria2) {
         this.idRef = idRef;
         this.doi = doi;
         this.idDL = idDL;
@@ -29,6 +32,8 @@ public class referenceDTO implements Serializable {
         this.state = state;
         this.idProjRef = idProjRef;
         this.consensusCriteriaDTOList = exclusionDTOList;
+        this.usersCriteria1 = usersCriteria1;
+        this.usersCriteria2 = usersCriteria2;
     }
 
     public int getIdRef() {
@@ -116,5 +121,21 @@ public class referenceDTO implements Serializable {
 
     public void setExclusionDTOList(List<consensusCriteriaDTO> exclusionDTOList) {
         this.consensusCriteriaDTOList = exclusionDTOList;
+    }
+    
+    public userDesignationDTO getUsersCriteria1() {
+    	return this.usersCriteria1;
+    }
+    
+    public void setUsersCriteria1(userDesignationDTO usersCriteria) {
+    	this.usersCriteria1 = usersCriteria;
+    }
+    
+    public userDesignationDTO getUsersCriteria2() {
+    	return this.usersCriteria2;
+    }
+    
+    public void setUsersCriteria2(userDesignationDTO usersCriteria) {
+    	this.usersCriteria2 = usersCriteria;
     }
 }

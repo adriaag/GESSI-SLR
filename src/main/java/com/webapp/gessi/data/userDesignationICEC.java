@@ -74,21 +74,21 @@ public class userDesignationICEC {
 
     }
     
-    public static List<userDesignationICECDTO> getByPK(Statement s, String username, int idRef) throws SQLException {
+    public static List<Integer> getICECs(Statement s, String username, int idRef) throws SQLException {
         String query = "SELECT * FROM userDesignationsICEC WHERE username = ? and idRef = ?";
         Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setString(1, username);
         preparedStatement.setInt(2, idRef);
         ResultSet resultSet = preparedStatement.executeQuery();
-        return convertResultSetTouserDesignationICECDTO(resultSet);
+        return convertResultSetToICECList(resultSet);
     }
 
 
-    private static List<userDesignationICECDTO> convertResultSetTouserDesignationICECDTO(ResultSet resultSet) throws SQLException {
-        List<userDesignationICECDTO> exclusionDTOList = new ArrayList<>();
+    private static List<Integer> convertResultSetToICECList(ResultSet resultSet) throws SQLException {
+        List<Integer> exclusionDTOList = new ArrayList<>();
         while (resultSet.next()) {
-            exclusionDTOList.add(new userDesignationICECDTO(resultSet.getString("username"), resultSet.getInt("idRef"), resultSet.getInt("idICEC")));
+            exclusionDTOList.add(resultSet.getInt("idICEC"));
         }
         return exclusionDTOList;
     }

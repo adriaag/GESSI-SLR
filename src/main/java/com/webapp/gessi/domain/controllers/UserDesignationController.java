@@ -41,7 +41,7 @@ public class UserDesignationController {
         
         List<Integer> applCriteriaList = new LinkedList<>(designation.getCriteriaList());
         List<Integer> copyApplCriteriaList = new LinkedList<>(designation.getCriteriaList());
-        List<Integer> currentExclusionDTOList = UserDesignationICECController.getByPK(s, username, idRef).stream().map(userDesignationICECDTO::getIdICEC).collect(Collectors.toCollection(LinkedList::new));
+        List<Integer> currentExclusionDTOList = UserDesignationICECController.getICECs(s, username, idRef);
         currentExclusionDTOList.forEach(applCriteriaList::remove);
         copyApplCriteriaList.forEach(currentExclusionDTOList::remove);
         if (!applCriteriaList.isEmpty()) {

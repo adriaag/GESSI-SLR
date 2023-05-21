@@ -41,8 +41,8 @@ public class UserDesignationICECController {
     	
     }
     
-    public static List<userDesignationICECDTO> getByPK(Statement s, String username, int idRef) throws SQLException {
-        return userDesignationICEC.getByPK(s, username, idRef);
+    public static List<Integer> getICECs(Statement s, String username, int idRef) throws SQLException {
+        return userDesignationICEC.getICECs(s, username, idRef);
     }
 
 }
