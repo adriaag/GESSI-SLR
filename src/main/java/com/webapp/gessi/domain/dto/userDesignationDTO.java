@@ -6,13 +6,22 @@ public class userDesignationDTO {
 	private String username;
 	private int idRef;
 	private boolean processed;
+	private int numDesignation;
 	private List<Integer> criteriaList;
 	
-	public userDesignationDTO(String username, int idRef, boolean processed, List<Integer> criteriaList) {
+	public userDesignationDTO(String username, int idRef, int numDesignation, boolean processed, List<Integer> criteriaList) {
 		this.username = username;
 		this.idRef = idRef;
 		this.processed = processed;
 		this.criteriaList = criteriaList;
+		this.numDesignation = numDesignation;
+	}
+	
+	public userDesignationDTO(String username, int idRef, int numDesignation, List<Integer> criteriaList) {
+		this.username = username;
+		this.idRef = idRef;
+		this.criteriaList = criteriaList;
+		this.numDesignation = numDesignation;
 	}
 	
 	public String getUsername() {
@@ -45,6 +54,14 @@ public class userDesignationDTO {
 	
 	public void setCriteriaList(List<Integer> criteriaList) {
 		this.criteriaList = criteriaList;
+	}
+	
+	public int getNumDesignation() {
+		return this.numDesignation;
+	}
+	
+	public void setNumDesignation(int numDesignation) {
+		this.numDesignation = numDesignation;
 	}
 
 }

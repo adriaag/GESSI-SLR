@@ -9,8 +9,7 @@ import { ReferenceFromFileResponse } from './dataModels/referenceFromFileRespons
 import { CriteriaResponse } from './criteriaResponse';
 import { environment } from 'src/environments/environment';
 import { AddReference } from './dataModels/addReference';
-import { User } from './dataModels/user';
-import { AuthenticationService } from './authentication.service';
+import { UserDesignation } from './dataModels/userDesignation';
 
 @Injectable({
   providedIn: 'root'
@@ -58,6 +57,26 @@ export class DataService {
       )
   }
 
+  updateReferenceUserDesignation(idRef: number, idProject: number, username: string, numDesignation: number): Observable<{message: string}> {
+    const formData: FormData = new FormData();
+    formData.append('numDesignation',String(numDesignation));
+    formData.append('username', username);
+
+    return this.http.put<{message: string}>(`${this.rootUrl}/projects/${idProject}/references/${idRef}/userDesignations`,formData,this.setHttpHeader())
+    .pipe(
+      tap(data => console.log("Data:", data)),
+      catchError(this.handleError),
+    )
+  }
+
+  updateReferenceUserDesignationCriteria(idProject: number, userDesignation: UserDesignation): Observable<{message: string}> {
+    return this.http.put<{message: string}>(`${this.rootUrl}/projects/${idProject}/references/${userDesignation.idRef}/userDesignations/${userDesignation.numDesignation}`,userDesignation,this.setHttpHeader())
+    .pipe(
+      tap(data => console.log("Data:", data)),
+      catchError(this.handleError),
+    )
+  }
+
   deleteReference(idRef: number, idProject: number): Observable<string> {
     return this.http.delete<string>(
       `${this.rootUrl}/projects/${idProject}/references/${idRef}`,this.setHttpHeader())
@@ -66,15 +85,6 @@ export class DataService {
       catchError(this.handleError),
     )
   }
-
-  /*getReference(idReference: number): Observable<Reference> {
-    return this.http.get<Project[]>(
-      `${this.rootUrl}/reference?idReference=${idReference}`, this.setHttpHeader())
-      .pipe(
-        tap(data => console.log("Anlagenstatus Daten:", data)),
-        catchError(this.handleError),
-      )
-  }*/
 
   getExcelFile(idProject: number): Observable<Blob> {
     return this.http.get(
