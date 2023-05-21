@@ -64,6 +64,10 @@ public class user {
         preparedStatement.executeUpdate();
         conn.commit();
     }
+    
+    public static int getUsernameMaxLength() {
+    	return usernameMaxLength;
+    }
   
     
 }

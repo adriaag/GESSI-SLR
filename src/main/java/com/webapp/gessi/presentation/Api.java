@@ -3,6 +3,8 @@ package com.webapp.gessi.presentation;
 
 import com.webapp.gessi.domain.controllers.ProjectController;
 import com.webapp.gessi.domain.controllers.ReferenceController;
+import com.webapp.gessi.domain.controllers.UserDesignationController;
+import com.webapp.gessi.domain.controllers.UserDesignationICECController;
 import com.webapp.gessi.domain.controllers.criteriaController;
 import com.webapp.gessi.domain.controllers.digitalLibraryController;
 import com.webapp.gessi.domain.dto.*;
@@ -108,6 +110,38 @@ public class Api implements ErrorController{
 	    	return sqlExcHandler(e);	    	
 	    }
     	
+    }
+    
+    @PutMapping(value=("/projects/{id}/references/{idRef}/userDesignations"))
+    public ResponseEntity<?> setUserDesignation(@PathVariable("idRef") int idRef, @RequestParam(name = "numDesignation") int numDesignation, 
+    		@RequestParam(name = "username") String username) {
+        try {
+        	if (numDesignation != 1 && numDesignation != 2) 
+        		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        	
+        	UserDesignationController.insertRow(username, idRef,numDesignation);
+	        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        }
+        catch (SQLException e) {
+	    	return sqlExcHandler(e);	    	
+	    }
+   
+    }
+    
+    @PutMapping(value=("/projects/{id}/references/{idRef}/userDesignations/{numDesignation}"))
+    public ResponseEntity<?> setUserDesignationICEC(@PathVariable("idRef") int idRef, @PathVariable("numDesignation") int numDesignation, 
+    		@RequestParam(name = "userDesignation") userDesignationDTO designation) {
+        try {
+        	if (numDesignation != 1 && numDesignation != 2) 
+        		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        	
+        	UserDesignationController.addCriteria(designation);
+	        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        }
+        catch (SQLException e) {
+	    	return sqlExcHandler(e);	    	
+	    }
+   
     }
     
     @PutMapping(value=("/projects/{id}/references/{idRef}"))

@@ -14,14 +14,14 @@ public class consensusCriteria {
             s.execute("create TABLE consensusCriteria(" +
                     "idICEC INT, " +
                     "idRef INT, " +
-                    "CONSTRAINT criteria_FK FOREIGN KEY (idICEC) REFERENCES criteria(id) ON UPDATE RESTRICT ON DELETE CASCADE, " +
+                    "CONSTRAINT criteriaCC_FK FOREIGN KEY (idICEC) REFERENCES criteria(id) ON UPDATE RESTRICT ON DELETE CASCADE, " +
                     "CONSTRAINT referencies_FK FOREIGN KEY (idRef) REFERENCES referencias(idRef) ON DELETE CASCADE, " +
                     "PRIMARY KEY(idICEC, idRef))");
             System.out.println("Created table Exclusion");
             return true;
 
         } catch (SQLException t ) {
-            if (t.getSQLState().equals("X0Y32")) System.out.println("Table Exclusion exists");
+            if (t.getSQLState().equals("X0Y32")) System.out.println("Table consensusCriteria exists");
             else System.out.println("Error en create consensusCriteria");
             while (t != null) {
                 System.err.println("\n----- SQLException -----");
@@ -40,7 +40,8 @@ public class consensusCriteria {
             System.out.println("Dropped table consensusCriteria");
         }
         catch (SQLException sqlException) {
-            System.out.println("Tabla consensusCriteria not exist");
+        	sqlException.printStackTrace();
+            
         }
     }
 

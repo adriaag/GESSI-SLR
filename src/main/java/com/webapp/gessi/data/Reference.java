@@ -67,7 +67,7 @@ public class Reference {
                     "PRIMARY KEY(idRef), unique(doi, idDL, idProject), unique(idProjRef,idProject), " +
                     "CONSTRAINT DL_FK_R FOREIGN KEY (idDL) REFERENCES digitalLibraries (idDL) ON DELETE CASCADE," +
                     "CONSTRAINT AR_FK_R FOREIGN KEY (doi) REFERENCES articles (doi) ON DELETE CASCADE," +
-                    "CONSTRAINT PR_FK_R FOREIGN KEY (idProject) REFERENCES project (id) ON DELETE CASCADE," +
+                    "CONSTRAINT PR_FK_R FOREIGN KEY (idProject) REFERENCES project (id) ON DELETE CASCADE," +             
                     "CONSTRAINT state_chk CHECK (state IN ( 'in', 'out')))");
             System.out.println("Created table referencias");
         } catch (SQLException e) {
@@ -91,7 +91,7 @@ public class Reference {
         System.out.println("Dropped table referencias");
         }
         catch (SQLException sqlException) {
-            System.out.println("Tabla referencias not exist");
+            System.out.println(sqlException.getCause());
         }
     }
 
@@ -226,35 +226,35 @@ public class Reference {
         affiliation.createTable(s);
         importationLogError.createTable(s);
         user.createTable(s);
+        userDesignation.createTable(s);
+        userDesignationICEC.createTable(s);
     }
 
     private static void deleteTables(Statement s) throws SQLException {
-    	consensusCriteria.dropTable(s);
+    	userDesignationICEC.dropTable(s);
+        userDesignation.dropTable(s);
+        user.dropTable(s);   	
         importationLogError.dropTable(s);
         affiliation.dropTable(s);
         company.dropTable(s);
         author.dropTable(s);
-        Reference.dropTable(s);
+        consensusCriteria.dropTable(s);
         researcher.dropTable(s);
+        Reference.dropTable(s);
         article.dropTable(s);
         venue.dropTable(s);
-        Criteria.dropTable(s);
-        digitalLibrary.dropTable(s);
+        Criteria.dropTable(s); 
         Project.dropTable(s);
-        user.dropTable(s);
-    }
-    
-    private static void iniDB() {
-    	try {
-			DBConnection.iniDB();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
+        digitalLibrary.dropTable(s);
+        
+        
+        
+        
+        
+        
+       
+        
+
     }
 
     public static List<importErrorDTO> importar(String idDL, ProjectDTO project, MultipartFile file) throws SQLException, IOException, BadBibtexFileException {
@@ -419,7 +419,6 @@ public class Reference {
     	System.out.println(idRef);
     	return getReference(s.getConnection(), idRef);
     }
-    
     
 
     private static List<consensusCriteriaDTO> convertResultSetToExclusionDTO(ResultSet resultSet, List<consensusCriteriaDTO> exclusionDTOList) throws SQLException {

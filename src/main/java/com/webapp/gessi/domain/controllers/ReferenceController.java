@@ -7,9 +7,11 @@ import com.webapp.gessi.domain.dto.consensusCriteriaDTO;
 import com.webapp.gessi.domain.dto.importErrorDTO;
 import com.webapp.gessi.domain.dto.referenceDTO;
 import com.webapp.gessi.domain.dto.referenceDTOadd;
+import com.webapp.gessi.domain.dto.userDesignationDTO;
 import com.webapp.gessi.exceptions.BadBibtexFileException;
 
 import org.jbibtex.ParseException;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.web.bind.annotation.*;
@@ -105,13 +107,5 @@ public class ReferenceController {
     	return Reference.addReferenceManually(s, referenceData, idProject);
     }
     
-
-    @RequestMapping(value = "/createTables")
-    public void createTables(){
-        Reference.create();
-    }
-    @RequestMapping(value = "/deleteTables")
-    public void deleteTables(){
-        Reference.delete();
-    }
+    
 }

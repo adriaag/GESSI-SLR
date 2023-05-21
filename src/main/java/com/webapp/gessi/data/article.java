@@ -569,7 +569,7 @@ public class article {
             System.out.println("Dropped table articles");
         }
         catch (SQLException sqlException) {
-            System.out.println("Tabla articles not exist");
+        	System.out.println(sqlException.getCause());
         }
     }
 

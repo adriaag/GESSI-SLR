@@ -44,7 +44,7 @@ public class Project {
             System.out.println("Dropped table Project");
         }
         catch (SQLException sqlException) {
-            System.out.println("Tabla Project not exist");
+        	sqlException.printStackTrace();
         }
     }
 
