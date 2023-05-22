@@ -3,6 +3,7 @@ package com.webapp.gessi.presentation;
 
 import com.webapp.gessi.domain.controllers.ProjectController;
 import com.webapp.gessi.domain.controllers.ReferenceController;
+import com.webapp.gessi.domain.controllers.UserController;
 import com.webapp.gessi.domain.controllers.UserDesignationController;
 import com.webapp.gessi.domain.controllers.UserDesignationICECController;
 import com.webapp.gessi.domain.controllers.criteriaController;
@@ -348,6 +349,18 @@ public class Api implements ErrorController{
         JSONObject returnData = new JSONObject();
         returnData.put("message", "The database has been reset!");
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(returnData.toString());
+    }
+    
+    @GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
+    public ResponseEntity<?> getUsernames(){
+    	try {
+	    	List<String> usernames = UserController.getAllUsernames();
+	        return ResponseEntity.ok(usernames);
+    	}
+    	catch (SQLException e) {
+	    	return sqlExcHandler(e);
+	    	
+	    }
     }
     
     @RequestMapping(value = "/error") 

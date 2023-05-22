@@ -189,6 +189,15 @@ export class DataService {
     )
   }
 
+  getUsernames(): Observable<string[]> {
+    return this.http.get<string[]>(
+      `${this.rootUrl}/users`,this.setHttpHeader())
+      .pipe(
+        tap(data => console.log("Data:", data)),
+        catchError(this.handleError),
+      )
+  }
+
   deleteDatabase(): Observable<{message: string}> {
     return this.http.delete<{message: string}>(
       `${this.rootUrl}/`,this.setHttpHeader())

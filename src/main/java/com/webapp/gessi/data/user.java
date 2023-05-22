@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.webapp.gessi.domain.dto.userDTO;
 
@@ -67,6 +69,22 @@ public class user {
     
     public static int getUsernameMaxLength() {
     	return usernameMaxLength;
+    }
+    
+    public static List<String> getAllUsernames(Statement s) throws SQLException {
+    	String query ="SELECT username from users";
+    	Connection conn = s.getConnection();
+    	PreparedStatement preparedStatement = conn.prepareStatement(query);
+    	ResultSet rs = preparedStatement.executeQuery();
+    	List<String> usernames = new ArrayList<>();
+    	
+    	while(rs.next()) {
+    		usernames.add(rs.getString("username"));
+    	}
+    	
+    	return usernames;
+    	
+    	
     }
   
     

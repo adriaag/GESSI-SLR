@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { map, merge, Observable, of, startWith } from 'rxjs';
 import { DataService } from '../data.service';
 import { Criteria } from '../dataModels/criteria';
 import { Exclusion } from '../dataModels/exclusion';
@@ -18,13 +20,20 @@ export class ScreeningComponent {
   @Input('references') referenceslist!: Reference[]
   @Input('idProject') idProject!: number
   @Input('exclusionCriteria') exclusionCriteria!: Criteria[]
+  @Input('usernames') usernames!: string[]
   @Output() referencesUpdated = new EventEmitter();
 
   references: Reference[] = [];
   sortedData: Reference[] = [];
   dataSource!: MatTableDataSource<Reference>;
-  displayedColumns: string[] = ['doi','ref', 'dl', 'year', 'auth', 'tit', 'ven', 'abs', 'inf', 'del'];
+  displayedColumns: string[] = ['ref','tit', 'abs', 'usr1'];
   filterValue: string = ""
+
+  refind: { [id: number] : number; } = {}
+  usr1: FormArray = new FormArray<FormControl>([]);
+  usrFilter: string = ""
+
+  filteredOptions: Observable<string[]> = new Observable<string[]>
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -33,6 +42,7 @@ export class ScreeningComponent {
 
   ngOnChanges() {
     this.references = this.referenceslist
+    this.uploadUsr1()
     this.sortedData = this.references.slice();
     this.dataSource = new MatTableDataSource(this.referenceslist);
     this.dataSource.paginator = this.paginator;
@@ -41,6 +51,13 @@ export class ScreeningComponent {
     this.dataSource.filterPredicate = this.filterData();
     this.applyFilterWhenReloading()
 
+    merge(...this.usr1.controls.map(control => control.valueChanges))
+    .subscribe((value) => {
+      this.filteredOptions = of(this.filtreUsr(value))
+    })
+
+
+
   }
 
   ngAfterViewInit() {
@@ -48,6 +65,39 @@ export class ScreeningComponent {
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.filterData();
     this.dataSource.paginator = this.paginator;
+  }
+
+  uploadUsr1() {
+    this.refind = {};
+    this.usr1 = new FormArray<FormControl>([])
+    var ind = 0
+    var f
+    for (var ref of this.referenceslist) {
+      ref.usersCriteria1 === null? f = new FormControl(): f = new FormControl(ref.usersCriteria1.username)
+      this.usr1.push(f)
+      this.refind[ref.idProjRef] = ind
+      ind += 1 
+    }
+  }
+
+  filtreUsr(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.usernames.filter(option => option.toLowerCase().includes(filterValue));
+  }
+
+  changeUser(col: number, idProjRef: number) {
+    console.log('changing user to',this.usr1.at(this.refind[idProjRef]).value)
+  }
+
+  resetFilter(idProjRef: number) {
+    let val = this.usr1.at(this.refind[idProjRef]).value
+    val !== null? this.filteredOptions = of(this.filtreUsr(val)): this.filteredOptions = of(this.usernames)
+  }
+
+  getCtrl(i: number): FormControl<string> {
+    return this.usr1.at(this.refind[i]) as FormControl<string>
+
   }
 
   editReferenceDialog(ref: Reference) {
@@ -118,8 +168,6 @@ export class ScreeningComponent {
       return refs.sort((a, b) => {
         const isAsc = sort.direction === 'asc';
         switch (sort.active) {
-          case 'doi':
-            return compare(a.art.doi, b.art.doi, isAsc);
           case 'ref':
             return compare(a.idRef, b.idRef, isAsc);
           case 'tit':
@@ -157,6 +205,7 @@ export class ScreeningComponent {
     }
 
   }
+
 }
 
 function compare(a: Number | String | null, b: Number | String | null, isAsc: boolean) {

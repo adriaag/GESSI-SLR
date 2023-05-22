@@ -24,6 +24,7 @@ export class MainComponent implements OnInit {
   references: Reference[] = [];
   errors: ImportError[] = [];
   dlNames: String[] = [];
+  usernames: string[] = []
   IC: Criteria[] = [];
   EC: Criteria[] = [];
 
@@ -140,6 +141,15 @@ export class MainComponent implements OnInit {
   })
   }
 
+  getUsernames(): void {
+    this.dataService.getUsernames().subscribe({
+      next: (resposta) => {
+        this.usernames = resposta
+        console.log(resposta , 'Users');
+      }
+    })
+  }
+
   //funció temporal. L'ubicació de projects ha de canviar
   defaultProject(): void {
     console.log('selected project', this.selectedProject)
@@ -189,6 +199,7 @@ export class MainComponent implements OnInit {
       console.log(resposta)
       this.getProjects()
       this.getDLNames()
+      this.getUsernames()
     },error: (error) => {
       this.loginDialog()
 
