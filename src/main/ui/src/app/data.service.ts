@@ -70,7 +70,11 @@ export class DataService {
   }
 
   updateReferenceUserDesignationCriteria(idProject: number, userDesignation: UserDesignation): Observable<{message: string}> {
-    return this.http.put<{message: string}>(`${this.rootUrl}/projects/${idProject}/references/${userDesignation.idRef}/userDesignations/${userDesignation.numDesignation}`,userDesignation,this.setHttpHeader())
+    const formData: FormData = new FormData();
+    formData.append('username', userDesignation.username);
+    formData.append('processed', String(userDesignation.processed));
+    formData.append('criteriaList', String(userDesignation.criteriaList));
+    return this.http.put<{message: string}>(`${this.rootUrl}/projects/${idProject}/references/${userDesignation.idRef}/userDesignations/${userDesignation.numDesignation}`,formData,this.setHttpHeader())
     .pipe(
       tap(data => console.log("Data:", data)),
       catchError(this.handleError),
