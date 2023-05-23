@@ -128,14 +128,15 @@ public class Api implements ErrorController{
 	    }
    
     }
-    
+
     @PutMapping(value=("/projects/{id}/references/{idRef}/userDesignations/{numDesignation}"))
     public ResponseEntity<?> setUserDesignationICEC(@PathVariable("idRef") int idRef, @PathVariable("numDesignation") int numDesignation, 
-    		@RequestBody userDesignationDTO designation) {
+    		@RequestParam("username")String username, @RequestParam("processed") boolean processed, @RequestParam("criteriaList") List<Integer> criteriaList) {
         try {
         	if (numDesignation != 1 && numDesignation != 2) 
         		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         	
+        	userDesignationDTO designation = new userDesignationDTO(username, idRef, numDesignation, processed,  criteriaList);
         	UserDesignationController.addCriteria(designation);
 	        return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }

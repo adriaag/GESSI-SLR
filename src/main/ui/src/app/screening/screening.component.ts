@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -9,6 +10,7 @@ import { DataService } from '../data.service';
 import { Criteria } from '../dataModels/criteria';
 import { Exclusion } from '../dataModels/exclusion';
 import { Reference } from '../dataModels/reference';
+import { UserDesignation } from '../dataModels/userDesignation';
 import { ReferenceClassifyComponent } from '../reference-classify/reference-classify.component';
 
 @Component({
@@ -26,17 +28,23 @@ export class ScreeningComponent {
   references: Reference[] = [];
   sortedData: Reference[] = [];
   dataSource!: MatTableDataSource<Reference>;
-  displayedColumns: string[] = ['ref','tit', 'abs', 'usr1'];
+  displayedColumns: string[] = ['ref','tit', 'abs', 'usr1', 'sta1', 'icec1'];
   filterValue: string = ""
 
   refind: { [id: number] : number; } = {}
   usr1: FormArray = new FormArray<FormControl>([]);
   usrFilter: string = ""
 
-  filteredOptions: Observable<string[]> = new Observable<string[]>
-  
+  critind: { [id: number] : number; } = {}
+  crit1: FormArray = new FormArray<FormControl>([])
+  crit1Filter: string = ""
+  focusedCriteria1: number[] = []
+
+  filteredOptionsUsr1: Observable<string[]> = new Observable<string[]>
+  filteredOptionsCrit1: Observable<Criteria[]> = new Observable<Criteria[]>
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild('crit1Input') crit1Input!: ElementRef<HTMLInputElement>;
 
   constructor(private dataService: DataService, private dialog: MatDialog) {}
 
@@ -53,7 +61,12 @@ export class ScreeningComponent {
 
     merge(...this.usr1.controls.map(control => control.valueChanges))
     .subscribe((value) => {
-      this.filteredOptions = of(this.filtreUsr(value))
+      this.filteredOptionsUsr1 = of(this.filtreUsr(value))
+    })
+
+    merge(...this.crit1.controls.map(control => control.valueChanges))
+    .subscribe((value) => {
+      this.filteredOptionsCrit1 = of(this.filtreCrit(value))
     })
 
 
@@ -72,11 +85,20 @@ export class ScreeningComponent {
     this.usr1 = new FormArray<FormControl>([])
     var ind = 0
     var f
+    var c
     for (var ref of this.referenceslist) {
       ref.usersCriteria1 === null? f = new FormControl(): f = new FormControl(ref.usersCriteria1.username)
       this.usr1.push(f)
+      ref.usersCriteria1 === null? c = new FormControl(): c = new FormControl(ref.usersCriteria1.criteriaList)
+      this.crit1.push(c)
       this.refind[ref.idProjRef] = ind
       ind += 1 
+    }
+
+    ind = 0
+    for (let cri of this.exclusionCriteria) {
+      this.critind[cri.id] = ind
+      ind += 1
     }
   }
 
@@ -86,17 +108,116 @@ export class ScreeningComponent {
     return this.usernames.filter(option => option.toLowerCase().includes(filterValue));
   }
 
-  changeUser(col: number, idProjRef: number) {
-    console.log('changing user to',this.usr1.at(this.refind[idProjRef]).value)
+  filtreCrit(name: any): Criteria[] {
+    console.log(typeof name)
+    if (typeof name === "string") {
+      const filterValue = name.toLowerCase();
+      let filteredData: Criteria[] = []
+      this.filteredOptionsCrit1.subscribe({
+        next: (data) => {
+          filteredData = data
+        }
+      })
+
+      console.log('Filter',filteredData)
+
+      return this.exclusionCriteria.filter(
+        option => option.name.toLowerCase().includes(filterValue)
+        && !this.focusedCriteria1.includes(option.id)
+      )
+    }
+    return this.exclusionCriteria
+  }
+
+  changeUser(numDes: number, ref: Reference) {
+    let user = this.usr1.at(this.refind[ref.idProjRef]).value
+    this.dataService.updateReferenceUserDesignation(ref.idRef, this.idProject, user, numDes).subscribe({
+      next: (value) => {
+        this.referencesUpdated.emit()
+      }
+    })
   }
 
   resetFilter(idProjRef: number) {
     let val = this.usr1.at(this.refind[idProjRef]).value
-    val !== null? this.filteredOptions = of(this.filtreUsr(val)): this.filteredOptions = of(this.usernames)
+    val !== null? this.filteredOptionsUsr1 = of(this.filtreUsr(val)): this.filteredOptionsUsr1 = of(this.usernames)
+  }
+
+  resetFilterCriteria(usersCriteria : UserDesignation) {
+    if (usersCriteria !== null) {
+      this.filteredOptionsCrit1 = of(this.exclusionCriteria.filter((option) => !usersCriteria.criteriaList.includes(option.id)))
+      this.focusedCriteria1 = usersCriteria.criteriaList
+    }
+    else {
+      this.filteredOptionsCrit1 = of(this.exclusionCriteria)
+    }
+
+
+
   }
 
   getCtrl(i: number): FormControl<string> {
     return this.usr1.at(this.refind[i]) as FormControl<string>
+
+  }
+
+  getCritCtrl(i: number): FormControl<number[]> {
+    return this.crit1.at(this.refind[i]) as FormControl<number[]>
+  }
+
+  getCriteriaNames(ref: Reference, numD: number) {
+    var uc;
+    numD == 1? uc = ref.usersCriteria1: uc = ref.usersCriteria2
+
+    if(uc !== null) {
+      let criteria:Criteria[] = []
+      for (let id of uc.criteriaList)
+        criteria.push(this.exclusionCriteria.at(this.critind[id])!)
+      return criteria
+    }
+    return []
+  }
+
+  selectedCriteria1(event: MatAutocompleteSelectedEvent, ref: Reference): void {
+    console.log(event.option.value)
+    ref.usersCriteria1.criteriaList.push(Number(event.option.value));
+    this.crit1Input.nativeElement.value = '';
+    this.crit1.at(this.refind[ref.idProjRef]).setValue('');
+    this.addUserDesignationCriteria(ref.usersCriteria1)
+  }
+
+  addUserDesignationCriteria(uc: UserDesignation) {
+    this.dataService.updateReferenceUserDesignationCriteria(this.idProject, uc).subscribe({
+      next: (value) => {
+          this.referencesUpdated.emit()
+      }
+    })
+  }
+
+  removeCri1(ref: Reference, critId: number) {
+    const index = ref.usersCriteria1.criteriaList.indexOf(critId)
+
+    if (index >= 0) {
+      ref.usersCriteria1.criteriaList.splice(index, 1);
+    }
+
+  }
+
+  getState(ref: Reference): string {
+    if (ref.usersCriteria1 !== null) {
+      if (ref.usersCriteria1.criteriaList.length > 0) {
+        return 'out'
+      }
+      else {
+        if (ref.usersCriteria1.processed) {
+          return 'in'
+        }
+        else {
+          return 'undiecided'
+        }
+      }
+    }
+    return ''
 
   }
 

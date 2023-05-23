@@ -3,5 +3,5 @@ export interface UserDesignation {
     idRef: number,
     numDesignation: number,
     processed: boolean,
-    criteria: number[]
+    criteriaList: number[]
 }

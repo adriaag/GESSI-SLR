@@ -17,10 +17,11 @@ public class userDesignationDTO {
 		this.numDesignation = numDesignation;
 	}
 	
-	public userDesignationDTO(String username, int idRef, int numDesignation, List<Integer> criteriaList) {
+	public userDesignationDTO(String username, int idRef, int numDesignation, boolean processed, int criteriaList[]) {
 		this.username = username;
 		this.idRef = idRef;
-		this.criteriaList = criteriaList;
+		this.processed = processed;
+		//this.criteriaList = criteriaList;
 		this.numDesignation = numDesignation;
 	}
 	
