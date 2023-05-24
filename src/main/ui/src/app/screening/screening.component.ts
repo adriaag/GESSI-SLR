@@ -22,8 +22,11 @@ export class ScreeningComponent {
   @Input('references') referenceslist!: Reference[]
   @Input('idProject') idProject!: number
   @Input('exclusionCriteria') exclusionCriteria!: Criteria[]
+  @Input('inclusionCriteria') inclusionCriteria!: Criteria[]
   @Input('usernames') usernames!: string[]
   @Output() referencesUpdated = new EventEmitter();
+
+  criterias: Criteria[] = [];
 
   references: Reference[] = [];
   sortedData: Reference[] = [];
@@ -50,6 +53,7 @@ export class ScreeningComponent {
 
   ngOnChanges() {
     this.references = this.referenceslist
+    this.criterias = this.exclusionCriteria.concat(this.inclusionCriteria)
     this.uploadUsr1()
     this.sortedData = this.references.slice();
     this.dataSource = new MatTableDataSource(this.referenceslist);
@@ -89,14 +93,21 @@ export class ScreeningComponent {
     for (var ref of this.referenceslist) {
       ref.usersCriteria1 === null? f = new FormControl(): f = new FormControl(ref.usersCriteria1.username)
       this.usr1.push(f)
-      ref.usersCriteria1 === null? c = new FormControl(): c = new FormControl(ref.usersCriteria1.criteriaList)
+
+      if(ref.usersCriteria1 === null) {
+        c = new FormControl()
+      }
+      else {
+        c = new FormControl(ref.usersCriteria1.criteriaList)
+      }
       this.crit1.push(c)
       this.refind[ref.idProjRef] = ind
       ind += 1 
     }
+    console.log("bucle")
 
     ind = 0
-    for (let cri of this.exclusionCriteria) {
+    for (let cri of this.criterias) {
       this.critind[cri.id] = ind
       ind += 1
     }
@@ -121,12 +132,12 @@ export class ScreeningComponent {
 
       console.log('Filter',filteredData)
 
-      return this.exclusionCriteria.filter(
+      return this.criterias.filter(
         option => option.name.toLowerCase().includes(filterValue)
         && !this.focusedCriteria1.includes(option.id)
       )
     }
-    return this.exclusionCriteria
+    return this.criterias
   }
 
   changeUser(numDes: number, ref: Reference) {
@@ -145,11 +156,11 @@ export class ScreeningComponent {
 
   resetFilterCriteria(usersCriteria : UserDesignation) {
     if (usersCriteria !== null) {
-      this.filteredOptionsCrit1 = of(this.exclusionCriteria.filter((option) => !usersCriteria.criteriaList.includes(option.id)))
+      this.filteredOptionsCrit1 = of(this.criterias.filter((option) => !usersCriteria.criteriaList.includes(option.id)))
       this.focusedCriteria1 = usersCriteria.criteriaList
     }
     else {
-      this.filteredOptionsCrit1 = of(this.exclusionCriteria)
+      this.filteredOptionsCrit1 = of(this.criterias)
     }
 
 
@@ -162,7 +173,9 @@ export class ScreeningComponent {
   }
 
   getCritCtrl(i: number): FormControl<number[]> {
-    return this.crit1.at(this.refind[i]) as FormControl<number[]>
+    let ctrl: FormControl<number[]> = this.crit1.at(this.refind[i]) as FormControl<number[]>
+    this.usr1.at(this.refind[i]).value !== null? ctrl.enable() : ctrl.disable()
+    return ctrl
   }
 
   getCriteriaNames(ref: Reference, numD: number) {
@@ -172,7 +185,7 @@ export class ScreeningComponent {
     if(uc !== null) {
       let criteria:Criteria[] = []
       for (let id of uc.criteriaList)
-        criteria.push(this.exclusionCriteria.at(this.critind[id])!)
+        criteria.push(this.criterias.at(this.critind[id])!)
       return criteria
     }
     return []
@@ -217,7 +230,7 @@ export class ScreeningComponent {
         }
       }
     }
-    return ''
+    return 'unassigned'
 
   }
 
@@ -234,7 +247,7 @@ export class ScreeningComponent {
     })
 
   }
-
+  //deprecated
   updateReference(id: number, type: string, idCriteria: number[]) {
     this.dataService.editReferenceCriteria(id,this.idProject,type,idCriteria).subscribe((resposta) => {
       this.referencesUpdated.emit()
