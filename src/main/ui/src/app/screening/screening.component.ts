@@ -31,7 +31,7 @@ export class ScreeningComponent {
   references: Reference[] = [];
   sortedData: Reference[] = [];
   dataSource!: MatTableDataSource<Reference>;
-  displayedColumns: string[] = ['ref','tit', 'abs', 'usr1', 'sta1','icec1','usr2','sta2','icec2'];
+  displayedColumns: string[] = ['ref','tit', 'abs', 'usr1', 'sta1','icec1','usr2','sta2','icec2', 'cons'];
   filterValue: string = ""
 
   refind: { [id: number] : number; } = {}
@@ -351,6 +351,31 @@ export class ScreeningComponent {
 
   }
 
+  getConsensusState(ref: Reference): string {
+    let sta1 = this.getState(ref, 1)
+    let sta2 = this.getState(ref, 2)
+
+    if ((sta1 === 'in' || sta1 == 'out') && (sta2 === 'in' || sta2 === 'out')) {
+      if (sta1 === sta2) {
+        if (sta1 == 'in') return 'YES'
+        else {
+          let clist1 = ref.usersCriteria1.criteriaList
+          let clist2 = ref.usersCriteria2.criteriaList
+          if(compareArrays(clist1,clist2))
+            return 'YES'
+          else return 'PARTLY'
+        }
+
+      }
+      else {
+        return 'NO'
+      }
+
+    }
+    return ''
+
+  }
+
   editReferenceDialog(ref: Reference) {
     let referenceEditDialog = this.dialog.open(ReferenceClassifyComponent, {
       data: {
@@ -494,5 +519,15 @@ function compareCriteria(a: Exclusion[], b: Exclusion[], isAsc: boolean) {
       return 1 * (isAsc ? 1 : -1)
     }
   }
+}
+
+function compareArrays(a: number[], b: number[]) {
+  if (a.length != b.length) return false
+  let dic : { [id: number] : boolean } = {}
+  for(let num of a) dic[num] = true
+  for(let num of b) 
+    if (dic[num] === null) return false
+  
+  return true
 }
 
