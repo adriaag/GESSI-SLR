@@ -42,9 +42,9 @@
             <td mat-cell *matCellDef="let row;index as i;">
                 <mat-form-field class="example-full-width">
                     <mat-label>Researcher</mat-label>
-                    <input type="text" matInput [formControl]="$any(usr1.at(refind[row.idProjRef]))" [matAutocomplete]="auto" (focusin)="resetFilter(row.idProjRef)">
-                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="changeUser(1, row)" (closed)="recoverUsername(row.idProjRef)">
-                        <mat-option *ngFor="let option of filteredOptionsUsr1 | async" [value]="option">
+                    <input type="text" matInput [formControl]="$any(usr1.at(refind[row.idProjRef]))" [matAutocomplete]="auto" (focusin)="resetFilter(row.idProjRef,1)">
+                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="changeUser(1, row)" (closed)="recoverUsername(row.idProjRef,1)">
+                        <mat-option *ngFor="let option of filteredOptionsUsr | async" [value]="option">
                             {{option}}
                           </mat-option>
                     </mat-autocomplete>
@@ -58,12 +58,12 @@
                 {{getState(row)}}
         </ng-container>
 
-        <ng-container matColumnDef="icec1">
+        <ng-container matColumnDef="icec1" >
             <th mat-header-cell *matHeaderCellDef mat-sort-header>not IC/EC Researcher #1</th>
             <td mat-cell class="doubleCell" *matCellDef="let row">
                 <mat-form-field class="example-chip-list">
                     <mat-label>Select not IC/EC</mat-label>
-                    <mat-chip-grid #chipGrid aria-label="ICEC selection" [formControl]="$any(crit1.at(refind[row.idProjRef]))">
+                    <mat-chip-grid #chipGrid aria-label="ICEC selection" [formControl]="$any(critEnabled1.at(refind[row.idProjRef]))">
                       <mat-chip-row *ngFor="let criteria of getCriteriaNames(row, 1)" (removed)="removeCri1(row, criteria.id)">
                         {{criteria.type === "exclusion" ? criteria.name: "not "+criteria.name}}
                         <button matChipRemove [attr.aria-label]="'remove ' + criteria">
@@ -71,17 +71,17 @@
                         </button>
                       </mat-chip-row>
                     </mat-chip-grid>
-                    <input placeholder="Select ICEC..." #crit1Input [formControl]="$any(crit1.at(refind[row.idProjRef]))"
-                      [matChipInputFor]="chipGrid" [matAutocomplete]="auto" (focusin)="resetFilterCriteria(row.usersCriteria1)">
-                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedCriteria1($event,row)">
-                      <mat-option *ngFor="let criteria of filteredOptionsCrit1 | async" [value]="criteria.id">
+                    <input placeholder="Select ICEC..." #crit1Input [matChipInputFor]="chipGrid" [matAutocomplete]="auto" 
+                    [formControl]="$any(crit1.at(refind[row.idProjRef]))" (focusin)="resetFilterCriteria(row.usersCriteria1)">
+                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedCriteria($event,row,1)">
+                      <mat-option *ngFor="let criteria of filteredOptionsCrit | async" [value]="criteria.id">
                         {{criteria.type === "exclusion" ? criteria.name: "not "+criteria.name}}
                       </mat-option>
                     </mat-autocomplete>
                 </mat-form-field>
                 <button mat-icon-button class="boto" (click)="updateCriteria1(row)">
-                    <mat-icon class="icVerd" *ngIf="$any(crit1.at(refind[row.idProjRef])).enabled">done</mat-icon>
-                    <mat-icon class="icNeg" *ngIf="$any(crit1.at(refind[row.idProjRef])).disabled && row.usersCriteria1 !== null">edit</mat-icon>
+                    <mat-icon class="icVerd" *ngIf="$any(critEnabled1.at(refind[row.idProjRef])).enabled">done</mat-icon>
+                    <mat-icon class="icNeg" *ngIf="$any(critEnabled1.at(refind[row.idProjRef])).disabled && row.usersCriteria1 !== null">edit</mat-icon>
                 </button>
             </td>   
         </ng-container>
