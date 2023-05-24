@@ -5,12 +5,9 @@ import { Researcher } from '../dataModels/researcher';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { Exclusion } from '../dataModels/exclusion';
 import { MatDialog} from '@angular/material/dialog';
 import { ReferenceInfoComponent } from '../reference-info/reference-info.component';
-import { ReferenceClassifyComponent } from '../reference-classify/reference-classify.component';
 import { Criteria } from '../dataModels/criteria';
-import { TooltipModule } from 'ng2-tooltip-directive-ngfix';
 import { MatTooltipDefaultOptions, MAT_TOOLTIP_DEFAULT_OPTIONS } from '@angular/material/tooltip';
 
 
@@ -81,26 +78,6 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
     });
   }
 
-  editReferenceDialog(ref: Reference) {
-    let referenceEditDialog = this.dialog.open(ReferenceClassifyComponent, {
-      data: {
-        reference: ref,
-        exclusionCriteria: this.exclusionCriteria
-      }
-    })
-    referenceEditDialog.afterClosed().subscribe(result => {
-      if(result !== undefined)
-        this.updateReference(ref.idRef, result.type, result.criteria)
-    })
-
-  }
-
-  updateReference(id: number, type: string, idCriteria: number[]) {
-    this.dataService.editReferenceCriteria(id,this.idProject,type,idCriteria).subscribe((resposta) => {
-      this.referencesUpdated.emit()
-    })
-  }
-
   requestDeleteReference(reference: Reference) {
     if(confirm("Are you sure to delete reference "+ reference.art.title + " ?")) {
       this.deleteReference(reference)
@@ -130,12 +107,6 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
             }
             if(data.art.title !== null)filterText += data.art.title;
             if(data.art.ven !== null && data.art.ven.name !== null)filterText += data.art.ven.name;
-            if(data.state !== null)filterText += data.state;
-            if (data.exclusionDTOList != null) {
-              for (let exclusion of data.exclusionDTOList){
-                filterText += exclusion.nameICEC;
-              }
-            }
             if(data.art.abstractA !== null)filterText += data.art.abstractA
 
             filterText = filterText.toLowerCase()
@@ -198,10 +169,6 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
               return compare(a.art.ven.name, null, isAsc);
             }
             return compare(a.art.ven.name, b.art.ven.name, isAsc);
-          case 'sta':
-            return compare(a.state,b.state, isAsc);
-          case 'cri':
-            return compareCriteria(a.exclusionDTOList, b.exclusionDTOList, isAsc);
           case 'abs':
             return compare(String(a.art.abstractA),String(b.art.abstractA), isAsc);
           default:
@@ -268,36 +235,6 @@ function compareAuthors(a: Researcher[], b: Researcher[], isAsc: boolean) {
         return 1 * (isAsc ? 1 : -1)
       }
     }
-}
-
-function compareCriteria(a: Exclusion[], b: Exclusion[], isAsc: boolean) {
-  if (a !== null) {
-    if (b === null) {
-      return -1 * (isAsc ? 1 : -1)
-    }
-    else{
-      var nomsA = "";
-      for(let elem of a) {
-        nomsA += elem.nameICEC
-      }
-
-      var nomsB = "";
-      for(let elem of b) {
-        nomsB += elem.nameICEC
-      }
-
-      return compare(nomsA,nomsB,isAsc)
-    }
-
-  }
-  else {
-    if (b === null) {
-      return -1 * (isAsc ? 1 : -1)
-    }
-    else {
-      return 1 * (isAsc ? 1 : -1)
-    }
-  }
 }
 
 

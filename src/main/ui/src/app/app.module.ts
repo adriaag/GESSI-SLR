@@ -26,7 +26,6 @@ import { ReferenceImportComponent } from './reference-import/reference-import.co
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CriteriaComponent } from './criteria/criteria.component';
 import { CriteriaEditComponent } from './criteria-edit/criteria-edit.component';
-import { ReferenceClassifyComponent } from './reference-classify/reference-classify.component';
 import { ProjectCreateComponent } from './project-create/project-create.component';
 import { ProjectDeleteComponent } from './project-delete/project-delete.component';
 import { ReferenceImportManuallyComponent } from './reference-import-manually/reference-import-manually.component';
@@ -46,7 +45,6 @@ import { ScreeningComponent } from './screening/screening.component';
     ReferenceImportComponent,
     CriteriaComponent,
     CriteriaEditComponent,
-    ReferenceClassifyComponent,
     ProjectCreateComponent,
     ProjectDeleteComponent,
     ReferenceImportManuallyComponent,

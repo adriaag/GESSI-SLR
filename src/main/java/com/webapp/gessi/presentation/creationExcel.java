@@ -68,7 +68,7 @@ public class creationExcel {
             if (auxEst != null && (auxEst.equals("duplicated") || auxEst.equals("out"))) stRow = styleD;
 
             Cell cell = row.createCell(0);
-            cell.setCellValue(ref.getIdRef());
+            cell.setCellValue(ref.getIdProjRef());
             cell.setCellStyle(stRow);
 
             cell = row.createCell(1);

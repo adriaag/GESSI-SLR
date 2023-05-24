@@ -17,7 +17,7 @@ public class consensusCriteria {
                     "CONSTRAINT criteriaCC_FK FOREIGN KEY (idICEC) REFERENCES criteria(id) ON UPDATE RESTRICT ON DELETE CASCADE, " +
                     "CONSTRAINT referencies_FK FOREIGN KEY (idRef) REFERENCES referencias(idRef) ON DELETE CASCADE, " +
                     "PRIMARY KEY(idICEC, idRef))");
-            System.out.println("Created table Exclusion");
+            System.out.println("Created table consensusCriteria");
             return true;
 
         } catch (SQLException t ) {
@@ -77,37 +77,21 @@ public class consensusCriteria {
         System.out.println("Deleted row " + idICEC + ", " + idRef + " in exclusion");
     }
 
-    public static List<consensusCriteriaDTO> getByIdRef(Statement s, int idRef) throws SQLException {
+    public static consensusCriteriaDTO getByIdRef(Statement s, int idRef) throws SQLException {
         String query = "SELECT * FROM consensusCriteria WHERE IDREF = ?";
         Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setInt(1, idRef);
         ResultSet resultSet = preparedStatement.executeQuery();
-        List<consensusCriteriaDTO> exclusionDTOList = convertResultSetToExclusionDTO(resultSet, null);
-        for (consensusCriteriaDTO value: exclusionDTOList) {
-            CriteriaDTO criteriaDTO = Criteria.getById(conn, value.getIdICEC());
-            value.setNameICEC(criteriaDTO.getName());
-        }
-
+        consensusCriteriaDTO exclusionDTOList = convertResultSetToConsensusCriteriaDTO(resultSet, idRef);
         return exclusionDTOList;
     }
 
-    public static List<consensusCriteriaDTO> getByIdICEC(Statement s, int idICEC) throws SQLException {
-        String query = "SELECT * FROM consensusCriteria WHERE IDICEC = ?";
-        Connection conn = s.getConnection();
-        PreparedStatement preparedStatement = conn.prepareStatement(query);
-        preparedStatement.setInt(1, idICEC);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        CriteriaDTO criteriaDTO = Criteria.getById(conn, idICEC);
-        return convertResultSetToExclusionDTO(resultSet, criteriaDTO.getName());
-    }
-
-
-    private static List<consensusCriteriaDTO> convertResultSetToExclusionDTO(ResultSet resultSet, String nameICEC) throws SQLException {
-        List<consensusCriteriaDTO> exclusionDTOList = new ArrayList<>();
+    private static consensusCriteriaDTO convertResultSetToConsensusCriteriaDTO(ResultSet resultSet, int idRef) throws SQLException {
+        List<Integer> idICEC = new ArrayList<>();
         while (resultSet.next()) {
-            exclusionDTOList.add(new consensusCriteriaDTO(resultSet.getInt("idRef"), resultSet.getInt("idICEC"), nameICEC));
+            idICEC.add(resultSet.getInt("idICEC"));
         }
-        return exclusionDTOList;
+        return new consensusCriteriaDTO(idRef,idICEC);
     }
 }

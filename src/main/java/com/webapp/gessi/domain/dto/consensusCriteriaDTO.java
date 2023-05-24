@@ -1,16 +1,15 @@
 package com.webapp.gessi.domain.dto;
 
+import java.util.List;
 
 public class consensusCriteriaDTO {
 
     private int idRef;
-    private int idICEC;
-    private String nameICEC;
+    private List<Integer> idICEC;
 
-    public consensusCriteriaDTO(int idRef, int idICEC, String nameICEC) {
+    public consensusCriteriaDTO(int idRef,  List<Integer> idICEC){
         this.idRef = idRef;
         this.idICEC = idICEC;
-        this.nameICEC = nameICEC;
     }
 
     public consensusCriteriaDTO() {}
@@ -23,17 +22,9 @@ public class consensusCriteriaDTO {
         this.idRef = idRef;
     }
 
-    public String getNameICEC() {
-        return nameICEC;
-    }
+    public List<Integer> getIdICEC() { return idICEC; }
 
-    public void setNameICEC(String nameICEC) {
-        this.nameICEC = nameICEC;
-    }
-
-    public int getIdICEC() { return idICEC; }
-
-    public void setIdICEC(int idICEC) {
+    public void setIdICEC(List<Integer> idICEC) {
         this.idICEC = idICEC;
     }
 }

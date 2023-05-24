@@ -181,9 +181,8 @@ export class DataService {
     )
   }
 
-  editReferenceCriteria(idRef: number, idProject: number, state: string, criteria: number[]) {
+  editReferenceCriteria(idRef: number, idProject: number, criteria: number[]) {
     const formData: FormData = new FormData();
-    formData.append('state', state);
     formData.append('criteria', String(criteria));
     return this.http.put<string>(
       `${this.rootUrl}/projects/${idProject}/references/${idRef}`,formData,this.setHttpHeader())

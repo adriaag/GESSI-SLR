@@ -13,37 +13,30 @@ import java.util.List;
 
 public class ConsensusCriteriaController {
 
-    public static void insertRows(List<consensusCriteriaDTO> consensusCriteriaDTOList) throws SQLException {
+    public static void insertRows(consensusCriteriaDTO consensusCriteriaDTO) throws SQLException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         Statement s;
         s = conn.createStatement();
-        for(consensusCriteriaDTO value: consensusCriteriaDTOList) {
-        	consensusCriteria.insertRow(s, value.getIdICEC(), value.getIdRef());	
+        for(int value: consensusCriteriaDTO.getIdICEC()) {
+        	consensusCriteria.insertRow(s, value, consensusCriteriaDTO.getIdRef());	
         }
         s.getConnection().commit();
     }
 
-    public static void deleteRows(List<consensusCriteriaDTO> consensusCriteriaDTOList) throws SQLException {
+    public static void deleteRows(consensusCriteriaDTO consensusCriteriaDTO) throws SQLException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         Statement s;
         s = conn.createStatement();
-        for (consensusCriteriaDTO value: consensusCriteriaDTOList) {
-        	consensusCriteria.deleteRow(s, value.getIdICEC(), value.getIdRef());
+        for(int value: consensusCriteriaDTO.getIdICEC()) {
+        	consensusCriteria.deleteRow(s, value, consensusCriteriaDTO.getIdRef());
         }
         s.getConnection().commit();
     }
 
-    public static List<consensusCriteriaDTO> getByIdRef(Statement s, int idRef) throws SQLException {
+    public static consensusCriteriaDTO getByIdRef(Statement s, int idRef) throws SQLException {
         return consensusCriteria.getByIdRef(s, idRef);
-    }
-
-    public static List<consensusCriteriaDTO> getByIdICEC(int idICEC) throws SQLException {
-        ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
-        Connection conn = ctx.getBean(Connection.class);
-        Statement s = conn.createStatement();
-        return consensusCriteria.getByIdICEC(s, idICEC);
     }
 
 }

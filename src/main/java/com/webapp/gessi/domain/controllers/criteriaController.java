@@ -41,12 +41,6 @@ public class criteriaController {
 
     public static void deleteCriteria(@PathVariable("id") int id) throws SQLException {
         System.out.println("delete criteria en controller criteria");
-        List<consensusCriteriaDTO> exclusionDTOList = ConsensusCriteriaController.getByIdICEC(id);
-        for (consensusCriteriaDTO exclusionDTO : exclusionDTOList) {
-            referenceDTO referenceDTO = ReferenceController.getReference(exclusionDTO.getIdRef());
-            if (referenceDTO.getExclusionDTOList().size() <= 1)
-                ReferenceController.updateState(referenceDTO.getIdRef(), null);
-        }
         Criteria.delete(id);
 
     }

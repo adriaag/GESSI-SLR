@@ -147,9 +147,9 @@ public class Api implements ErrorController{
     }
     
     @PutMapping(value=("/projects/{id}/references/{idRef}"))
-    public ResponseEntity<?> editReference(@PathVariable("idRef") int idRef, @RequestParam(name = "state") String state, @RequestParam(name = "criteria") List<Integer> criteria) {
+    public ResponseEntity<?> editReference(@PathVariable("idRef") int idRef, @RequestParam(name = "criteria") List<Integer> criteria) {
         try {
-	    	ReferenceController.updateReference(idRef, state, criteria);
+	    	ReferenceController.updateReference(idRef,criteria);
 	        return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
         catch (SQLException e) {

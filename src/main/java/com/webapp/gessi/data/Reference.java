@@ -21,7 +21,7 @@ public class Reference {
 
     public static int insertRow(Statement s, String doi, String idDL, String estado, int idProject) throws SQLException {
     	String getIdProjRefAntQuery = "SELECT max(idProjRef) FROM referencias where idProject = ?";
-        String query = "INSERT INTO referencias(doi, idDL, state, idProject, idProjRef) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO referencias(doi, idDL, idProject, idProjRef) VALUES (?, ?, ?, ?)";
         Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(getIdProjRefAntQuery);
         preparedStatement.setInt(1,idProject);
@@ -37,10 +37,8 @@ public class Reference {
         preparedStatement.setString(1, truncate(doi, doiMaxLength));
         if (idDL != null) preparedStatement.setString(2, idDL);
         else preparedStatement.setNull(2, java.sql.Types.VARCHAR);
-        if (estado != null) preparedStatement.setString(3, estado);
-        else preparedStatement.setNull(3, java.sql.Types.VARCHAR);
-        preparedStatement.setInt(4, idProject);
-        preparedStatement.setInt(5, idProjRef);
+        preparedStatement.setInt(3, idProject);
+        preparedStatement.setInt(4, idProjRef);
         preparedStatement.execute();
         System.out.println("Inserted row with doi "+ doi +", idDL.. in referencias");
         conn.commit();
@@ -62,13 +60,12 @@ public class Reference {
         try {
             s.execute("create table referencias(" +
                     "idRef INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
-                    "doi varchar(50), idDL INT, state VARCHAR(10), idProject INT, " +
+                    "doi varchar(50), idDL INT, idProject INT, " +
                     "idProjRef INT NOT NULL, "+
                     "PRIMARY KEY(idRef), unique(doi, idDL, idProject), unique(idProjRef,idProject), " +
                     "CONSTRAINT DL_FK_R FOREIGN KEY (idDL) REFERENCES digitalLibraries (idDL) ON DELETE CASCADE," +
                     "CONSTRAINT AR_FK_R FOREIGN KEY (doi) REFERENCES articles (doi) ON DELETE CASCADE," +
-                    "CONSTRAINT PR_FK_R FOREIGN KEY (idProject) REFERENCES project (id) ON DELETE CASCADE," +             
-                    "CONSTRAINT state_chk CHECK (state IN ( 'in', 'out')))");
+                    "CONSTRAINT PR_FK_R FOREIGN KEY (idProject) REFERENCES project (id) ON DELETE CASCADE)");
             System.out.println("Created table referencias");
         } catch (SQLException e) {
             if (e.getSQLState().equals("X0Y32"))
@@ -120,16 +117,14 @@ public class Reference {
             int idR = rs.getInt(1);
             String doiR = rs.getString(2);
             int dlR = rs.getInt(3);
-            String estado = rs.getString(4);
-            int idProjRef = rs.getInt(6);
-            List<consensusCriteriaDTO> exclusionDTOList = null;
-            if (Objects.equals(estado, "out")) {
-                Statement s1 = conn.createStatement();
-                exclusionDTOList = consensusCriteria.getByIdRef(s1, idR);
-            }
+            int idProjRef = rs.getInt(5);
+            consensusCriteriaDTO exclusionDTOList = null;
+            Statement s1 = conn.createStatement();
+            exclusionDTOList = consensusCriteria.getByIdRef(s1, idR);
+            
             userDesignationDTO usersCriteria1 = userDesignation.getByIdRefNumDes(s,idR, 1);
             userDesignationDTO usersCriteria2 = userDesignation.getByIdRefNumDes(s,idR, 2);
-            referenceDTO NewRef = new referenceDTO( idR, doiR, dlR, idProject, estado, idProjRef, exclusionDTOList, usersCriteria1, usersCriteria2);
+            referenceDTO NewRef = new referenceDTO( idR, doiR, dlR, idProject, idProjRef, exclusionDTOList, usersCriteria1, usersCriteria2);
             obtainReferenceDTO(conn, NewRef, doiR, dlR);
 
             refList.add(NewRef);
@@ -357,9 +352,9 @@ public class Reference {
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.next();
         referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
-                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), resultSet.getInt("idProjRef"),null, null, null);
-        List<consensusCriteriaDTO> exclusionDTOList = consensusCriteria.getByIdRef(conn.createStatement(), idR);
-        referenceDTO.setExclusionDTOList(exclusionDTOList);
+                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getInt("idProjRef"),null, null, null);
+        consensusCriteriaDTO exclusionDTOList = consensusCriteria.getByIdRef(conn.createStatement(), idR);
+        referenceDTO.setConsensusCriteria(exclusionDTOList);
         return referenceDTO;
     }
 
@@ -385,6 +380,7 @@ public class Reference {
         conn.commit();
         return resultSet;
     }
+    
     static void updateEstateReferences(Statement s, int idRef, int idDuplicateCriteria) throws SQLException {
         String query = "update referencias set state = 'out' where IDREF = ?";
 
@@ -396,25 +392,6 @@ public class Reference {
         consensusCriteria.insertRow(s, idDuplicateCriteria, idRef);
     }
 
-    public static void update(int idRef, String estado) throws SQLException {
-    	
-    ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
-    Connection conn = ctx.getBean(Connection.class);
-    Statement s = conn.createStatement();
-    
-    String query = "update referencias set state = ? WHERE idRef = ?";
-    conn = s.getConnection();
-    PreparedStatement preparedStatement = conn.prepareStatement(query);
-    preparedStatement.setInt(2, idRef);
-    
-    if ((estado == null || estado.isEmpty()))
-    	preparedStatement.setString(1, null);
-    else
-    	preparedStatement.setString(1, estado);
-    preparedStatement.execute();
-    conn.commit();
-    }
-    
     public static referenceDTO addReferenceManually(Statement s, referenceDTOadd referenceData, int idProject) throws SQLException {
     	article.insertRowManually(s, referenceData);
     	int idRef = insertRow(s, referenceData.getDoi(), "-1", null, idProject);  
@@ -422,13 +399,6 @@ public class Reference {
     	return getReference(s.getConnection(), idRef);
     }
     
-
-    private static List<consensusCriteriaDTO> convertResultSetToExclusionDTO(ResultSet resultSet, List<consensusCriteriaDTO> exclusionDTOList) throws SQLException {
-        while (resultSet.next()) {
-            exclusionDTOList.add(new consensusCriteriaDTO(resultSet.getInt("idRef"), resultSet.getInt("idICEC"), resultSet.getString("name")));
-        }
-        return exclusionDTOList;
-    }
 
     
     private static String truncate(String text, int maxValue) {

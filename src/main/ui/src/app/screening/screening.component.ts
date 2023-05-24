@@ -8,10 +8,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { map, merge, Observable, of, startWith } from 'rxjs';
 import { DataService } from '../data.service';
 import { Criteria } from '../dataModels/criteria';
-import { Exclusion } from '../dataModels/exclusion';
+import { ConsensusCriteria } from '../dataModels/consensusCriteria';
 import { Reference } from '../dataModels/reference';
 import { UserDesignation } from '../dataModels/userDesignation';
-import { ReferenceClassifyComponent } from '../reference-classify/reference-classify.component';
 
 @Component({
   selector: 'app-screening',
@@ -31,7 +30,7 @@ export class ScreeningComponent {
   references: Reference[] = [];
   sortedData: Reference[] = [];
   dataSource!: MatTableDataSource<Reference>;
-  displayedColumns: string[] = ['ref','tit', 'abs', 'usr1', 'sta1','icec1','usr2','sta2','icec2', 'cons'];
+  displayedColumns: string[] = ['ref','tit', 'usr1', 'sta1','icec1','usr2','sta2','icec2', 'cons','disc'];
   filterValue: string = ""
 
   refind: { [id: number] : number; } = {}
@@ -43,6 +42,9 @@ export class ScreeningComponent {
   crit2: FormArray = new FormArray<FormControl>([])
   critEnabled2: FormArray = new FormArray<FormControl>([])
   usr2:  FormArray = new FormArray<FormControl>([])
+
+  critDisc: FormArray = new FormArray<FormControl>([])
+  critDiscEnabled: FormArray = new FormArray<FormControl>([])
   
   
   focusedCriteria: number[] = []
@@ -53,6 +55,8 @@ export class ScreeningComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('crit1Input') crit1Input!: ElementRef<HTMLInputElement>;
+  @ViewChild('crit2Input') crit2Input!: ElementRef<HTMLInputElement>;
+  @ViewChild('crit3Input') crit3Input!: ElementRef<HTMLInputElement>;
 
   constructor(private dataService: DataService, private dialog: MatDialog) {}
 
@@ -93,6 +97,12 @@ export class ScreeningComponent {
       this.filteredOptionsCrit = of(this.filtreCrit(value))
     })
 
+    merge(...this.critDisc.controls.map(control => control.valueChanges))
+    .subscribe((value) => {
+      console.log('criteris2',value)
+      this.filteredOptionsCrit = of(this.filtreCrit(value))
+    })
+
 
 
   }
@@ -120,6 +130,7 @@ export class ScreeningComponent {
     var c
     var cEnable1
     var cEnable2
+    var cEnable3
 
     for (var ref of this.referenceslist) {
       ref.usersCriteria1 === null? f = new FormControl(): f = new FormControl(ref.usersCriteria1.username)
@@ -154,6 +165,22 @@ export class ScreeningComponent {
       this.crit2.push(c)
       this.critEnabled2.push(cEnable2)
 
+      cEnable3 = new FormControl()
+
+      if(ref.exclusionDTOList === null) {
+        c = new FormControl()
+      }
+      else {
+        c = new FormControl(ref.exclusionDTOList)
+      }
+      
+      let state = this.getConsensusState(ref)
+      if( state === 'YES' || state === '') cEnable3.disable()
+
+      this.critDisc.push(c)
+      this.critDiscEnabled.push(cEnable3)
+      
+      
 
       this.refind[ref.idProjRef] = ind
       ind += 1 
@@ -227,19 +254,23 @@ export class ScreeningComponent {
   }
 
   resetFilterCriteria(usersCriteria : UserDesignation) {
-    console.log('reset', usersCriteria)
     if (usersCriteria !== null) {
       this.filteredOptionsCrit = of(this.criterias.filter((option) => !usersCriteria.criteriaList.includes(option.id)))
       this.focusedCriteria = usersCriteria.criteriaList
-      console.log('uc no nul')
     }
     else {
       this.filteredOptionsCrit = of(this.criterias)
-      console.log('uc nul')
     }
-    console.log(this.criterias.filter((option) => !usersCriteria.criteriaList.includes(option.id)))
+  }
 
-
+  resetFilterCriteriaDecision(consCrit: ConsensusCriteria) {
+    if (consCrit !== null) {
+      this.filteredOptionsCrit = of(this.criterias.filter((option) => !consCrit.idICEC.includes(option.id)))
+      this.focusedCriteria = consCrit.idICEC
+    }
+    else {
+      this.filteredOptionsCrit = of(this.criterias)
+    }
 
   }
 
@@ -251,6 +282,16 @@ export class ScreeningComponent {
       let criteria:Criteria[] = []
       for (let id of uc.criteriaList)
         criteria.push(this.criterias.at(this.critind[id])!)
+      return criteria
+    }
+    return []
+  }
+
+  getCriteriaNamesDecision(ref: Reference) {
+    if (ref.exclusionDTOList !== null) {
+      let criteria: Criteria[] = []
+      for (let conCrit of ref.exclusionDTOList.idICEC)
+        criteria.push(this.criterias.at(this.critind[conCrit])!)
       return criteria
     }
     return []
@@ -268,51 +309,78 @@ export class ScreeningComponent {
     }
     else {
       ref.usersCriteria2.criteriaList.push(Number(event.option.value));
-      //this.crit2Input.nativeElement.value = '';
+      this.crit2Input.nativeElement.value = '';
     
     }
     critCtrl.at(this.refind[ref.idProjRef]).setValue(null);
   }
 
-  addUserDesignationCriteria(uc: UserDesignation) {
+  selectedCriteriaDecision(event: MatAutocompleteSelectedEvent, ref: Reference) {
+    this.crit3Input.nativeElement.value = '';
+    ref.exclusionDTOList.idICEC.push(event.option.value);
+    this.critDisc.at(this.refind[ref.idProjRef]).setValue(null);
+
+  }
+
+  addUserDesignationCriteria(uc: UserDesignation, idProjRef: number) {
     this.dataService.updateReferenceUserDesignationCriteria(this.idProject, uc).subscribe({
       next: (value) => {
-          //this.referencesUpdated.emit()
+        let state = this.getConsensusState(this.references.at(this.refind[idProjRef])!)
+        if(state === "NO" || state == "PARTLY")
+          this.critDiscEnabled.at(this.refind[idProjRef]).enable()
       }
     })
+  }
+
+  addConsensusCriteria(cc: ConsensusCriteria) {
+    this.dataService.editReferenceCriteria(cc.idRef, this.idProject, cc.idICEC).subscribe({
+      next: (value)=> {
+
+      }
+    })
+
   }
 
   updateCriteria1(ref: Reference) {
     if (this.critEnabled1.at(this.refind[ref.idProjRef]).enabled) {
       ref.usersCriteria1.processed = true
-      this.addUserDesignationCriteria(ref.usersCriteria1)
       this.critEnabled1.at(this.refind[ref.idProjRef]).disable()
     }
     else {
       if(ref.usersCriteria1 !== null) {
-        ref.usersCriteria1.processed = false
-        this.addUserDesignationCriteria(ref.usersCriteria1)
+        ref.usersCriteria1.processed = false     
         this.critEnabled1.at(this.refind[ref.idProjRef]).enable()
       }
       
     }
+    this.addUserDesignationCriteria(ref.usersCriteria1, ref.idProjRef)
 
   }
 
   updateCriteria2(ref: Reference) {
     if (this.critEnabled2.at(this.refind[ref.idProjRef]).enabled) {
-      ref.usersCriteria2.processed = true
-      this.addUserDesignationCriteria(ref.usersCriteria2)
+      ref.usersCriteria2.processed = true     
       this.critEnabled2.at(this.refind[ref.idProjRef]).disable()
     }
     else {
       if(ref.usersCriteria2 !== null) {
         ref.usersCriteria2.processed = false
-        this.addUserDesignationCriteria(ref.usersCriteria2)
         this.critEnabled2.at(this.refind[ref.idProjRef]).enable()
       }
       
     }
+    this.addUserDesignationCriteria(ref.usersCriteria2, ref.idProjRef)
+
+  }
+
+  updateCriteriaDecision(ref: Reference) {
+    if (this.critDiscEnabled.at(this.refind[ref.idProjRef]).enabled) 
+      this.critDiscEnabled.at(this.refind[ref.idProjRef]).disable()
+    else {
+      if(ref.exclusionDTOList !== null) 
+        this.critDiscEnabled.at(this.refind[ref.idProjRef]).enable()
+    }
+    this.addConsensusCriteria(ref.exclusionDTOList)
 
   }
 
@@ -332,6 +400,15 @@ export class ScreeningComponent {
     if (index >= 0) {
       uc.criteriaList.splice(index, 1);
       //this.addUserDesignationCriteria(ref.usersCriteria1)
+    }
+
+  }
+
+  removeCriDecision(ref: Reference, critId: number) {
+    const index = ref.exclusionDTOList.idICEC.indexOf(critId)
+
+    if (index >= 0) {
+      ref.exclusionDTOList.idICEC.splice(index, 1);
     }
 
   }
@@ -376,26 +453,6 @@ export class ScreeningComponent {
 
   }
 
-  editReferenceDialog(ref: Reference) {
-    let referenceEditDialog = this.dialog.open(ReferenceClassifyComponent, {
-      data: {
-        reference: ref,
-        exclusionCriteria: this.exclusionCriteria
-      }
-    })
-    referenceEditDialog.afterClosed().subscribe(result => {
-      if(result !== undefined)
-        this.updateReference(ref.idRef, result.type, result.criteria)
-    })
-
-  }
-  //deprecated
-  updateReference(id: number, type: string, idCriteria: number[]) {
-    this.dataService.editReferenceCriteria(id,this.idProject,type,idCriteria).subscribe((resposta) => {
-      this.referencesUpdated.emit()
-    })
-  }
-
   //possible optimització precomputant-ho quan es carreguen les dades
   filterData() {
     let filterFunction = 
@@ -412,12 +469,6 @@ export class ScreeningComponent {
             }
             if(data.art.title !== null)filterText += data.art.title;
             if(data.art.ven !== null && data.art.ven.name !== null)filterText += data.art.ven.name;
-            if(data.state !== null)filterText += data.state;
-            if (data.exclusionDTOList != null) {
-              for (let exclusion of data.exclusionDTOList){
-                filterText += exclusion.nameICEC;
-              }
-            }
             if(data.art.abstractA !== null)filterText += data.art.abstractA
 
             filterText = filterText.toLowerCase()
@@ -447,11 +498,7 @@ export class ScreeningComponent {
           case 'ref':
             return compare(a.idRef, b.idRef, isAsc);
           case 'tit':
-            return compare(a.art.title, b.art.title, isAsc);
-          case 'sta':
-            return compare(a.state,b.state, isAsc);
-          case 'cri':
-            return compareCriteria(a.exclusionDTOList, b.exclusionDTOList, isAsc);
+            return compare(a.art.title, b.art.title, isAsc);    
           case 'abs':
             return compare(String(a.art.abstractA),String(b.art.abstractA), isAsc);
           default:
@@ -489,36 +536,6 @@ function compare(a: Number | String | null, b: Number | String | null, isAsc: bo
       return (a !== null ? -1 : 1) * (isAsc ? 1 : -1);
     }
     return (a > b ? -1 : 1) * (isAsc ? 1 : -1);
-}
-
-function compareCriteria(a: Exclusion[], b: Exclusion[], isAsc: boolean) {
-  if (a !== null) {
-    if (b === null) {
-      return -1 * (isAsc ? 1 : -1)
-    }
-    else{
-      var nomsA = "";
-      for(let elem of a) {
-        nomsA += elem.nameICEC
-      }
-
-      var nomsB = "";
-      for(let elem of b) {
-        nomsB += elem.nameICEC
-      }
-
-      return compare(nomsA,nomsB,isAsc)
-    }
-
-  }
-  else {
-    if (b === null) {
-      return -1 * (isAsc ? 1 : -1)
-    }
-    else {
-      return 1 * (isAsc ? 1 : -1)
-    }
-  }
 }
 
 function compareArrays(a: number[], b: number[]) {

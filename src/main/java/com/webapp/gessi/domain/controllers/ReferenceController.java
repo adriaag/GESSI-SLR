@@ -64,23 +64,20 @@ public class ReferenceController {
         Reference.create();
     }
 
-    public static void updateReference(int idRef, String estado, List<Integer> applCriteria) throws SQLException {
-        Reference.update(idRef, estado);
+    public static void updateReference(int idRef, List<Integer> applCriteria) throws SQLException {
         List<Integer> applCriteriaList = new LinkedList<>(applCriteria);
         List<Integer> copyApplCriteriaList = new LinkedList<>(applCriteria);
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Statement s = ctx.getBean(Connection.class).createStatement();
-        List<Integer> currentExclusionDTOList = ConsensusCriteriaController.getByIdRef(s, idRef).stream().map(consensusCriteriaDTO::getIdICEC).collect(Collectors.toCollection(LinkedList::new));
+        List<Integer> currentExclusionDTOList = ConsensusCriteriaController.getByIdRef(s, idRef).getIdICEC();
         currentExclusionDTOList.forEach(applCriteriaList::remove);
         copyApplCriteriaList.forEach(currentExclusionDTOList::remove);
         if (!applCriteriaList.isEmpty()) {
-            List<consensusCriteriaDTO> exclusionDTOList = new ArrayList<>();
-            applCriteriaList.forEach(value -> exclusionDTOList.add(new consensusCriteriaDTO(idRef, value, null)));
+            consensusCriteriaDTO exclusionDTOList = new consensusCriteriaDTO(idRef, applCriteriaList);
             ConsensusCriteriaController.insertRows(exclusionDTOList);
         }
         if (!currentExclusionDTOList.isEmpty()) {
-            List<consensusCriteriaDTO> exclusionDTOList = new ArrayList<>();
-            currentExclusionDTOList.forEach(value -> exclusionDTOList.add(new consensusCriteriaDTO(idRef, value, null)));
+        	consensusCriteriaDTO exclusionDTOList = new consensusCriteriaDTO(idRef,currentExclusionDTOList);
             ConsensusCriteriaController.deleteRows(exclusionDTOList);
         }
     }
@@ -95,10 +92,6 @@ public class ReferenceController {
     
     public static List<importErrorDTO> getErrors(int idProject) throws SQLException {
         return Reference.getErrors(idProject);
-    }
-
-    public static void updateState(int idRef, String state) throws SQLException {
-        Reference.update(idRef, state);
     }
     
     public static referenceDTO addReferenceManually (referenceDTOadd referenceData, int idProject) throws SQLException {

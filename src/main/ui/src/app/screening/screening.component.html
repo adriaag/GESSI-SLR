@@ -141,6 +141,34 @@
                 {{getConsensusState(row)}}
         </ng-container>
 
+        <ng-container matColumnDef="disc" >
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Consensus after discussion</th>
+            <td mat-cell class="doubleCell" *matCellDef="let row">
+                <mat-form-field class="example-chip-list">
+                    <mat-label>Select not IC/EC</mat-label>
+                    <mat-chip-grid #chipGrid aria-label="ICEC selection" [formControl]="$any(critDiscEnabled.at(refind[row.idProjRef]))">
+                      <mat-chip-row *ngFor="let criteria of getCriteriaNamesDecision(row)" (removed)="removeCriDecision(row, criteria.id)">
+                        {{criteria.type === "exclusion" ? criteria.name: "not "+criteria.name}}
+                        <button matChipRemove [attr.aria-label]="'remove ' + criteria">
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      </mat-chip-row>
+                    </mat-chip-grid>
+                    <input placeholder="Select ICEC..." #crit3Input [matChipInputFor]="chipGrid" [matAutocomplete]="auto" 
+                    [formControl]="$any(critDisc.at(refind[row.idProjRef]))" (focusin)="resetFilterCriteriaDecision(row.exclusionDTOList)">
+                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedCriteriaDecision($event,row)">
+                      <mat-option *ngFor="let criteria of filteredOptionsCrit | async" [value]="criteria.id">
+                        {{criteria.type === "exclusion" ? criteria.name: "not "+criteria.name}}
+                      </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+                <button mat-icon-button class="boto" (click)="updateCriteriaDecision(row)">
+                    <mat-icon class="icVerd" *ngIf="$any(critDiscEnabled.at(refind[row.idProjRef])).enabled">done</mat-icon>
+                    <mat-icon class="icNeg" *ngIf="$any(critDiscEnabled.at(refind[row.idProjRef])).disabled && getConsensusState(row) !== 'YES' && getConsensusState(row) !== ''">edit</mat-icon>
+                </button>
+            </td>   
+        </ng-container>
+
 
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
