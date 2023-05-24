@@ -65,6 +65,7 @@ public class ReferenceController {
     }
 
     public static void updateReference(int idRef, List<Integer> applCriteria) throws SQLException {
+    	
         List<Integer> applCriteriaList = new LinkedList<>(applCriteria);
         List<Integer> copyApplCriteriaList = new LinkedList<>(applCriteria);
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
@@ -72,6 +73,8 @@ public class ReferenceController {
         List<Integer> currentExclusionDTOList = ConsensusCriteriaController.getByIdRef(s, idRef).getIdICEC();
         currentExclusionDTOList.forEach(applCriteriaList::remove);
         copyApplCriteriaList.forEach(currentExclusionDTOList::remove);
+        Reference.setProcessed(s,idRef);
+        
         if (!applCriteriaList.isEmpty()) {
             consensusCriteriaDTO exclusionDTOList = new consensusCriteriaDTO(idRef, applCriteriaList);
             ConsensusCriteriaController.insertRows(exclusionDTOList);

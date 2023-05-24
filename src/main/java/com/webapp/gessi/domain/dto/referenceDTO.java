@@ -20,10 +20,12 @@ public class referenceDTO implements Serializable {
     private digitalLibraryDTO dl;
     private userDesignationDTO usersCriteria1;
     private userDesignationDTO usersCriteria2;
+    private boolean consensusCriteriaProcessed;
 
 
     public referenceDTO(int idRef, String doi, int idDL, int idProject, int idProjRef, 
-    		consensusCriteriaDTO exclusionDTOList, userDesignationDTO usersCriteria1, userDesignationDTO usersCriteria2) {
+    		consensusCriteriaDTO exclusionDTOList, userDesignationDTO usersCriteria1, 
+    		userDesignationDTO usersCriteria2, boolean consensusCriteriaProcessed) {
         this.idRef = idRef;
         this.doi = doi;
         this.idDL = idDL;
@@ -32,6 +34,7 @@ public class referenceDTO implements Serializable {
         this.consensusCriteria = exclusionDTOList;
         this.usersCriteria1 = usersCriteria1;
         this.usersCriteria2 = usersCriteria2;
+        this.consensusCriteriaProcessed = consensusCriteriaProcessed;
     }
 
     public int getIdRef() {
@@ -111,5 +114,14 @@ public class referenceDTO implements Serializable {
     
     public void setUsersCriteria2(userDesignationDTO usersCriteria) {
     	this.usersCriteria2 = usersCriteria;
+    }
+    
+    public boolean getConsensusCriteriaProcessed() {
+    	return this.consensusCriteriaProcessed;
+ 
+    }
+    
+    public void setConsensusCriteriaProcessed(boolean processed) {
+    	this.consensusCriteriaProcessed = processed;
     }
 }

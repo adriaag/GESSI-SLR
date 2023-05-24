@@ -15,6 +15,7 @@ export interface Reference {
     dl: DigitalLibrary;
     usersCriteria1: UserDesignation;
     usersCriteria2: UserDesignation;
+    consensusCriteriaProcessed: boolean;
     
 }
 

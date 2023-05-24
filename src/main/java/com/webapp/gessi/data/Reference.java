@@ -62,6 +62,7 @@ public class Reference {
                     "idRef INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
                     "doi varchar(50), idDL INT, idProject INT, " +
                     "idProjRef INT NOT NULL, "+
+                    "ConsensusCriteriaProcessed BOOLEAN DEFAULT false, " +
                     "PRIMARY KEY(idRef), unique(doi, idDL, idProject), unique(idProjRef,idProject), " +
                     "CONSTRAINT DL_FK_R FOREIGN KEY (idDL) REFERENCES digitalLibraries (idDL) ON DELETE CASCADE," +
                     "CONSTRAINT AR_FK_R FOREIGN KEY (doi) REFERENCES articles (doi) ON DELETE CASCADE," +
@@ -118,13 +119,14 @@ public class Reference {
             String doiR = rs.getString(2);
             int dlR = rs.getInt(3);
             int idProjRef = rs.getInt(5);
+            boolean processed = rs.getBoolean(6);
             consensusCriteriaDTO exclusionDTOList = null;
             Statement s1 = conn.createStatement();
             exclusionDTOList = consensusCriteria.getByIdRef(s1, idR);
             
             userDesignationDTO usersCriteria1 = userDesignation.getByIdRefNumDes(s,idR, 1);
             userDesignationDTO usersCriteria2 = userDesignation.getByIdRefNumDes(s,idR, 2);
-            referenceDTO NewRef = new referenceDTO( idR, doiR, dlR, idProject, idProjRef, exclusionDTOList, usersCriteria1, usersCriteria2);
+            referenceDTO NewRef = new referenceDTO( idR, doiR, dlR, idProject, idProjRef, exclusionDTOList, usersCriteria1, usersCriteria2, processed);
             obtainReferenceDTO(conn, NewRef, doiR, dlR);
 
             refList.add(NewRef);
@@ -352,7 +354,7 @@ public class Reference {
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.next();
         referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
-                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getInt("idProjRef"),null, null, null);
+                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getInt("idProjRef"),null, null, null, resultSet.getBoolean("consensusCriteriaProcessed"));
         consensusCriteriaDTO exclusionDTOList = consensusCriteria.getByIdRef(conn.createStatement(), idR);
         referenceDTO.setConsensusCriteria(exclusionDTOList);
         return referenceDTO;
@@ -399,6 +401,15 @@ public class Reference {
     	return getReference(s.getConnection(), idRef);
     }
     
+    public static void setProcessed(Statement s, int idRef) throws SQLException {
+    	String query = "update referencias set ConsensusCriteriaProcessed = true where IDREF = ?";
+
+        Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setInt(1, idRef);
+        preparedStatement.execute();
+        conn.commit(); 	
+    }
 
     
     private static String truncate(String text, int maxValue) {

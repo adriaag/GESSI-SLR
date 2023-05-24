@@ -30,7 +30,7 @@ export class ScreeningComponent {
   references: Reference[] = [];
   sortedData: Reference[] = [];
   dataSource!: MatTableDataSource<Reference>;
-  displayedColumns: string[] = ['ref','tit', 'usr1', 'sta1','icec1','usr2','sta2','icec2', 'cons','disc'];
+  displayedColumns: string[] = ['ref','tit', 'usr1', 'sta1','icec1','usr2','sta2','icec2', 'cons','disc','consDes'];
   filterValue: string = ""
 
   refind: { [id: number] : number; } = {}
@@ -173,9 +173,10 @@ export class ScreeningComponent {
       else {
         c = new FormControl(ref.exclusionDTOList)
       }
-      
+
+      if(ref.consensusCriteriaProcessed) cEnable3.disable()
       let state = this.getConsensusState(ref)
-      if( state === 'YES' || state === '') cEnable3.disable()
+      if(state === '' || state === "YES") cEnable3.disable()
 
       this.critDisc.push(c)
       this.critDiscEnabled.push(cEnable3)
@@ -350,6 +351,7 @@ export class ScreeningComponent {
       if(ref.usersCriteria1 !== null) {
         ref.usersCriteria1.processed = false     
         this.critEnabled1.at(this.refind[ref.idProjRef]).enable()
+        this.critDiscEnabled.at(this.refind[ref.idProjRef]).disable()
       }
       
     }
@@ -366,6 +368,7 @@ export class ScreeningComponent {
       if(ref.usersCriteria2 !== null) {
         ref.usersCriteria2.processed = false
         this.critEnabled2.at(this.refind[ref.idProjRef]).enable()
+        this.critDiscEnabled.at(this.refind[ref.idProjRef]).disable()
       }
       
     }
@@ -374,10 +377,13 @@ export class ScreeningComponent {
   }
 
   updateCriteriaDecision(ref: Reference) {
-    if (this.critDiscEnabled.at(this.refind[ref.idProjRef]).enabled) 
+    if (this.critDiscEnabled.at(this.refind[ref.idProjRef]).enabled) {
+      ref.consensusCriteriaProcessed = true
       this.critDiscEnabled.at(this.refind[ref.idProjRef]).disable()
+    }
     else {
       if(ref.exclusionDTOList !== null) 
+      ref.consensusCriteriaProcessed = false
         this.critDiscEnabled.at(this.refind[ref.idProjRef]).enable()
     }
     this.addConsensusCriteria(ref.exclusionDTOList)
@@ -448,6 +454,17 @@ export class ScreeningComponent {
         return 'NO'
       }
 
+    }
+    return ''
+
+  }
+
+  getFinalDecision(ref: Reference) {
+    let consState = this.getConsensusState(ref)
+    if (consState === "YES") return this.getState(ref,1).toUpperCase()
+    if (ref.consensusCriteriaProcessed){
+      if(ref.exclusionDTOList.idICEC.length > 0) return 'OUT'
+      else return 'IN'
     }
     return ''
 
@@ -543,7 +560,7 @@ function compareArrays(a: number[], b: number[]) {
   let dic : { [id: number] : boolean } = {}
   for(let num of a) dic[num] = true
   for(let num of b) 
-    if (dic[num] === null) return false
+    if (dic[num] === undefined) return false
   
   return true
 }
