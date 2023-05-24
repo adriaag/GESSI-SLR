@@ -120,8 +120,8 @@ public class Api implements ErrorController{
         	if (numDesignation != 1 && numDesignation != 2) 
         		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         	
-        	UserDesignationController.insertRow(username, idRef,numDesignation);
-	        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        	userDesignationDTO ud = UserDesignationController.insertRow(username, idRef,numDesignation);
+	        return ResponseEntity.status(HttpStatus.ACCEPTED).body(ud);
         }
         catch (SQLException e) {
 	    	return sqlExcHandler(e);	    	

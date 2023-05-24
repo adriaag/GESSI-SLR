@@ -16,14 +16,7 @@ public class userDesignationDTO {
 		this.criteriaList = criteriaList;
 		this.numDesignation = numDesignation;
 	}
-	
-	public userDesignationDTO(String username, int idRef, int numDesignation, boolean processed, int criteriaList[]) {
-		this.username = username;
-		this.idRef = idRef;
-		this.processed = processed;
-		//this.criteriaList = criteriaList;
-		this.numDesignation = numDesignation;
-	}
+
 	
 	public String getUsername() {
 		return this.username;

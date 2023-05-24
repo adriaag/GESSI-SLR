@@ -19,13 +19,14 @@ import com.webapp.gessi.domain.dto.userDesignationICECDTO;
 
 public class UserDesignationController {
 	
-	public static void insertRow(String username, int idRef, int numDesignation) throws SQLException {
+	public static userDesignationDTO insertRow(String username, int idRef, int numDesignation) throws SQLException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         Statement s;
         s = conn.createStatement();
         userDesignation.setUserDesignation(s, numDesignation, username, idRef);
         s.getConnection().commit();
+        return new userDesignationDTO(username,idRef, numDesignation, false, new ArrayList<Integer>());
     }
 	
 	public static void addCriteria(userDesignationDTO designation) throws SQLException {
@@ -36,6 +37,9 @@ public class UserDesignationController {
         
         String username = designation.getUsername();
         int idRef = designation.getIdRef();
+        
+        if (designation.getProcessed())
+    		userDesignation.setProcessed(s, username, idRef);
         
         List<Integer> applCriteriaList = new LinkedList<>(designation.getCriteriaList());
         List<Integer> copyApplCriteriaList = new LinkedList<>(designation.getCriteriaList());

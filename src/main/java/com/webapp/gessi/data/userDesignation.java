@@ -94,18 +94,6 @@ public class userDesignation {
 	    	
 	    }
 	    
-	    public static void addCriteria(Statement s, userDesignationDTO designation) throws SQLException {
-	    	int idRef = designation.getIdRef();
-	    	String username = designation.getUsername();
-	    	if (designation.getProcessed())
-	    		setProcessed(s, username, idRef);
-	    	
-	    	for (int idICEC: designation.getCriteriaList()) {
-	    		userDesignationICEC.insertRow(s, username, idRef, idICEC);
-	    	}
-	    	
-	    	
-	    }
 	    
 	    public static void setProcessed(Statement s, String username, int idRef) throws SQLException {
 	    	String query = "UPDATE userDesignations set processed = true WHERE username = ? and idRef = ?";
