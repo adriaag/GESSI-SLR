@@ -37,8 +37,6 @@ public class UserDesignationController {
         String username = designation.getUsername();
         int idRef = designation.getIdRef();
         
-        userDesignation.setProcessed(s, username, idRef);
-        
         List<Integer> applCriteriaList = new LinkedList<>(designation.getCriteriaList());
         List<Integer> copyApplCriteriaList = new LinkedList<>(designation.getCriteriaList());
         List<Integer> currentExclusionDTOList = UserDesignationICECController.getICECs(s, username, idRef);

@@ -74,7 +74,7 @@ public class userDesignation {
 	    public static void setUserDesignation(Statement s, int numDesignation, String username, int idRef) throws SQLException {
 	    	
 	    	String userAct = getUserDesignation(s, numDesignation, idRef);
-	    	
+
 	    	if (userAct != null) 
 	    		deleteRow(s, userAct, idRef);
 
@@ -97,7 +97,8 @@ public class userDesignation {
 	    public static void addCriteria(Statement s, userDesignationDTO designation) throws SQLException {
 	    	int idRef = designation.getIdRef();
 	    	String username = designation.getUsername();
-	    	setProcessed(s, username, idRef);
+	    	if (designation.getProcessed())
+	    		setProcessed(s, username, idRef);
 	    	
 	    	for (int idICEC: designation.getCriteriaList()) {
 	    		userDesignationICEC.insertRow(s, username, idRef, idICEC);

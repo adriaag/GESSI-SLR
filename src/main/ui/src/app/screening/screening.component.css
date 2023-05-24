@@ -48,9 +48,16 @@ table {
 .boto {
   background-color: transparent;
   background-repeat: no-repeat;
-  color: green;
   border: none;
   cursor: pointer;
   overflow: hidden;
   outline: none;
+}
+
+.icVerd {
+  color: green
+}
+
+.icNeg {
+  color: black
 }

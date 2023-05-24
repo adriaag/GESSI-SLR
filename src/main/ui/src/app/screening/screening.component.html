@@ -43,7 +43,7 @@
                 <mat-form-field class="example-full-width">
                     <mat-label>Researcher</mat-label>
                     <input type="text" matInput [formControl]="$any(usr1.at(refind[row.idProjRef]))" [matAutocomplete]="auto" (focusin)="resetFilter(row.idProjRef)">
-                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="changeUser(1, row)">
+                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="changeUser(1, row)" (closed)="recoverUsername(row.idProjRef)">
                         <mat-option *ngFor="let option of filteredOptionsUsr1 | async" [value]="option">
                             {{option}}
                           </mat-option>
@@ -79,9 +79,9 @@
                       </mat-option>
                     </mat-autocomplete>
                 </mat-form-field>
-                <button class="boto" mat-icon-button (click)="updateCriteria1(row)">
-                    <mat-icon *ngIf="$any(crit1.at(refind[row.idProjRef])).enabled">done</mat-icon>
-                    <mat-icon *ngIf="$any(crit1.at(refind[row.idProjRef])).disabled && row.usersCriteria1 !== null">edit</mat-icon>
+                <button mat-icon-button class="boto" (click)="updateCriteria1(row)">
+                    <mat-icon class="icVerd" *ngIf="$any(crit1.at(refind[row.idProjRef])).enabled">done</mat-icon>
+                    <mat-icon class="icNeg" *ngIf="$any(crit1.at(refind[row.idProjRef])).disabled && row.usersCriteria1 !== null">edit</mat-icon>
                 </button>
             </td>   
         </ng-container>

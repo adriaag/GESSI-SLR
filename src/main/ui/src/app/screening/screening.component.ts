@@ -39,14 +39,12 @@ export class ScreeningComponent {
   filterValue: string = ""
 
   refind: { [id: number] : number; } = {}
-  
-
   critind: { [id: number] : number; } = {}
-  
   focusedCriteria1: number[] = []
-
+  focusedUser1: string = ''
   filteredOptionsUsr1: Observable<string[]> = new Observable<string[]>
   filteredOptionsCrit1: Observable<Criteria[]> = new Observable<Criteria[]>
+  
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('crit1Input') crit1Input!: ElementRef<HTMLInputElement>;
@@ -138,16 +136,28 @@ export class ScreeningComponent {
 
   changeUser(numDes: number, ref: Reference) {
     let user = this.usr1.at(this.refind[ref.idProjRef]).value
-    this.dataService.updateReferenceUserDesignation(ref.idRef, this.idProject, user, numDes).subscribe({
-      next: (value) => {
-        this.referencesUpdated.emit()
-      }
-    })
+    if (ref.usersCriteria1.username != user)
+      this.dataService.updateReferenceUserDesignation(ref.idRef, this.idProject, user, numDes).subscribe({
+        next: (value) => {
+          this.referencesUpdated.emit()
+        }
+      })
   }
 
   resetFilter(idProjRef: number) {
-    let val = this.usr1.at(this.refind[idProjRef]).value
-    val !== null? this.filteredOptionsUsr1 = of(this.filtreUsr(val)): this.filteredOptionsUsr1 = of(this.usernames)
+    this.focusedUser1 = this.usr1.at(this.refind[idProjRef]).value
+    this.usr1.at(this.refind[idProjRef]).setValue('')
+    this.filteredOptionsUsr1 = of(this.usernames)
+    //val !== null? this.filteredOptionsUsr1 = of(this.filtreUsr(val)): this.filteredOptionsUsr1 = of(this.usernames)
+  }
+
+  recoverUsername(idProjRef: number) {
+    if (this.focusedUser1 !== '' && this.usr1.at(this.refind[idProjRef]).value === '') {
+      this.usr1.at(this.refind[idProjRef]).setValue(this.focusedUser1)
+      this.focusedUser1 = ''
+    }
+
+
   }
 
   resetFilterCriteria(usersCriteria : UserDesignation) {
@@ -188,18 +198,21 @@ export class ScreeningComponent {
   addUserDesignationCriteria(uc: UserDesignation) {
     this.dataService.updateReferenceUserDesignationCriteria(this.idProject, uc).subscribe({
       next: (value) => {
-          this.referencesUpdated.emit()
+          //this.referencesUpdated.emit()
       }
     })
   }
 
   updateCriteria1(ref: Reference) {
     if (this.crit1.at(this.refind[ref.idProjRef]).enabled) {
+      ref.usersCriteria1.processed = true
       this.addUserDesignationCriteria(ref.usersCriteria1)
       this.crit1.at(this.refind[ref.idProjRef]).disable()
     }
     else {
       if(ref.usersCriteria1 !== null) {
+        ref.usersCriteria1.processed = false
+        this.addUserDesignationCriteria(ref.usersCriteria1)
         this.crit1.at(this.refind[ref.idProjRef]).enable()
       }
       
@@ -219,17 +232,11 @@ export class ScreeningComponent {
 
   getState(ref: Reference): string {
     if (ref.usersCriteria1 !== null) {
-      if (ref.usersCriteria1.criteriaList.length > 0) {
-        return 'out'
+      if (ref.usersCriteria1.processed) {
+        if (ref.usersCriteria1.criteriaList.length > 0) return 'out'
+        else return 'in'
       }
-      else {
-        if (ref.usersCriteria1.processed) {
-          return 'in'
-        }
-        else {
-          return 'undiecided'
-        }
-      }
+      else return 'undiecided'
     }
     return 'unassigned'
 
