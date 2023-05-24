@@ -38,3 +38,19 @@ table {
 
 
 }
+
+.doubleCell{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.boto {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  color: green;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+}

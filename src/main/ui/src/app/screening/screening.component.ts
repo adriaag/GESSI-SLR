@@ -28,19 +28,21 @@ export class ScreeningComponent {
 
   criterias: Criteria[] = [];
 
+  crit1: FormArray = new FormArray<FormControl>([])
+  usr1:  FormArray = new FormArray<FormControl>([])
+
+
   references: Reference[] = [];
   sortedData: Reference[] = [];
   dataSource!: MatTableDataSource<Reference>;
-  displayedColumns: string[] = ['ref','tit', 'abs', 'usr1', 'sta1', 'icec1'];
+  displayedColumns: string[] = ['ref','tit', 'abs', 'usr1', 'sta1','icec1'];
   filterValue: string = ""
 
   refind: { [id: number] : number; } = {}
-  usr1: FormArray = new FormArray<FormControl>([]);
-  usrFilter: string = ""
+  
 
   critind: { [id: number] : number; } = {}
-  crit1: FormArray = new FormArray<FormControl>([])
-  crit1Filter: string = ""
+  
   focusedCriteria1: number[] = []
 
   filteredOptionsUsr1: Observable<string[]> = new Observable<string[]>
@@ -52,6 +54,7 @@ export class ScreeningComponent {
   constructor(private dataService: DataService, private dialog: MatDialog) {}
 
   ngOnChanges() {
+    console.log("canvis")
     this.references = this.referenceslist
     this.criterias = this.exclusionCriteria.concat(this.inclusionCriteria)
     this.uploadUsr1()
@@ -73,8 +76,6 @@ export class ScreeningComponent {
       this.filteredOptionsCrit1 = of(this.filtreCrit(value))
     })
 
-
-
   }
 
   ngAfterViewInit() {
@@ -85,8 +86,9 @@ export class ScreeningComponent {
   }
 
   uploadUsr1() {
+    this.usr1 =  new FormArray<FormControl>([])
+    this.crit1 =  new FormArray<FormControl>([])
     this.refind = {};
-    this.usr1 = new FormArray<FormControl>([])
     var ind = 0
     var f
     var c
@@ -96,16 +98,18 @@ export class ScreeningComponent {
 
       if(ref.usersCriteria1 === null) {
         c = new FormControl()
+        c.disable()
       }
       else {
         c = new FormControl(ref.usersCriteria1.criteriaList)
+        if (ref.usersCriteria1.processed) c.disable()
       }
       this.crit1.push(c)
       this.refind[ref.idProjRef] = ind
       ind += 1 
     }
-    console.log("bucle")
-
+    
+    
     ind = 0
     for (let cri of this.criterias) {
       this.critind[cri.id] = ind
@@ -120,18 +124,10 @@ export class ScreeningComponent {
   }
 
   filtreCrit(name: any): Criteria[] {
-    console.log(typeof name)
+    //console.log(name)
     if (typeof name === "string") {
       const filterValue = name.toLowerCase();
-      let filteredData: Criteria[] = []
-      this.filteredOptionsCrit1.subscribe({
-        next: (data) => {
-          filteredData = data
-        }
-      })
-
-      console.log('Filter',filteredData)
-
+      console.log(name)
       return this.criterias.filter(
         option => option.name.toLowerCase().includes(filterValue)
         && !this.focusedCriteria1.includes(option.id)
@@ -167,16 +163,6 @@ export class ScreeningComponent {
 
   }
 
-  getCtrl(i: number): FormControl<string> {
-    return this.usr1.at(this.refind[i]) as FormControl<string>
-
-  }
-
-  getCritCtrl(i: number): FormControl<number[]> {
-    let ctrl: FormControl<number[]> = this.crit1.at(this.refind[i]) as FormControl<number[]>
-    this.usr1.at(this.refind[i]).value !== null? ctrl.enable() : ctrl.disable()
-    return ctrl
-  }
 
   getCriteriaNames(ref: Reference, numD: number) {
     var uc;
@@ -192,11 +178,11 @@ export class ScreeningComponent {
   }
 
   selectedCriteria1(event: MatAutocompleteSelectedEvent, ref: Reference): void {
-    console.log(event.option.value)
     ref.usersCriteria1.criteriaList.push(Number(event.option.value));
     this.crit1Input.nativeElement.value = '';
     this.crit1.at(this.refind[ref.idProjRef]).setValue('');
-    this.addUserDesignationCriteria(ref.usersCriteria1)
+    //this.controllers.controls['crit1'] = crit1
+    //this.addUserDesignationCriteria(ref.usersCriteria1)
   }
 
   addUserDesignationCriteria(uc: UserDesignation) {
@@ -207,11 +193,26 @@ export class ScreeningComponent {
     })
   }
 
+  updateCriteria1(ref: Reference) {
+    if (this.crit1.at(this.refind[ref.idProjRef]).enabled) {
+      this.addUserDesignationCriteria(ref.usersCriteria1)
+      this.crit1.at(this.refind[ref.idProjRef]).disable()
+    }
+    else {
+      if(ref.usersCriteria1 !== null) {
+        this.crit1.at(this.refind[ref.idProjRef]).enable()
+      }
+      
+    }
+
+  }
+
   removeCri1(ref: Reference, critId: number) {
     const index = ref.usersCriteria1.criteriaList.indexOf(critId)
 
     if (index >= 0) {
       ref.usersCriteria1.criteriaList.splice(index, 1);
+      //this.addUserDesignationCriteria(ref.usersCriteria1)
     }
 
   }

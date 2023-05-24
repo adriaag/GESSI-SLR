@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatChipsModule} from '@angular/material/chips';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 
 import { AppComponent } from './app.component';
@@ -71,7 +72,8 @@ import { ScreeningComponent } from './screening/screening.component';
     MatSelectModule,
     MatTooltipModule,
     MatAutocompleteModule,
-    MatChipsModule
+    MatChipsModule,
+    MatCheckboxModule
   ],
   providers: [
     {

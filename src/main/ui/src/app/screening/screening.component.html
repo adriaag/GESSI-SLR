@@ -42,7 +42,7 @@
             <td mat-cell *matCellDef="let row;index as i;">
                 <mat-form-field class="example-full-width">
                     <mat-label>Researcher</mat-label>
-                    <input type="text" matInput [formControl]="getCtrl(row.idProjRef)" [matAutocomplete]="auto" (focusin)="resetFilter(row.idProjRef)">
+                    <input type="text" matInput [formControl]="$any(usr1.at(refind[row.idProjRef]))" [matAutocomplete]="auto" (focusin)="resetFilter(row.idProjRef)">
                     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="changeUser(1, row)">
                         <mat-option *ngFor="let option of filteredOptionsUsr1 | async" [value]="option">
                             {{option}}
@@ -60,10 +60,10 @@
 
         <ng-container matColumnDef="icec1">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>not IC/EC Researcher #1</th>
-            <td mat-cell *matCellDef="let row">
+            <td mat-cell class="doubleCell" *matCellDef="let row">
                 <mat-form-field class="example-chip-list">
                     <mat-label>Select not IC/EC</mat-label>
-                    <mat-chip-grid #chipGrid aria-label="ICEC selection" [formControl]="getCritCtrl(row.idProjRef)">
+                    <mat-chip-grid #chipGrid aria-label="ICEC selection" [formControl]="$any(crit1.at(refind[row.idProjRef]))">
                       <mat-chip-row *ngFor="let criteria of getCriteriaNames(row, 1)" (removed)="removeCri1(row, criteria.id)">
                         {{criteria.type === "exclusion" ? criteria.name: "not "+criteria.name}}
                         <button matChipRemove [attr.aria-label]="'remove ' + criteria">
@@ -71,7 +71,7 @@
                         </button>
                       </mat-chip-row>
                     </mat-chip-grid>
-                    <input placeholder="Select ICEC..." #crit1Input 
+                    <input placeholder="Select ICEC..." #crit1Input [formControl]="$any(crit1.at(refind[row.idProjRef]))"
                       [matChipInputFor]="chipGrid" [matAutocomplete]="auto" (focusin)="resetFilterCriteria(row.usersCriteria1)">
                     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedCriteria1($event,row)">
                       <mat-option *ngFor="let criteria of filteredOptionsCrit1 | async" [value]="criteria.id">
@@ -79,7 +79,11 @@
                       </mat-option>
                     </mat-autocomplete>
                 </mat-form-field>
-
+                <button class="boto" mat-icon-button (click)="updateCriteria1(row)">
+                    <mat-icon *ngIf="$any(crit1.at(refind[row.idProjRef])).enabled">done</mat-icon>
+                    <mat-icon *ngIf="$any(crit1.at(refind[row.idProjRef])).disabled && row.usersCriteria1 !== null">edit</mat-icon>
+                </button>
+            </td>   
         </ng-container>
 
 
