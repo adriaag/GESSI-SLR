@@ -178,7 +178,7 @@
 
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [style]="row.state === 'in' ? 'background-color:  #BDECD6': row.state === 'out' ? 'background-color: #FFEBEE' : 'background-color: #E1F5FE'"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [style]="getFinalDecision(row) === 'IN' ? 'background-color:  #BDECD6': getFinalDecision(row) === 'OUT' ? 'background-color: #FFEBEE' : 'background-color: #E1F5FE'"></tr>
     
         <tr class="mat-row" *matNoDataRow>
             <td *ngIf="referenceslist.length > 0" class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>

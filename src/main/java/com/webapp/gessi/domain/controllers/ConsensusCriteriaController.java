@@ -34,6 +34,15 @@ public class ConsensusCriteriaController {
         }
         s.getConnection().commit();
     }
+    
+    public static void deleteByIdRef(int idRef) throws SQLException {
+    	ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Connection conn = ctx.getBean(Connection.class);
+        Statement s;
+        s = conn.createStatement();
+        consensusCriteria.deleteByIdRef(s, idRef);
+    	
+    }
 
     public static consensusCriteriaDTO getByIdRef(Statement s, int idRef) throws SQLException {
         return consensusCriteria.getByIdRef(s, idRef);

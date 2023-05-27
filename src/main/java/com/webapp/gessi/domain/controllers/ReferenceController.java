@@ -85,6 +85,14 @@ public class ReferenceController {
         }
     }
     
+    public static void deleteConsensusCriteria(int idRef) throws BeansException, SQLException {
+    	ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Statement s = ctx.getBean(Connection.class).createStatement();
+        Reference.setUnprocessed(s,idRef);
+        ConsensusCriteriaController.deleteByIdRef(idRef);
+    	
+    }
+    
     public static void deleteReference(int idRef) throws SQLException {
     	Reference.delete(idRef);
     }

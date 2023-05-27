@@ -41,6 +41,8 @@ public class UserDesignationController {
         if (designation.getProcessed())
     		userDesignation.setProcessed(s, username, idRef);
         
+        ReferenceController.deleteConsensusCriteria(designation.getIdRef());
+        
         List<Integer> applCriteriaList = new LinkedList<>(designation.getCriteriaList());
         List<Integer> copyApplCriteriaList = new LinkedList<>(designation.getCriteriaList());
         List<Integer> currentExclusionDTOList = UserDesignationICECController.getICECs(s, username, idRef);

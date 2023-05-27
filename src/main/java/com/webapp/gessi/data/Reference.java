@@ -411,6 +411,16 @@ public class Reference {
         conn.commit(); 	
     }
 
+    public static void setUnprocessed(Statement s, int idRef) throws SQLException {
+    	String query = "update referencias set ConsensusCriteriaProcessed = false where IDREF = ?";
+
+        Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setInt(1, idRef);
+        preparedStatement.execute();
+        conn.commit(); 	
+    }
+
     
     private static String truncate(String text, int maxValue) {
     	if (text.length() > maxValue) {

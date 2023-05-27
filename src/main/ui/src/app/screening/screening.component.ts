@@ -346,6 +346,9 @@ export class ScreeningComponent {
     if (this.critEnabled1.at(this.refind[ref.idProjRef]).enabled) {
       ref.usersCriteria1.processed = true
       this.critEnabled1.at(this.refind[ref.idProjRef]).disable()
+      this.critDisc.at(this.refind[ref.idProjRef]).setValue(null)
+      ref.exclusionDTOList.idICEC = []
+      ref.consensusCriteriaProcessed = false
     }
     else {
       if(ref.usersCriteria1 !== null) {
@@ -363,6 +366,9 @@ export class ScreeningComponent {
     if (this.critEnabled2.at(this.refind[ref.idProjRef]).enabled) {
       ref.usersCriteria2.processed = true     
       this.critEnabled2.at(this.refind[ref.idProjRef]).disable()
+      this.critDisc.at(this.refind[ref.idProjRef]).setValue(null)
+      ref.exclusionDTOList.idICEC = []
+      ref.consensusCriteriaProcessed = false
     }
     else {
       if(ref.usersCriteria2 !== null) {
@@ -518,6 +524,18 @@ export class ScreeningComponent {
             return compare(a.art.title, b.art.title, isAsc);    
           case 'abs':
             return compare(String(a.art.abstractA),String(b.art.abstractA), isAsc);
+          case 'usr1':
+            return compareUc(a.usersCriteria1,b.usersCriteria1, isAsc)
+          case 'sta1':
+            return compare(this.getState(a,1),this.getState(b,1), isAsc)
+          case 'usr2':
+              return compareUc(a.usersCriteria2,b.usersCriteria2, isAsc)
+          case 'sta2':
+              return compare(this.getState(a,2),this.getState(b,2), isAsc)
+          case 'cons':
+              return compare(this.getConsensusState(a), this.getConsensusState(b), isAsc)
+          case'consDes':
+              return compare(this.getFinalDecision(a), this.getFinalDecision(b), isAsc)
           default:
             return 0;
         }
@@ -564,4 +582,11 @@ function compareArrays(a: number[], b: number[]) {
   
   return true
 }
+
+function compareUc(a: UserDesignation, b: UserDesignation, isAsc: boolean) {
+  let usr1 = a === null? null: a.username
+  let usr2 = b === null? null: b.username
+  return compare(usr1,usr2,isAsc)
+}
+
 

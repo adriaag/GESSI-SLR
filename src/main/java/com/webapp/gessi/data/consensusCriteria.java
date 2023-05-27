@@ -76,6 +76,14 @@ public class consensusCriteria {
         preparedStatement.execute();
         System.out.println("Deleted row " + idICEC + ", " + idRef + " in exclusion");
     }
+    
+    public static void deleteByIdRef(Statement s, int idRef) throws SQLException {
+    	String query = "DELETE FROM consensusCriteria where idRef = ?";
+        Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setInt(1, idRef);
+        preparedStatement.execute();
+    }
 
     public static consensusCriteriaDTO getByIdRef(Statement s, int idRef) throws SQLException {
         String query = "SELECT * FROM consensusCriteria WHERE IDREF = ?";
