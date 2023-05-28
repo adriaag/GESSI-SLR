@@ -6,11 +6,11 @@
     <h1>
         <mat-form-field >
             <mat-label>Filter References</mat-label>
-            <input matInput (keyup)="applyFilter($event)" placeholder="Search" #input>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Search" [value]="this.filterValue" #input>
         </mat-form-field>
 
     </h1>
-    <table mat-table [dataSource]="dataSource" matSort class="table table-striped" id="dataTable">
+    <table mat-table [dataSource]="dataSource" matSort class="table table-striped" [matSortActive]="this.sortColumn" [matSortDirection]="this.sortDirection" id="dataTable">
             
         <ng-container matColumnDef="ref">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>#ref</th>

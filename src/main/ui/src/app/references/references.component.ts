@@ -2,7 +2,7 @@ import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, Simpl
 import { DataService } from '../data.service';
 import { Reference } from '../dataModels/reference';
 import { Researcher } from '../dataModels/researcher';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, SortDirection } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog} from '@angular/material/dialog';
@@ -32,18 +32,32 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   @Input('references') referenceslist!: Reference[]
   @Input('idProject') idProject!: number
   @Input('exclusionCriteria') exclusionCriteria!: Criteria[]
+  @Input('sortColumn') sortColumnAnt!: string
+  @Input('sortDirection') sortDirectionAnt!: SortDirection
+  @Input('filter') filter!: string
   @Output() referencesUpdated = new EventEmitter();
+  @Output() sortUpdated = new EventEmitter();
 
   references: Reference[] = [];
   sortedData: Reference[] = [];
   dataSource!: MatTableDataSource<Reference>;
   displayedColumns: string[] = ['doi','ref', 'dl', 'year', 'auth', 'tit', 'ven', 'abs', 'inf', 'del'];
   filterValue: string = ""
+
+  sortColumn: string = ""
+  sortDirection: SortDirection = ""
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(private dataService: DataService, private dialog: MatDialog) {}
+
+  ngOnInit() {
+    this.sortColumn = this.sortColumnAnt
+    this.sortDirection = this.sortDirectionAnt
+    this.filterValue = this.filter 
+    console.log(this.filter) 
+  }
 
   ngOnChanges() {
     this.references = this.referenceslist
@@ -62,6 +76,11 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.filterData();
     this.dataSource.paginator = this.paginator;
+    this.applyFilterWhenReloading()
+  }
+
+  ngOnDestroy() {
+    this.sortUpdated.emit({column: this.sortColumn, direction: this.sortDirection, filter: this.filterValue})
   }
 
   downloadExcel(): void {
@@ -126,6 +145,10 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   sortData() {
     let sortFunction =
     (refs: Reference[], sort: MatSort): Reference[] => {
+      if(this.sort !== undefined) {
+        this.sortColumn = sort.active
+        this.sortDirection = sort.direction
+      }
       if (!sort.active || sort.direction === '') {
         return refs;
       }

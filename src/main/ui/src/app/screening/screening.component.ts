@@ -1,11 +1,11 @@
 import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, MatSortable, SortDirection } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { map, merge, Observable, of, startWith } from 'rxjs';
+import { merge, Observable, of} from 'rxjs';
 import { DataService } from '../data.service';
 import { Criteria } from '../dataModels/criteria';
 import { ConsensusCriteria } from '../dataModels/consensusCriteria';
@@ -23,7 +23,10 @@ export class ScreeningComponent {
   @Input('exclusionCriteria') exclusionCriteria!: Criteria[]
   @Input('inclusionCriteria') inclusionCriteria!: Criteria[]
   @Input('usernames') usernames!: string[]
-  @Output() referencesUpdated = new EventEmitter();
+  @Input('sortColumn') sortColumnAnt!: string
+  @Input('sortDirection') sortDirectionAnt!: SortDirection
+  @Input('filter') filter!: string
+  @Output() sortUpdated = new EventEmitter();
 
   criterias: Criteria[] = [];
 
@@ -32,6 +35,9 @@ export class ScreeningComponent {
   dataSource!: MatTableDataSource<Reference>;
   displayedColumns: string[] = ['ref','tit', 'usr1', 'sta1','icec1','usr2','sta2','icec2', 'cons','disc','consDes'];
   filterValue: string = ""
+
+  sortColumn: string = ""
+  sortDirection: SortDirection = ""
 
   refind: { [id: number] : number; } = {}
   critind: { [id: number] : number; } = {}
@@ -60,8 +66,14 @@ export class ScreeningComponent {
 
   constructor(private dataService: DataService, private dialog: MatDialog) {}
 
+  ngOnInit() {
+    this.sortColumn = this.sortColumnAnt
+    this.sortDirection = this.sortDirectionAnt
+    this.filterValue = this.filter
+    console.log(this.filter)
+    
+  }
   ngOnChanges(changes: SimpleChanges) {
-    console.log(changes)
     this.references = this.referenceslist
     this.criterias = this.exclusionCriteria.concat(this.inclusionCriteria)
     this.uploadUsr1()
@@ -71,7 +83,6 @@ export class ScreeningComponent {
     this.dataSource.sortData = this.sortData();
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.filterData();
-    this.applyFilterWhenReloading()
 
     merge(...this.usr1.controls.map(control => control.valueChanges))
     .subscribe((value) => {
@@ -112,6 +123,11 @@ export class ScreeningComponent {
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.filterData();
     this.dataSource.paginator = this.paginator;
+    this.applyFilterWhenReloading()
+  }
+
+  ngOnDestroy() {
+    this.sortUpdated.emit({column: this.sortColumn, direction: this.sortDirection, filter: this.filterValue})
   }
 
   uploadUsr1() {
@@ -132,56 +148,45 @@ export class ScreeningComponent {
     var cEnable2
     var cEnable3
 
-    for (var ref of this.referenceslist) {
-      ref.usersCriteria1 === null? f = new FormControl(): f = new FormControl(ref.usersCriteria1.username)
-      this.usr1.push(f)
-
-      ref.usersCriteria2 === null? f = new FormControl(): f = new FormControl(ref.usersCriteria2.username)
-      this.usr2.push(f)
-
+    for (let ref of this.referenceslist) {
       cEnable1 = new FormControl()
-
-      if(ref.usersCriteria1 === null) {
+      if (ref.usersCriteria1 === null) {
+        f = new FormControl()
         c = new FormControl()
         cEnable1.disable()
       }
       else {
+        f = new FormControl(ref.usersCriteria1.username)
         c = new FormControl(ref.usersCriteria1.criteriaList)
         if (ref.usersCriteria1.processed) cEnable1.disable()
-      }
+      } 
+      this.usr1.push(f)
       this.crit1.push(c)
       this.critEnabled1.push(cEnable1)
 
       cEnable2 = new FormControl()
-
-      if(ref.usersCriteria2 === null) {
+      if (ref.usersCriteria2 === null) {
+        f = new FormControl()
         c = new FormControl()
         cEnable2.disable()
       }
       else {
+        f = new FormControl(ref.usersCriteria2.username)
         c = new FormControl(ref.usersCriteria2.criteriaList)
         if (ref.usersCriteria2.processed) cEnable2.disable()
       }
+      this.usr2.push(f)
       this.crit2.push(c)
       this.critEnabled2.push(cEnable2)
 
       cEnable3 = new FormControl()
 
-      if(ref.exclusionDTOList === null) {
-        c = new FormControl()
-      }
-      else {
-        c = new FormControl(ref.exclusionDTOList)
-      }
+      this.critDisc.push(new FormControl(ref.exclusionDTOList))
 
       if(ref.consensusCriteriaProcessed) cEnable3.disable()
       let state = this.getConsensusState(ref)
       if(state === '' || state === "YES") cEnable3.disable()
-
-      this.critDisc.push(c)
       this.critDiscEnabled.push(cEnable3)
-      
-      
 
       this.refind[ref.idProjRef] = ind
       ind += 1 
@@ -196,10 +201,14 @@ export class ScreeningComponent {
   }
 
   filtreUsr(value: string): string[] {
-    const filterValue = value.toLowerCase();
+    if (value !== null) {
+      const filterValue = value.toLowerCase();
+      return this.usernames.filter(option => option.toLowerCase().includes(filterValue));
+    }
 
-    return this.usernames.filter(option => option.toLowerCase().includes(filterValue));
+    return this.usernames
   }
+
 
   filtreCrit(name: any): Criteria[] {
     //console.log(name)
@@ -483,17 +492,11 @@ export class ScreeningComponent {
           if (filter) {
             //obtenim una string amb totes les dades de reference que apareixen a la taula 
             var filterText = ""
-            if(data.doi !== null) filterText += data.doi;
-            if(data.idProjRef !== null)filterText += data.idProjRef;
-            if(data.dl !== null && data.dl.name !== null)filterText += data.dl.name;
-            if(data.art.any !== null)filterText += data.art.any;
-            if(data.art.researchers !== null)for (let researcher of data.art.researchers){
-              filterText += researcher.name;
-            }
-            if(data.art.title !== null)filterText += data.art.title;
-            if(data.art.ven !== null && data.art.ven.name !== null)filterText += data.art.ven.name;
+            if(data.idProjRef !== null)filterText += data.idProjRef;              
+            if(data.art.title !== null)filterText += data.art.title;          
             if(data.art.abstractA !== null)filterText += data.art.abstractA
-
+            if(data.usersCriteria1 !== null)filterText += data.usersCriteria1.username
+            if(data.usersCriteria2 !== null)filterText += data.usersCriteria2.username
             filterText = filterText.toLowerCase()
 
             //console.log(filterText, "Text per filtrar")
@@ -511,6 +514,10 @@ export class ScreeningComponent {
   sortData() {
     let sortFunction =
     (refs: Reference[], sort: MatSort): Reference[] => {
+      if(this.sort !== undefined) {
+        this.sortColumn = sort.active
+        this.sortDirection = sort.direction
+      }
       if (!sort.active || sort.direction === '') {
         return refs;
       }
