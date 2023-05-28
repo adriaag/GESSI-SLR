@@ -87,7 +87,9 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
     this.dataService.getExcelFile(this.idProject).subscribe((resposta) => {
         var newBlob = new Blob([resposta], { type: "application/vnd.ms-excel" });
         const url= window.URL.createObjectURL(newBlob);
-        window.open(url);
+        window.location.href = url;
+        //window.open(url);
+        
     });
   }
 

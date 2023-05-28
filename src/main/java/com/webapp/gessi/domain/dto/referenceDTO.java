@@ -124,4 +124,5 @@ public class referenceDTO implements Serializable {
     public void setConsensusCriteriaProcessed(boolean processed) {
     	this.consensusCriteriaProcessed = processed;
     }
+    
 }

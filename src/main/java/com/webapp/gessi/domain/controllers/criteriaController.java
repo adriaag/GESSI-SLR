@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class criteriaController {
@@ -67,4 +69,18 @@ public class criteriaController {
         }
         return r;
     }
+    
+    public static Map<Integer,String> getCriteriaIdNameConversor(int idProject) throws SQLException {
+    	List<CriteriaDTO> list = Criteria.getAllCriteria(null, idProject);
+    	Map<Integer, String> map = new HashMap<Integer, String>();
+    	
+    	for (CriteriaDTO i : list) {
+    		map.put(i.getId(), i.getName());
+    	}
+    	
+    	return map;
+    	
+    }
+    
+    
 }

@@ -1,5 +1,6 @@
 package com.webapp.gessi.presentation;
 
+import com.webapp.gessi.domain.controllers.criteriaController;import com.webapp.gessi.domain.dto.CriteriaDTO;
 import com.webapp.gessi.domain.dto.articleDTO;
 import com.webapp.gessi.domain.dto.companyDTO;
 import com.webapp.gessi.domain.dto.referenceDTO;
@@ -11,14 +12,17 @@ import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class creationExcel {
     private static String[] columnHeadings = {"#ref", /*dl*/ "DL-Name", "Year", /*article*/ "DOI" ,   /*researchers*/
             "Estate" , "Criteria", "Authors" , "Title" , "Venue" , "Type" ,  /*companies*/ "Affiliations", "Volume", "Pages",
             "Number","Numpages","Cite key", "Keywords"  , /*idVen*/ "Abstract"};
 
-    public static Workbook create(List<referenceDTO> p) throws IOException {
+    public static Workbook create(List<referenceDTO> p) throws IOException, SQLException {
 
         //format .xlsx format
         Workbook workbook = new XSSFWorkbook();
@@ -60,12 +64,30 @@ public class creationExcel {
         style.setFillPattern(FillPatternType.LEAST_DOTS);
         
         referenceDTO[] references = p.toArray(new referenceDTO[0]);
+        
+		Map<Integer,String> criteriaMap = criteriaController.getCriteriaIdNameConversor(references[0].getIdProject());
+	
         for (referenceDTO ref : references) {
             Row row = sheet.createRow(rowNum++);
 
-            String auxEst = ref.getState();
+			boolean auxProc = ref.getConsensusCriteriaProcessed();
             CellStyle stRow = style;
-            if (auxEst != null && (auxEst.equals("duplicated") || auxEst.equals("out"))) stRow = styleD;
+            String state = "";
+            
+            if(ref.getUsersCriteria1() != null && ref.getUsersCriteria2() != null 
+            		&& ref.getUsersCriteria1().getProcessed() && ref.getUsersCriteria2().getProcessed()) {
+            	if(auxProc) {
+            		if(ref.getExclusionDTOList().getIdICEC().isEmpty()) state = "in";
+            		else state = "out";
+            	}
+            	else {
+            		if(ref.getUsersCriteria1().getCriteriaList().equals(ref.getUsersCriteria2().getCriteriaList())) {
+            			if(ref.getUsersCriteria1().getCriteriaList().isEmpty()) state = "in";
+            			else state = "out";
+            		}
+            	
+            	}
+            }
 
             Cell cell = row.createCell(0);
             cell.setCellValue(ref.getIdProjRef());
@@ -85,11 +107,24 @@ public class creationExcel {
             cell.setCellStyle(stRow);
 
             cell = row.createCell(4);
-            cell.setCellValue(auxEst);
+            cell.setCellValue(state);
             cell.setCellStyle(stRow);
+            
+            List<Integer> critIds = new ArrayList<Integer>();
+            if (state.equals("out")) {
+            	if(ref.getConsensusCriteriaProcessed())
+            		critIds = ref.getExclusionDTOList().getIdICEC();
+            	else
+            		critIds = ref.getUsersCriteria1().getCriteriaList();
+            }
+            		
+            StringBuilder critNames = new StringBuilder();
+            for(int id : critIds) {
+            	critNames.append(criteriaMap.get(id)).append(", ");     	
+            }
 
             cell = row.createCell(5);
-            cell.setCellValue(String.join(", ", ref.getApplCriteriaString()));
+            cell.setCellValue(critNames.toString());
             cell.setCellStyle(stRow);
 
             researcherDTO[] authorsList = art.getResearchers();
