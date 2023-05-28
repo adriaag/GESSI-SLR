@@ -41,6 +41,7 @@ export class ScreeningComponent {
 
   refind: { [id: number] : number; } = {}
   critind: { [id: number] : number; } = {}
+  userDirty: { [idProjRef: number] : {usr1: string, usr2: string} } = {}
   
   crit1: FormArray = new FormArray<FormControl>([])
   critEnabled1: FormArray = new FormArray<FormControl>([])
@@ -54,7 +55,7 @@ export class ScreeningComponent {
   
   
   focusedCriteria: number[] = []
-  focusedUser: string = ''
+  focusedUserAlt: string = ''
   filteredOptionsUsr: Observable<string[]> = new Observable<string[]>
   filteredOptionsCrit: Observable<Criteria[]> = new Observable<Criteria[]>
   
@@ -69,9 +70,7 @@ export class ScreeningComponent {
   ngOnInit() {
     this.sortColumn = this.sortColumnAnt
     this.sortDirection = this.sortDirectionAnt
-    this.filterValue = this.filter
-    console.log(this.filter)
-    
+    this.filterValue = this.filter  
   }
   ngOnChanges(changes: SimpleChanges) {
     this.references = this.referenceslist
@@ -140,6 +139,7 @@ export class ScreeningComponent {
     
     this.refind = {};
     this.critind = {};
+    this.userDirty = {};
 
     var ind = 0
     var f
@@ -201,12 +201,15 @@ export class ScreeningComponent {
   }
 
   filtreUsr(value: string): string[] {
+    console.log(this.focusedUserAlt, 'Focused user filtre')
     if (value !== null) {
       const filterValue = value.toLowerCase();
-      return this.usernames.filter(option => option.toLowerCase().includes(filterValue));
+      return this.usernames.filter(option => 
+        option.toLowerCase().includes(filterValue)
+        && option != this.focusedUserAlt)
     }
 
-    return this.usernames
+    return this.usernames.filter(option => option != this.focusedUserAlt)
   }
 
 
@@ -240,26 +243,80 @@ export class ScreeningComponent {
             this.critEnabled2.at(this.refind[ref.idProjRef]).enable()
             ref.usersCriteria2 = value
           }
+          console.log('uc actualitzat')
           
         }
       })
   }
 
   resetFilter(idProjRef: number, numD : number) {
-    let uc: FormArray = this.getUserCtrl(numD)
-    this.focusedUser = uc.at(this.refind[idProjRef]).value
-    uc.at(this.refind[idProjRef]).setValue('')
-    this.filteredOptionsUsr = of(this.usernames)
+    console.log('reset filter')
+    let usrCtrl: FormArray = this.getUserCtrl(numD)
+    let udAlt: UserDesignation = this.getUserDesignation(this.refind[idProjRef],3-numD)
+    
+    let username = usrCtrl.at(this.refind[idProjRef]).value
+    if(this.userDirty[idProjRef] !== undefined) {
+      if(numD === 1) this.userDirty[idProjRef].usr1 = username
+      else this.userDirty[idProjRef].usr2 = username
+    }
+    else {
+      if(numD === 1) this.userDirty[idProjRef] = {usr1: username, usr2: ''}
+      else this.userDirty[idProjRef] = {usr1: '', usr2: username}
+    }
+    
+    usrCtrl.at(this.refind[idProjRef]).setValue('')
+    if(udAlt !== null){
+      this.filteredOptionsUsr = of(this.usernames.filter(option => option != udAlt.username))
+      this.focusedUserAlt = udAlt.username
+    }
+    else {
+      this.filteredOptionsUsr = of(this.usernames)
+      this.focusedUserAlt = ''
+    }
+    
     //val !== null? this.filteredOptionsUsr1 = of(this.filtreUsr(val)): this.filteredOptionsUsr1 = of(this.usernames)
   }
 
-  recoverUsername(idProjRef: number, numD: number) {
-    let usrCtrl = this.getUserCtrl(numD)
-    if (this.focusedUser !== '' && typeof usrCtrl.at(this.refind[idProjRef]).value === "string") {
-      usrCtrl.at(this.refind[idProjRef]).setValue(this.focusedUser)
-      this.focusedUser = ''
-    }
+  removeCtrlValue(idProjRef: number, numD: number) {
+    this.filteredOptionsUsr.subscribe({
+      next: (filter) => {
+        if (filter.length === 0) {
+          let usrCtrl = this.getUserCtrl(numD)
+          let usernames = this.userDirty[idProjRef]
+          if (usernames !== undefined) {
+            let username
+            numD === 1? username = usernames.usr1 : username = usernames.usr2 
+            if(username !== '' && typeof username === "string") {
+              usrCtrl.at(this.refind[idProjRef]).setValue(username)
+            }
+            else usrCtrl.at(this.refind[idProjRef]).setValue('')
+          }
+          else usrCtrl.at(this.refind[idProjRef]).setValue('')               
+        }
+      }
+    })
+  }
 
+  recoverUsername(idProjRef: number, numD: number) {
+    console.log(this.filteredOptionsUsr)
+    this.filteredOptionsUsr.subscribe({
+      next: (filter) => {
+        if (filter.length > 0) {
+          let usrCtrl = this.getUserCtrl(numD)
+          let usernames = this.userDirty[idProjRef]
+          if (usernames !== undefined) {
+            let username
+            numD === 1? username = usernames.usr1 : username = usernames.usr2 
+            if(username !== '' && typeof username === "string") {
+              usrCtrl.at(this.refind[idProjRef]).setValue(username)
+            }
+            else usrCtrl.at(this.refind[idProjRef]).setValue('')
+          }
+          else usrCtrl.at(this.refind[idProjRef]).setValue('')   
+        }
+        
+      }
+    })
 
   }
 
@@ -407,6 +464,10 @@ export class ScreeningComponent {
 
   private getUserCtrl(numD: number): FormArray {
     return   numD === 1? this.usr1 : this.usr2
+  }
+
+  private getUserDesignation(id:number, numD: number): UserDesignation {
+    return   numD === 1? this.referenceslist[id].usersCriteria1 : this.referenceslist[id].usersCriteria2
   }
 
   private getCriteriaCtrl(numD: number): FormArray {
