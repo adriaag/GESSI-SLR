@@ -14,7 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatChipsModule} from '@angular/material/chips';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 
 import { AppComponent } from './app.component';
@@ -71,7 +71,7 @@ import { ScreeningComponent } from './screening/screening.component';
     MatTooltipModule,
     MatAutocompleteModule,
     MatChipsModule,
-    MatCheckboxModule
+    MatProgressSpinnerModule
   ],
   providers: [
     {

@@ -19,7 +19,7 @@ public class Reference {
 	
 	private static final int doiMaxLength = 50;
 
-    public static int insertRow(Statement s, String doi, String idDL, String estado, int idProject) throws SQLException {
+    public static int insertRow(Statement s, String doi, String idDL, int idProject) throws SQLException {
     	String getIdProjRefAntQuery = "SELECT max(idProjRef) FROM referencias where idProject = ?";
         String query = "INSERT INTO referencias(doi, idDL, idProject, idProjRef) VALUES (?, ?, ?, ?)";
         Connection conn = s.getConnection();
@@ -383,20 +383,14 @@ public class Reference {
         return resultSet;
     }
     
-    static void updateEstateReferences(Statement s, int idRef, int idDuplicateCriteria) throws SQLException {
-        String query = "update referencias set state = 'out' where IDREF = ?";
-
-        Connection conn = s.getConnection();
-        PreparedStatement preparedStatement = conn.prepareStatement(query);
-        preparedStatement.setInt(1, idRef);
-        preparedStatement.execute();
-        conn.commit();
+    public static void updateEstateReferences(Statement s, int idRef, int idDuplicateCriteria) throws SQLException {
+        setProcessed(s, idRef);
         consensusCriteria.insertRow(s, idDuplicateCriteria, idRef);
     }
 
     public static referenceDTO addReferenceManually(Statement s, referenceDTOadd referenceData, int idProject) throws SQLException {
     	article.insertRowManually(s, referenceData);
-    	int idRef = insertRow(s, referenceData.getDoi(), "-1", null, idProject);  
+    	int idRef = insertRow(s, referenceData.getDoi(), "-1", idProject);  
     	System.out.println(idRef);
     	return getReference(s.getConnection(), idRef);
     }
@@ -419,6 +413,38 @@ public class Reference {
         preparedStatement.setInt(1, idRef);
         preparedStatement.execute();
         conn.commit(); 	
+    }
+    
+    public static boolean getProcessed(Statement s, int idRef) throws SQLException {
+        	String query = "select ConsensusCriteriaProcessed from referencias where IDREF = ?";
+
+            Connection conn = s.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, idRef);
+            ResultSet rs = preparedStatement.executeQuery();
+            rs.next();
+            return rs.getBoolean("ConsensusCriteriaProcessed");
+            
+            
+    }
+    
+    public static String getState(Statement s, int idRef) throws SQLException {
+    	userDesignationDTO ud1 = userDesignation.getByIdRefNumDes(s, idRef, 1);
+    	userDesignationDTO ud2 = userDesignation.getByIdRefNumDes(s, idRef, 1);
+    	if(ud1 != null && ud2 != null && ud1.getProcessed() && ud2.getProcessed()) {
+    		if(ud1.getCriteriaList().equals(ud2.getCriteriaList())) {
+    			if(ud1.getCriteriaList().isEmpty()) return "in";
+    			else return "out";
+    		}
+    		else {
+    			if(getProcessed(s,idRef)) {
+    				consensusCriteriaDTO cc = consensusCriteria.getByIdRef(s, idRef);
+    				if (cc.getIdICEC().isEmpty()) return "in";
+    				else return "out";
+    			}
+    		}
+    	}
+    	return "";
     }
 
     

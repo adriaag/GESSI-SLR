@@ -193,7 +193,6 @@ public class article {
         if (doi != null) {
             //doi = doi.replaceAll("[{-}]", "");//.replaceAll("'", "''");
             ResultSet rs = getArticle(s, doi);
-            String estado = null;
             int apCriteria = 0;
             if (rs.next()) {
                 updateRow(rs, entry, s, doi); //añadir informacion en los valores null del article
@@ -206,7 +205,7 @@ public class article {
                 	int idRefMaxPriority = -1;
                 	
                 	while (duplicate.next()) {            		
-                		if (duplicate.getInt("priority") < priority && (duplicate.getString("state") == null || !duplicate.getString("state").equals("out"))) {
+                		if (duplicate.getInt("priority") < priority && (!Reference.getState(s,duplicate.getInt("idRef")).equals("out"))) {
                 			priority = duplicate.getInt("priority");
                 			idRefMaxPriority = duplicate.getInt("idRef");
                 			
@@ -221,10 +220,10 @@ public class article {
 
                 	if (!duplicatedLibrary && priority < 1000) {
 	                    if (entriesPriority > priority) {
-	                        estado = "out";
 	                        apCriteria = project.getIdDuplicateCriteria();
 	                        
-	                        int idRef = Reference.insertRow(s, doi, idDL, estado, project.getId());
+	                        int idRef = Reference.insertRow(s, doi, idDL, project.getId());
+	                        Reference.setProcessed(s, idRef);
 	                        if (idRef == -2) return "ERROR: The reference had problems";
 	                        referencesImported += 1;
 	                        
@@ -233,7 +232,7 @@ public class article {
 	                    }
 	                    else {	                  
 	                        Reference.updateEstateReferences(s, idRefMaxPriority, project.getIdDuplicateCriteria());
-	                    	int idRef = Reference.insertRow(s, doi, idDL, estado, project.getId());
+	                    	int idRef = Reference.insertRow(s, doi, idDL, project.getId());
 	                    	if (idRef == -2) return "ERROR: The reference had problems";
 	                    	referencesImported += 1;	
 	                    }
@@ -241,7 +240,7 @@ public class article {
 	                else {
 	                	if(duplicatedLibrary) referencesDuplicated += 1;	
 	                	else {
-	                		int idRef = Reference.insertRow(s, doi, idDL, estado, project.getId());
+	                		int idRef = Reference.insertRow(s, doi, idDL, project.getId());
 	                        referencesImported += 1;
 	                        if (idRef == -2) return "ERROR: The reference had problems";                		
 	                	}
@@ -250,7 +249,7 @@ public class article {
             }
             else {
                 insertRow(s, entry, doi);                                       //create article nuevo
-                int idRef = Reference.insertRow(s, doi, idDL, estado, project.getId());
+                int idRef = Reference.insertRow(s, doi, idDL, project.getId());
                 referencesImported += 1;
                 if (idRef == -2) return "ERROR: The reference had problems";
             }
