@@ -28,12 +28,8 @@ export class MainComponent implements OnInit {
   usernames: string[] = []
   IC: Criteria[] = [];
   EC: Criteria[] = [];
-  screeningSortColumn: string = ''
-  screeningSortDirection: SortDirection = ''
-  screeningFilter: string = ''
-  referencesSortColumn: string = ''
-  referencesSortDirection: SortDirection = ''
-  referencesFilter: string = ''
+
+  dataLoaded: boolean = false
 
 
   constructor(private dataService: DataService, private authService: AuthenticationService, private dialog: MatDialog) {}
@@ -91,6 +87,7 @@ export class MainComponent implements OnInit {
   }
 
   projectDeleted(): void {
+    this.dataLoaded = false
     this.selectedProject.setValue(null)
     this.getProjects()
   }
@@ -106,6 +103,7 @@ export class MainComponent implements OnInit {
   }
 
   changeProject() {
+    this.dataLoaded = false
     this.getProjectData()
     this.getProjectErrors()
     this.getProjectCriteria()
@@ -119,6 +117,7 @@ export class MainComponent implements OnInit {
     this.dataService.getReferences(this.selectedProject.value.id).subscribe((resposta)=> {
       console.log(resposta , 'User resume response');
       this.references = resposta;
+      this.dataLoaded = true
     })
     console.log("reference", this.references)
 
@@ -217,18 +216,6 @@ export class MainComponent implements OnInit {
   logout() {
     this.authService.logout()
     this.loginDialog()
-  }
-
-  updateSortScreening(vars: {column: string, direction: SortDirection, filter: string}) {
-    this.screeningSortColumn = vars.column
-    this.screeningSortDirection = vars.direction
-    this.screeningFilter = vars.filter
-  }
-
-  updateSortReferences(vars: {column: string, direction: SortDirection, filter: string}) {
-    this.referencesSortColumn = vars.column
-    this.referencesSortDirection = vars.direction
-    this.referencesFilter = vars.filter
   }
 
 }

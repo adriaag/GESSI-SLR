@@ -32,11 +32,7 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   @Input('references') referenceslist!: Reference[]
   @Input('idProject') idProject!: number
   @Input('exclusionCriteria') exclusionCriteria!: Criteria[]
-  @Input('sortColumn') sortColumnAnt!: string
-  @Input('sortDirection') sortDirectionAnt!: SortDirection
-  @Input('filter') filter!: string
   @Output() referencesUpdated = new EventEmitter();
-  @Output() sortUpdated = new EventEmitter();
 
   references: Reference[] = [];
   sortedData: Reference[] = [];
@@ -51,13 +47,6 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(private dataService: DataService, private dialog: MatDialog) {}
-
-  ngOnInit() {
-    this.sortColumn = this.sortColumnAnt
-    this.sortDirection = this.sortDirectionAnt
-    this.filterValue = this.filter 
-    console.log(this.filter) 
-  }
 
   ngOnChanges() {
     this.references = this.referenceslist
@@ -77,10 +66,6 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
     this.dataSource.filterPredicate = this.filterData();
     this.dataSource.paginator = this.paginator;
     this.applyFilterWhenReloading()
-  }
-
-  ngOnDestroy() {
-    this.sortUpdated.emit({column: this.sortColumn, direction: this.sortDirection, filter: this.filterValue})
   }
 
   downloadExcel(): void {

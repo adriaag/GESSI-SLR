@@ -23,10 +23,6 @@ export class ScreeningComponent {
   @Input('exclusionCriteria') exclusionCriteria!: Criteria[]
   @Input('inclusionCriteria') inclusionCriteria!: Criteria[]
   @Input('usernames') usernames!: string[]
-  @Input('sortColumn') sortColumnAnt!: string
-  @Input('sortDirection') sortDirectionAnt!: SortDirection
-  @Input('filter') filter!: string
-  @Output() sortUpdated = new EventEmitter();
 
   criterias: Criteria[] = [];
 
@@ -67,11 +63,6 @@ export class ScreeningComponent {
 
   constructor(private dataService: DataService, private dialog: MatDialog) {}
 
-  ngOnInit() {
-    this.sortColumn = this.sortColumnAnt
-    this.sortDirection = this.sortDirectionAnt
-    this.filterValue = this.filter  
-  }
   ngOnChanges(changes: SimpleChanges) {
     this.references = this.referenceslist
     this.criterias = this.exclusionCriteria.concat(this.inclusionCriteria)
@@ -124,11 +115,7 @@ export class ScreeningComponent {
     this.dataSource.paginator = this.paginator;
     this.applyFilterWhenReloading()
   }
-
-  ngOnDestroy() {
-    this.sortUpdated.emit({column: this.sortColumn, direction: this.sortDirection, filter: this.filterValue})
-  }
-
+  
   uploadUsr1() {
     this.usr1 =  new FormArray<FormControl>([])
     this.crit1 =  new FormArray<FormControl>([])

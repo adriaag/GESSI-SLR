@@ -57,12 +57,16 @@
         </div>
     </nav>
   </header>
-  <div [ngSwitch]="selectedOption">
-      <app-index *ngSwitchCase="'index'"></app-index>
-      <app-references *ngSwitchCase="'references'" [references]="references" [idProject]="selectedProject.value.id" [exclusionCriteria]="EC" [sortColumn]="referencesSortColumn" [sortDirection]="referencesSortDirection" [filter]="this.referencesFilter" (sortUpdated)="updateSortReferences($event)" (referencesUpdated)="getProjectData()"></app-references>
-      <app-errors *ngSwitchCase="'errors'" [errors]="errors"></app-errors>
-      <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject.value.id" (newReferencesImported)="newReferences()"> </app-reference-import>
-      <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC" [idDuplicateCriteria]="selectedProject.value.idDuplicateCriteria" [idProject]="selectedProject.value.id" (criteriaUpdated)="getProjectCriteria()"></app-criteria>
-      <app-project-delete *ngSwitchCase="'reset'" [idProject]="getIdProject()" [nameProject]="getNameProject()" (projectDeleted)="projectDeleted()" ></app-project-delete>
-      <app-screening *ngSwitchCase="'screening'" [references]="references" [usernames] = "usernames" [idProject]="selectedProject.value.id" [exclusionCriteria]="this.EC" [inclusionCriteria]="this.IC" [sortColumn]="screeningSortColumn" [sortDirection]="screeningSortDirection" [filter]="this.screeningFilter" (sortUpdated)="updateSortScreening($event)"></app-screening>
+  <div *ngIf="dataLoaded">
+    <div [ngSwitch]="selectedOption">
+        <app-index *ngSwitchCase="'index'"></app-index>
+        <app-errors *ngSwitchCase="'errors'" [errors]="errors"></app-errors>
+        <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject.value.id" (newReferencesImported)="newReferences()"> </app-reference-import>
+        <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC" [idDuplicateCriteria]="selectedProject.value.idDuplicateCriteria" [idProject]="selectedProject.value.id" (criteriaUpdated)="getProjectCriteria()"></app-criteria>
+        <app-project-delete *ngSwitchCase="'reset'" [idProject]="getIdProject()" [nameProject]="getNameProject()" (projectDeleted)="projectDeleted()" ></app-project-delete>
+    </div>
+    <app-references [hidden]="selectedOption !== 'references'" [references]="references" [idProject]="selectedProject.value.id" [exclusionCriteria]="EC" (referencesUpdated)="getProjectData()"></app-references>
+    <app-screening [hidden]="selectedOption !== 'screening'" [references]="references" [usernames] = "usernames" [idProject]="selectedProject.value.id" [exclusionCriteria]="this.EC" [inclusionCriteria]="this.IC"></app-screening>
   </div>
+
+  <mat-spinner *ngIf="!dataLoaded && dlNames.length > 0"></mat-spinner>
