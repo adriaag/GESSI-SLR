@@ -32,7 +32,7 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   @Input('references') referenceslist!: Reference[]
   @Input('idProject') idProject!: number
   @Input('exclusionCriteria') exclusionCriteria!: Criteria[]
-  @Output() referencesUpdated = new EventEmitter();
+  @Output() referenceDeleted = new EventEmitter();
 
   references: Reference[] = [];
   sortedData: Reference[] = [];
@@ -92,7 +92,8 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
 
   deleteReference(reference: Reference): void {
     this.dataService.deleteReference(reference.idRef, this.idProject).subscribe((resposta) => {
-      this.referencesUpdated.emit()
+      this.referenceDeleted.emit(reference)
+      this.ngOnChanges()
     })
       
   }

@@ -30,6 +30,7 @@ export class MainComponent implements OnInit {
   EC: Criteria[] = [];
 
   dataLoaded: boolean = false
+  trigger: boolean = false
 
 
   constructor(private dataService: DataService, private authService: AuthenticationService, private dialog: MatDialog) {}
@@ -216,6 +217,11 @@ export class MainComponent implements OnInit {
   logout() {
     this.authService.logout()
     this.loginDialog()
+  }
+
+  deleteReference(ref: any) {
+    this.references.splice(this.references.indexOf(ref),1)
+    this.trigger = !this.trigger
   }
 
 }

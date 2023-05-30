@@ -65,8 +65,8 @@
         <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC" [idDuplicateCriteria]="selectedProject.value.idDuplicateCriteria" [idProject]="selectedProject.value.id" (criteriaUpdated)="getProjectCriteria()"></app-criteria>
         <app-project-delete *ngSwitchCase="'reset'" [idProject]="getIdProject()" [nameProject]="getNameProject()" (projectDeleted)="projectDeleted()" ></app-project-delete>
     </div>
-    <app-references [hidden]="selectedOption !== 'references'" [references]="references" [idProject]="selectedProject.value.id" [exclusionCriteria]="EC" (referencesUpdated)="getProjectData()"></app-references>
-    <app-screening [hidden]="selectedOption !== 'screening'" [references]="references" [usernames] = "usernames" [idProject]="selectedProject.value.id" [exclusionCriteria]="this.EC" [inclusionCriteria]="this.IC"></app-screening>
+    <app-references [hidden]="selectedOption !== 'references'" [references]="references" [idProject]="selectedProject.value.id" [exclusionCriteria]="EC" (referenceDeleted)="deleteReference($event)"></app-references>
+    <app-screening [hidden]="selectedOption !== 'screening'" [references]="references" [usernames] = "usernames" [idProject]="selectedProject.value.id" [exclusionCriteria]="this.EC" [inclusionCriteria]="this.IC" [trigger]="trigger"></app-screening>
   </div>
 
   <mat-spinner *ngIf="!dataLoaded && dlNames.length > 0"></mat-spinner>

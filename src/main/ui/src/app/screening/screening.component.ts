@@ -23,6 +23,9 @@ export class ScreeningComponent {
   @Input('exclusionCriteria') exclusionCriteria!: Criteria[]
   @Input('inclusionCriteria') inclusionCriteria!: Criteria[]
   @Input('usernames') usernames!: string[]
+  @Input('trigger') trigger!: boolean //Pensat per tal que s'executi ngOnChanges quan
+                                      //es modifiquin els inputs. Angular compara els 
+                                      //inputs per referència. 
 
   criterias: Criteria[] = [];
 
@@ -115,7 +118,7 @@ export class ScreeningComponent {
     this.dataSource.paginator = this.paginator;
     this.applyFilterWhenReloading()
   }
-  
+
   uploadUsr1() {
     this.usr1 =  new FormArray<FormControl>([])
     this.crit1 =  new FormArray<FormControl>([])
