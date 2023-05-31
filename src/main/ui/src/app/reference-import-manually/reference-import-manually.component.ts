@@ -28,7 +28,7 @@ export class ReferenceImportManuallyComponent {
   authorNames = new FormControl();
   affiliationNames = new FormControl();
 
-  doiMaxLength = 50;
+  doiMaxLength = 100;
   typeMaxLength = 50;
   nameVenMaxLength = 300;
   titleMaxLength = 200;
