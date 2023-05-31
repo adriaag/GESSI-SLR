@@ -9,6 +9,7 @@ import com.webapp.gessi.domain.dto.referenceDTO;
 import com.webapp.gessi.domain.dto.referenceDTOadd;
 import com.webapp.gessi.domain.dto.userDesignationDTO;
 import com.webapp.gessi.exceptions.BadBibtexFileException;
+import com.webapp.gessi.exceptions.TruncationException;
 
 import org.jbibtex.ParseException;
 import org.springframework.beans.BeansException;
@@ -39,7 +40,7 @@ public class ReferenceController {
     }
 
     public static List<importErrorDTO> addReference(String nameDL, int idProject, MultipartFile file)
-            throws SQLException, IOException, BadBibtexFileException {
+            throws SQLException, IOException, BadBibtexFileException, NumberFormatException, TruncationException {
         return Reference.importar(nameDL, ProjectController.getById(idProject), file);
     }
 

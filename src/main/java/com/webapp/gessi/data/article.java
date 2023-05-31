@@ -4,6 +4,8 @@ import com.webapp.gessi.domain.dto.ProjectDTO;
 import com.webapp.gessi.domain.dto.articleDTO;
 import com.webapp.gessi.domain.dto.referenceDTOadd;
 import com.webapp.gessi.exceptions.BadBibtexFileException;
+import com.webapp.gessi.exceptions.TruncationException;
+
 import org.apache.commons.io.IOUtils;
 import com.github.adriaag.jbibtex.BibTeXDatabase;
 import com.github.adriaag.jbibtex.BibTeXParser;
@@ -38,7 +40,7 @@ public class article {
     static Key articleKey = new Key("article");
     static Key affiliationKey = new Key("affiliation");
     
-    private static final int doiMaxLength = 50;
+    private static final int doiMaxLength = 100;
     private static final int typeMaxLength = 50;
     private static final int citeKeyMaxLength = 50;
     private static final int titleMaxLength = 200;
@@ -51,7 +53,7 @@ public class article {
     private static final int abstractMaxLength = 6000;
     
 
-    public static Timestamp importar(String idDL, ProjectDTO project, Statement s, MultipartFile file) throws SQLException, IOException, BadBibtexFileException, NumberFormatException{
+    public static Timestamp importar(String idDL, ProjectDTO project, Statement s, MultipartFile file) throws SQLException, IOException, BadBibtexFileException, NumberFormatException, TruncationException{
 
         //Reader reader = new FileReader(path);
         //Parametro MultipartFile file
@@ -161,13 +163,13 @@ public class article {
         Connection conn = s.getConnection();
         String query = "SELECT * FROM articles where doi = ?";
         PreparedStatement preparedStatement = conn.prepareStatement(query);
-        preparedStatement.setString(1, doi);
+        preparedStatement.setString(1, truncate(doi, doiMaxLength));
         preparedStatement.execute();
         return preparedStatement.getResultSet();
     }
 
 //Devuelve un string de todos los autores de la referencia
-    static String addArticle(String idDL, ProjectDTO project, Statement s, BibTeXEntry entry, int entriesPriority) throws SQLException, NumberFormatException {
+    static String addArticle(String idDL, ProjectDTO project, Statement s, BibTeXEntry entry, int entriesPriority) throws SQLException, NumberFormatException, TruncationException {
         String doi;
         if (entry.getField(BibTeXEntry.KEY_DOI) == null) {
             String str = entry.getKey().toString();
@@ -195,6 +197,7 @@ public class article {
             ResultSet rs = getArticle(s, doi);
             int apCriteria = 0;
             if (rs.next()) {
+            	if(doi.length() > doiMaxLength) throw new TruncationException("ERROR: DOI "+doi+" already exists when trucated. Max doi length allowed: "+doiMaxLength, null);
                 updateRow(rs, entry, s, doi); //añadir informacion en los valores null del article
                 ResultSet duplicate = Reference.isDuplicate(s, doi, project.getId());
                 if (duplicate == null)
@@ -247,7 +250,8 @@ public class article {
 	                }
 	            }                
             }
-            else {
+            else {                  		
+            	System.out.println("DOI "+doi);
                 insertRow(s, entry, doi);                                       //create article nuevo
                 int idRef = Reference.insertRow(s, doi, idDL, project.getId());
                 referencesImported += 1;
@@ -542,7 +546,7 @@ public class article {
 
     public static void createTable(Statement s) {
         try {
-            s.execute("create table articles( doi varchar(50), type varchar(50), citeKey varchar(50), " +
+            s.execute("create table articles( doi varchar(100), type varchar(50), citeKey varchar(50), " +
                     "idVen int, title varchar(200), keywords varchar(1000), number varchar(10), numpages INT, " +
                     "pages varchar(20), volume varchar(20), año INT, abstract varchar(6000), manuallyImported boolean, " +
                     "PRIMARY KEY (doi), " +

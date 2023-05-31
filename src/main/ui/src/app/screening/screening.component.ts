@@ -107,8 +107,6 @@ export class ScreeningComponent {
       this.filteredOptionsCrit = of(this.filtreCrit(value))
     })
 
-
-
   }
 
   ngAfterViewInit() {

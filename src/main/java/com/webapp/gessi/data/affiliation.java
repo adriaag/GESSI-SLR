@@ -8,12 +8,12 @@ import java.sql.Statement;
 
 public class affiliation {
 	
-	private static final int idAMaxLength = 50;
+	private static final int idAMaxLength = 100;
     /* create table affiliations(name varchar(50),
     PRIMARY KEY (name));*/
     public static void createTable(Statement s) {
         try {
-            s.execute("create table affiliations(idCom int, idA varchar(50), PRIMARY KEY (idCom,idA), " +
+            s.execute("create table affiliations(idCom int, idA varchar(100), PRIMARY KEY (idCom,idA), " +
                     "CONSTRAINT COM_FK_AF FOREIGN KEY (idCom) REFERENCES companies( idCom ) ON DELETE CASCADE," +
                     "CONSTRAINT ART_FK_AF FOREIGN KEY (idA) REFERENCES articles( doi ) ON DELETE CASCADE)");
             System.out.println("Created table affiliations");

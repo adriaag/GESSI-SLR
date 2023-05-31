@@ -9,11 +9,11 @@ import java.sql.Statement;
 public class author {
     /* create table authors( name varchar(50),
     PRIMARY KEY (name));*/
-	private static final int idAMaxLength = 50;
+	private static final int idAMaxLength = 100;
 	
     public static void createTable(Statement s) {
         try {
-            s.execute("CREATE TABLE authors( idRes int , idA varchar(50) , PRIMARY KEY (idRes, idA)," +
+            s.execute("CREATE TABLE authors( idRes int , idA varchar(100) , PRIMARY KEY (idRes, idA)," +
                     "CONSTRAINT RES_FK_AU FOREIGN KEY (idRes) REFERENCES researchers (idRes) ON DELETE CASCADE," +
                     "CONSTRAINT ART_FK_AU FOREIGN KEY (idA) REFERENCES articles( doi ) ON DELETE CASCADE)");
             System.out.println("Created table authors");

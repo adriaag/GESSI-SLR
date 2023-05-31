@@ -3,6 +3,7 @@ package com.webapp.gessi.data;
 import com.webapp.gessi.config.DBConnection;
 import com.webapp.gessi.domain.dto.*;
 import com.webapp.gessi.exceptions.BadBibtexFileException;
+import com.webapp.gessi.exceptions.TruncationException;
 
 import org.jbibtex.ParseException;
 import org.springframework.context.ApplicationContext;
@@ -17,7 +18,7 @@ import java.util.Objects;
 
 public class Reference {
 	
-	private static final int doiMaxLength = 50;
+	private static final int doiMaxLength = 100;
 
     public static int insertRow(Statement s, String doi, String idDL, int idProject) throws SQLException {
     	String getIdProjRefAntQuery = "SELECT max(idProjRef) FROM referencias where idProject = ?";
@@ -60,7 +61,7 @@ public class Reference {
         try {
             s.execute("create table referencias(" +
                     "idRef INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
-                    "doi varchar(50), idDL INT, idProject INT, " +
+                    "doi varchar(100), idDL INT, idProject INT, " +
                     "idProjRef INT NOT NULL, "+
                     "ConsensusCriteriaProcessed BOOLEAN DEFAULT false, " +
                     "PRIMARY KEY(idRef), unique(doi, idDL, idProject), unique(idProjRef,idProject), " +
@@ -256,7 +257,7 @@ public class Reference {
 
     }
 
-    public static List<importErrorDTO> importar(String idDL, ProjectDTO project, MultipartFile file) throws SQLException, IOException, BadBibtexFileException {
+    public static List<importErrorDTO> importar(String idDL, ProjectDTO project, MultipartFile file) throws SQLException, IOException, BadBibtexFileException, NumberFormatException, TruncationException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         conn.setAutoCommit(false);

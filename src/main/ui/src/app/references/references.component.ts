@@ -57,7 +57,6 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.filterData();
     this.applyFilterWhenReloading()
-
   }
 
   ngAfterViewInit() {

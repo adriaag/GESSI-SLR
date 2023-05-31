@@ -10,7 +10,7 @@ import com.webapp.gessi.domain.controllers.criteriaController;
 import com.webapp.gessi.domain.controllers.digitalLibraryController;
 import com.webapp.gessi.domain.dto.*;
 import com.webapp.gessi.exceptions.BadBibtexFileException;
-
+import com.webapp.gessi.exceptions.TruncationException;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -26,6 +26,7 @@ import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
@@ -178,8 +179,7 @@ public class Api implements ErrorController{
 	        }
 	        else {*/
 	            errors = ReferenceController.addReference(form.getdlNum(), form.getIdProject(), form.getFile());
-	            int num = Integer.parseInt(form.getdlNum());
-	            returnData.put("newDL", form.getdlNum());
+	            returnData.put("newDL",  digitalLibraryController.getNames().get(Integer.parseInt(form.getdlNum())));
 	            returnData.put("newName", StringUtils.cleanPath(nameFile));
 	            returnData.put("errors", errors);
 	       
@@ -214,6 +214,13 @@ public class Api implements ErrorController{
     		JSONObject returnData = new JSONObject();
     		returnData.put("message", e.getCause());
     		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnData.toString());    		
+    	}
+    	
+    	catch(TruncationException e) {
+    		JSONObject returnData = new JSONObject();
+    		returnData.put("message",e.getMessage());
+    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnData.toString());    		
+    		
     	}
     	
     }
