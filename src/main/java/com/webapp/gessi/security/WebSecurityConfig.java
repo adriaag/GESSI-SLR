@@ -65,7 +65,7 @@ public class WebSecurityConfig {
 					.antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
 					.antMatchers(HttpMethod.POST,"/api/login","/auth/changePasswordRequest").permitAll()
 					.antMatchers(HttpMethod.PUT, "/auth/password").permitAll()
-					.antMatchers(HttpMethod.GET, "/").permitAll()
+					.antMatchers(HttpMethod.GET, "/ui/**").permitAll()
 					.anyRequest()
 					.authenticated()
 					.and()
