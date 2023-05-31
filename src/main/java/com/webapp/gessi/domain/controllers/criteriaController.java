@@ -2,8 +2,8 @@ package com.webapp.gessi.domain.controllers;
 
 import com.webapp.gessi.config.DBConnection;
 import com.webapp.gessi.data.Criteria;
-import com.webapp.gessi.domain.dto.ExclusionDTO;
 import com.webapp.gessi.domain.dto.CriteriaDTO;
+import com.webapp.gessi.domain.dto.consensusCriteriaDTO;
 import com.webapp.gessi.domain.dto.referenceDTO;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class criteriaController {
@@ -41,12 +43,6 @@ public class criteriaController {
 
     public static void deleteCriteria(@PathVariable("id") int id) throws SQLException {
         System.out.println("delete criteria en controller criteria");
-        List<ExclusionDTO> exclusionDTOList = ExclusionController.getByIdICEC(id);
-        for (ExclusionDTO exclusionDTO : exclusionDTOList) {
-            referenceDTO referenceDTO = ReferenceController.getReference(exclusionDTO.getIdRef());
-            if (referenceDTO.getExclusionDTOList().size() <= 1)
-                ReferenceController.updateState(referenceDTO.getIdRef(), null);
-        }
         Criteria.delete(id);
 
     }
@@ -73,4 +69,18 @@ public class criteriaController {
         }
         return r;
     }
+    
+    public static Map<Integer,String> getCriteriaIdNameConversor(int idProject) throws SQLException {
+    	List<CriteriaDTO> list = Criteria.getAllCriteria(null, idProject);
+    	Map<Integer, String> map = new HashMap<Integer, String>();
+    	
+    	for (CriteriaDTO i : list) {
+    		map.put(i.getId(), i.getName());
+    	}
+    	
+    	return map;
+    	
+    }
+    
+    
 }

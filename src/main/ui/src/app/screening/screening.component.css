@@ -1,17 +1,3 @@
-.btn2 {
-  background-color: DodgerBlue;
-  border: none;
-  color: white;
-  padding: 12px 30px;
-  cursor: pointer;
-  font-size: 20px;
-}
-
-/* Darker background on mouse-over */
-.btn2:hover {
-    background-color: RoyalBlue;
-}
-
 table {
     width: 100%;
   }
@@ -42,7 +28,7 @@ table {
 
   h1 {
     display: flex;
-    justify-content: space-between;
+    justify-content: right;
   }
 
   .mdc-tooltip__surface{
@@ -51,4 +37,27 @@ table {
     font-size: 11pt !important;
 
 
+}
+
+.doubleCell{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.boto {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+}
+
+.icVerd {
+  color: green
+}
+
+.icNeg {
+  color: black
 }

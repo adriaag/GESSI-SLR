@@ -27,6 +27,7 @@ export class ReferenceImportComponent {
   DLnew: string = "";
   errorFile: string = "";
   importBool: boolean = false;
+  loading: boolean = false;
 
   handleFileInput(event: Event) {
     const target= event.target as HTMLInputElement;
@@ -39,20 +40,26 @@ export class ReferenceImportComponent {
   }
 
   submitFile() {
-    this.dataService.createReferenceFromFile(String(this.idProject), String(this.digitalLibraryId), this.fileToUpload).subscribe((resposta)=> {
-      this.importBool = resposta.importBool
-      this.errorFile = resposta.errorFile
-      this.newDL = resposta.newDL;
-      this.newName = resposta.newName;
-      this.errors = resposta.errors;
-      this.refsImp = resposta.refsImp;
-      this.refsDupl = resposta.refsDupl;
-      this.DLnew = resposta.DLnew;
+    this.loading = true
+    this.dataService.createReferenceFromFile(String(this.idProject), String(this.digitalLibraryId), this.fileToUpload).subscribe({
+      next: (resposta)=> {
+        this.loading = false
+        this.importBool = resposta.importBool
+        this.errorFile = resposta.errorFile
+        this.newDL = resposta.newDL;
+        this.newName = resposta.newName;
+        this.errors = resposta.errors;
+        this.refsImp = resposta.refsImp;
+        this.refsDupl = resposta.refsDupl;
+        this.DLnew = resposta.DLnew;
 
-      if(this.importBool) {
-        this.newReferencesImported.emit();
+        if(this.importBool) {
+          this.newReferencesImported.emit();
+        }
+      },
+      error: (resposta) => {
+        this.loading = false
       }
-
     })
 
   }

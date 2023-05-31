@@ -3,6 +3,7 @@ package com.webapp.gessi.data;
 import com.webapp.gessi.config.DBConnection;
 import com.webapp.gessi.domain.dto.*;
 import com.webapp.gessi.exceptions.BadBibtexFileException;
+import com.webapp.gessi.exceptions.TruncationException;
 
 import org.jbibtex.ParseException;
 import org.springframework.context.ApplicationContext;
@@ -17,11 +18,11 @@ import java.util.Objects;
 
 public class Reference {
 	
-	private static final int doiMaxLength = 50;
+	private static final int doiMaxLength = 100;
 
-    public static int insertRow(Statement s, String doi, String idDL, String estado, int idProject) throws SQLException {
+    public static int insertRow(Statement s, String doi, String idDL, int idProject) throws SQLException {
     	String getIdProjRefAntQuery = "SELECT max(idProjRef) FROM referencias where idProject = ?";
-        String query = "INSERT INTO referencias(doi, idDL, state, idProject, idProjRef) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO referencias(doi, idDL, idProject, idProjRef) VALUES (?, ?, ?, ?)";
         Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(getIdProjRefAntQuery);
         preparedStatement.setInt(1,idProject);
@@ -37,10 +38,8 @@ public class Reference {
         preparedStatement.setString(1, truncate(doi, doiMaxLength));
         if (idDL != null) preparedStatement.setString(2, idDL);
         else preparedStatement.setNull(2, java.sql.Types.VARCHAR);
-        if (estado != null) preparedStatement.setString(3, estado);
-        else preparedStatement.setNull(3, java.sql.Types.VARCHAR);
-        preparedStatement.setInt(4, idProject);
-        preparedStatement.setInt(5, idProjRef);
+        preparedStatement.setInt(3, idProject);
+        preparedStatement.setInt(4, idProjRef);
         preparedStatement.execute();
         System.out.println("Inserted row with doi "+ doi +", idDL.. in referencias");
         conn.commit();
@@ -62,13 +61,13 @@ public class Reference {
         try {
             s.execute("create table referencias(" +
                     "idRef INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
-                    "doi varchar(50), idDL INT, state VARCHAR(10), idProject INT, " +
+                    "doi varchar(100), idDL INT, idProject INT, " +
                     "idProjRef INT NOT NULL, "+
+                    "ConsensusCriteriaProcessed BOOLEAN DEFAULT false, " +
                     "PRIMARY KEY(idRef), unique(doi, idDL, idProject), unique(idProjRef,idProject), " +
                     "CONSTRAINT DL_FK_R FOREIGN KEY (idDL) REFERENCES digitalLibraries (idDL) ON DELETE CASCADE," +
                     "CONSTRAINT AR_FK_R FOREIGN KEY (doi) REFERENCES articles (doi) ON DELETE CASCADE," +
-                    "CONSTRAINT PR_FK_R FOREIGN KEY (idProject) REFERENCES project (id) ON DELETE CASCADE," +
-                    "CONSTRAINT state_chk CHECK (state IN ( 'in', 'out')))");
+                    "CONSTRAINT PR_FK_R FOREIGN KEY (idProject) REFERENCES project (id) ON DELETE CASCADE)");
             System.out.println("Created table referencias");
         } catch (SQLException e) {
             if (e.getSQLState().equals("X0Y32"))
@@ -91,7 +90,7 @@ public class Reference {
         System.out.println("Dropped table referencias");
         }
         catch (SQLException sqlException) {
-            System.out.println("Tabla referencias not exist");
+            System.out.println(sqlException.getCause());
         }
     }
 
@@ -120,14 +119,15 @@ public class Reference {
             int idR = rs.getInt(1);
             String doiR = rs.getString(2);
             int dlR = rs.getInt(3);
-            String estado = rs.getString(4);
-            int idProjRef = rs.getInt(6);
-            List<ExclusionDTO> exclusionDTOList = null;
-            if (Objects.equals(estado, "out")) {
-                Statement s1 = conn.createStatement();
-                exclusionDTOList = Exclusion.getByIdRef(s1, idR);
-            }
-            referenceDTO NewRef = new referenceDTO( idR, doiR, dlR, idProject, estado, idProjRef, exclusionDTOList);
+            int idProjRef = rs.getInt(5);
+            boolean processed = rs.getBoolean(6);
+            consensusCriteriaDTO exclusionDTOList = null;
+            Statement s1 = conn.createStatement();
+            exclusionDTOList = consensusCriteria.getByIdRef(s1, idR);
+            
+            userDesignationDTO usersCriteria1 = userDesignation.getByIdRefNumDes(s,idR, 1);
+            userDesignationDTO usersCriteria2 = userDesignation.getByIdRefNumDes(s,idR, 2);
+            referenceDTO NewRef = new referenceDTO( idR, doiR, dlR, idProject, idProjRef, exclusionDTOList, usersCriteria1, usersCriteria2, processed);
             obtainReferenceDTO(conn, NewRef, doiR, dlR);
 
             refList.add(NewRef);
@@ -220,44 +220,44 @@ public class Reference {
         researcher.createTable(s);
         Criteria.createTable(s);
         Reference.createTable(s);
-        Exclusion.createTable(s);
+        consensusCriteria.createTable(s);
         author.createTable(s);
         company.createTable(s);
         affiliation.createTable(s);
         importationLogError.createTable(s);
         user.createTable(s);
+        userDesignation.createTable(s);
+        userDesignationICEC.createTable(s);
     }
 
     private static void deleteTables(Statement s) throws SQLException {
-        Exclusion.dropTable(s);
+    	userDesignationICEC.dropTable(s);
+        userDesignation.dropTable(s);
+        user.dropTable(s);   	
         importationLogError.dropTable(s);
         affiliation.dropTable(s);
         company.dropTable(s);
         author.dropTable(s);
-        Reference.dropTable(s);
+        consensusCriteria.dropTable(s);
         researcher.dropTable(s);
+        Reference.dropTable(s);
         article.dropTable(s);
         venue.dropTable(s);
-        Criteria.dropTable(s);
-        digitalLibrary.dropTable(s);
+        Criteria.dropTable(s); 
         Project.dropTable(s);
-        user.dropTable(s);
-    }
-    
-    private static void iniDB() {
-    	try {
-			DBConnection.iniDB();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
+        digitalLibrary.dropTable(s);
+        
+        
+        
+        
+        
+        
+       
+        
+
     }
 
-    public static List<importErrorDTO> importar(String idDL, ProjectDTO project, MultipartFile file) throws SQLException, IOException, BadBibtexFileException {
+    public static List<importErrorDTO> importar(String idDL, ProjectDTO project, MultipartFile file) throws SQLException, IOException, BadBibtexFileException, NumberFormatException, TruncationException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
         conn.setAutoCommit(false);
@@ -355,9 +355,9 @@ public class Reference {
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.next();
         referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
-                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), resultSet.getInt("idProjRef"),null);
-        List<ExclusionDTO> exclusionDTOList = Exclusion.getByIdRef(conn.createStatement(), idR);
-        referenceDTO.setExclusionDTOList(exclusionDTOList);
+                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getInt("idProjRef"),null, null, null, resultSet.getBoolean("consensusCriteriaProcessed"));
+        consensusCriteriaDTO exclusionDTOList = consensusCriteria.getByIdRef(conn.createStatement(), idR);
+        referenceDTO.setConsensusCriteria(exclusionDTOList);
         return referenceDTO;
     }
 
@@ -383,61 +383,71 @@ public class Reference {
         conn.commit();
         return resultSet;
     }
-    static void updateEstateReferences(Statement s, int idRef, int idDuplicateCriteria) throws SQLException {
-        String query = "update referencias set state = 'out' where IDREF = ?";
+    
+    public static void updateEstateReferences(Statement s, int idRef, int idDuplicateCriteria) throws SQLException {
+        setProcessed(s, idRef);
+        consensusCriteria.insertRow(s, idDuplicateCriteria, idRef);
+    }
+
+    public static referenceDTO addReferenceManually(Statement s, referenceDTOadd referenceData, int idProject) throws SQLException {
+    	article.insertRowManually(s, referenceData);
+    	int idRef = insertRow(s, referenceData.getDoi(), "-1", idProject);  
+    	System.out.println(idRef);
+    	return getReference(s.getConnection(), idRef);
+    }
+    
+    public static void setProcessed(Statement s, int idRef) throws SQLException {
+    	String query = "update referencias set ConsensusCriteriaProcessed = true where IDREF = ?";
 
         Connection conn = s.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setInt(1, idRef);
         preparedStatement.execute();
-        conn.commit();
-        Exclusion.insertRow(s, idDuplicateCriteria, idRef);
+        conn.commit(); 	
     }
 
-    public static void update(int idRef, String estado) throws SQLException {
-    	
-    ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
-    Connection conn = ctx.getBean(Connection.class);
-    Statement s = conn.createStatement();
-    
-    String query = "update referencias set state = ? WHERE idRef = ?";
-    conn = s.getConnection();
-    PreparedStatement preparedStatement = conn.prepareStatement(query);
-    preparedStatement.setInt(2, idRef);
-    
-    if ((estado == null || estado.isEmpty()))
-    	preparedStatement.setString(1, null);
-    else
-    	preparedStatement.setString(1, estado);
-    preparedStatement.execute();
-    conn.commit();
-    }
-    
-    public static referenceDTO addReferenceManually(Statement s, referenceDTOadd referenceData, int idProject) throws SQLException {
-    	article.insertRowManually(s, referenceData);
-    	int idRef = insertRow(s, referenceData.getDoi(), "-1", null, idProject);  
-    	System.out.println(idRef);
-    	return getReference(s.getConnection(), idRef);
-    }
-    
-    
+    public static void setUnprocessed(Statement s, int idRef) throws SQLException {
+    	String query = "update referencias set ConsensusCriteriaProcessed = false where IDREF = ?";
 
-    private static List<ExclusionDTO> convertResultSetToExclusionDTO(ResultSet resultSet, List<ExclusionDTO> exclusionDTOList) throws SQLException {
-        while (resultSet.next()) {
-            exclusionDTOList.add(new ExclusionDTO(resultSet.getInt("idRef"), resultSet.getInt("idICEC"), resultSet.getString("name")));
-        }
-        return exclusionDTOList;
+        Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setInt(1, idRef);
+        preparedStatement.execute();
+        conn.commit(); 	
+    }
+    
+    public static boolean getProcessed(Statement s, int idRef) throws SQLException {
+        	String query = "select ConsensusCriteriaProcessed from referencias where IDREF = ?";
+
+            Connection conn = s.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, idRef);
+            ResultSet rs = preparedStatement.executeQuery();
+            rs.next();
+            return rs.getBoolean("ConsensusCriteriaProcessed");
+            
+            
+    }
+    
+    public static String getState(Statement s, int idRef) throws SQLException {
+    	userDesignationDTO ud1 = userDesignation.getByIdRefNumDes(s, idRef, 1);
+    	userDesignationDTO ud2 = userDesignation.getByIdRefNumDes(s, idRef, 1);
+    	if(ud1 != null && ud2 != null && ud1.getProcessed() && ud2.getProcessed()) {
+    		if(ud1.getCriteriaList().equals(ud2.getCriteriaList())) {
+    			if(ud1.getCriteriaList().isEmpty()) return "in";
+    			else return "out";
+    		}
+    		else {
+    			if(getProcessed(s,idRef)) {
+    				consensusCriteriaDTO cc = consensusCriteria.getByIdRef(s, idRef);
+    				if (cc.getIdICEC().isEmpty()) return "in";
+    				else return "out";
+    			}
+    		}
+    	}
+    	return "";
     }
 
-    private static referenceDTO convertResultSetToReferenceDTO(ResultSet resultSet) throws SQLException {
-        List<ExclusionDTO> exclusionDTOList = new ArrayList<>();
-        resultSet.next();
-        referenceDTO referenceDTO = new referenceDTO(resultSet.getInt("idRef"), resultSet.getString("doi"),
-                resultSet.getInt("idDL"), resultSet.getInt("idProject"), resultSet.getString("state"), resultSet.getInt("idProjRef"),null);
-        exclusionDTOList.add(new ExclusionDTO(resultSet.getInt("idRef"), resultSet.getInt("idICEC"), resultSet.getString("name")));
-        referenceDTO.setExclusionDTOList(convertResultSetToExclusionDTO(resultSet, exclusionDTOList));
-        return referenceDTO;
-    }
     
     private static String truncate(String text, int maxValue) {
     	if (text.length() > maxValue) {

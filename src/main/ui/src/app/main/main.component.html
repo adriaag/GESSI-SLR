@@ -18,24 +18,28 @@
   
                     </li>
                     <li class="nav-item">
-                      <a *ngIf="this.selectedOption === 'import'" class="nav-link active">Import reference</a>
-                      <a *ngIf="this.selectedOption !== 'import'" class="nav-link" (click)="changeOption('import')">Import reference</a>
+                      <a *ngIf="this.selectedOption === 'import'" class="nav-link active">Import</a>
+                      <a *ngIf="this.selectedOption !== 'import'" class="nav-link" (click)="changeOption('import')">Import</a>
                     </li>
                     <li  class="nav-item">
-                      <a *ngIf="this.selectedOption === 'criteria'" class="nav-link active">Criteria</a>
-                      <a *ngIf="this.selectedOption !== 'criteria'" class="nav-link" (click)="changeOption('criteria')">Criteria</a>
+                      <a *ngIf="this.selectedOption === 'criteria'" class="nav-link active">IC/EC</a>
+                      <a *ngIf="this.selectedOption !== 'criteria'" class="nav-link" (click)="changeOption('criteria')">IC/EC</a>
                     </li>
                     <li class="nav-item">
-                        <a *ngIf="this.selectedOption === 'references'" class="nav-link active">References</a>
-                        <a *ngIf="this.selectedOption !== 'references'" class="nav-link" (click)="changeOption('references')">References</a>
+                        <a *ngIf="this.selectedOption === 'references'" class="nav-link active">Search Result</a>
+                        <a *ngIf="this.selectedOption !== 'references'" class="nav-link" (click)="changeOption('references')">Search Result</a>
                     </li>
+                    <li class="nav-item">
+                      <a *ngIf="this.selectedOption === 'screening'" class="nav-link active">Screening</a>
+                      <a *ngIf="this.selectedOption !== 'screening'" class="nav-link" (click)="changeOption('screening')">Screening</a>
+                  </li>
                     <li class="nav-item">
                       <a *ngIf="this.selectedOption === 'errors'" class="nav-link active">Errors</a>
                       <a *ngIf="this.selectedOption !== 'errors'" class="nav-link" (click)="changeOption('errors')">Errors</a>
                     </li>
                     <li  class="nav-item">
-                      <a *ngIf="this.selectedOption === 'reset'" class="nav-link active">Reset</a>
-                      <a *ngIf="this.selectedOption !== 'reset'" class="nav-link" (click)="changeOption('reset')">Reset</a>
+                      <a *ngIf="this.selectedOption === 'reset'" class="nav-link active">Administration</a>
+                      <a *ngIf="this.selectedOption !== 'reset'" class="nav-link" (click)="changeOption('reset')">Administration</a>
                     </li>
                 </ul>
   
@@ -53,11 +57,16 @@
         </div>
     </nav>
   </header>
-  <div [ngSwitch]="selectedOption">
-      <app-index *ngSwitchCase="'index'"></app-index>
-      <app-references *ngSwitchCase="'references'" [references]="references" [idProject]="selectedProject.value.id" [exclusionCriteria]="EC" (referencesUpdated)="getProjectData()"></app-references>
-      <app-errors *ngSwitchCase="'errors'" [errors]="errors"></app-errors>
-      <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject.value.id" (newReferencesImported)="newReferences()"> </app-reference-import>
-      <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC" [idDuplicateCriteria]="selectedProject.value.idDuplicateCriteria" [idProject]="selectedProject.value.id" (criteriaUpdated)="getProjectCriteria()"></app-criteria>
-      <app-project-delete *ngSwitchCase="'reset'" [idProject]="getIdProject()" [nameProject]="getNameProject()" (projectDeleted)="projectDeleted()"></app-project-delete>
+  <div *ngIf="dataLoaded">
+    <div [ngSwitch]="selectedOption">
+        <app-index *ngSwitchCase="'index'"></app-index>
+        <app-errors *ngSwitchCase="'errors'" [errors]="errors"></app-errors>
+        <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject.value.id" (newReferencesImported)="newReferences()"> </app-reference-import>
+        <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC" [idDuplicateCriteria]="selectedProject.value.idDuplicateCriteria" [idProject]="selectedProject.value.id" (criteriaUpdated)="getProjectCriteria()"></app-criteria>
+        <app-project-delete *ngSwitchCase="'reset'" [idProject]="getIdProject()" [nameProject]="getNameProject()" (projectDeleted)="projectDeleted()" ></app-project-delete>
+    </div>
+    <app-references [hidden]="selectedOption !== 'references'" [references]="references" [idProject]="selectedProject.value.id" [exclusionCriteria]="EC" (referenceDeleted)="deleteReference($event)"></app-references>
+    <app-screening [hidden]="selectedOption !== 'screening'" [references]="references" [usernames] = "usernames" [idProject]="selectedProject.value.id" [exclusionCriteria]="this.EC" [inclusionCriteria]="this.IC" [trigger]="trigger"></app-screening>
   </div>
+
+  <mat-spinner *ngIf="!dataLoaded && dlNames.length > 0"></mat-spinner>

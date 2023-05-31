@@ -11,6 +11,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 
 import { AppComponent } from './app.component';
@@ -22,7 +26,6 @@ import { ReferenceImportComponent } from './reference-import/reference-import.co
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CriteriaComponent } from './criteria/criteria.component';
 import { CriteriaEditComponent } from './criteria-edit/criteria-edit.component';
-import { ReferenceClassifyComponent } from './reference-classify/reference-classify.component';
 import { ProjectCreateComponent } from './project-create/project-create.component';
 import { ProjectDeleteComponent } from './project-delete/project-delete.component';
 import { ReferenceImportManuallyComponent } from './reference-import-manually/reference-import-manually.component';
@@ -30,6 +33,7 @@ import { LoginComponent } from './login/login.component';
 import { AuthInterceptor } from './auth.interceptor';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { MainComponent } from './main/main.component';
+import { ScreeningComponent } from './screening/screening.component';
 
 @NgModule({
   declarations: [
@@ -41,13 +45,13 @@ import { MainComponent } from './main/main.component';
     ReferenceImportComponent,
     CriteriaComponent,
     CriteriaEditComponent,
-    ReferenceClassifyComponent,
     ProjectCreateComponent,
     ProjectDeleteComponent,
     ReferenceImportManuallyComponent,
     LoginComponent,
     ChangePasswordComponent,
     MainComponent,
+    ScreeningComponent,
   ],
   imports: [
     BrowserModule,
@@ -63,7 +67,11 @@ import { MainComponent } from './main/main.component';
     MatIconModule,
     FormsModule,
     ReactiveFormsModule,
-    MatSelectModule
+    MatSelectModule,
+    MatTooltipModule,
+    MatAutocompleteModule,
+    MatChipsModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     {

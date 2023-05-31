@@ -1,6 +1,7 @@
-import { Exclusion } from "./exclusion";
+import { ConsensusCriteria} from "./consensusCriteria";
 import { Article } from "./article";
 import { DigitalLibrary } from "./digitalLibrary";
+import { UserDesignation } from "./userDesignation";
 
 export interface Reference {
     idRef: number;
@@ -9,9 +10,12 @@ export interface Reference {
     idProject: number;
     state: string;
     idProjRef: number;
-    exclusionDTOList: Exclusion[];
+    exclusionDTOList: ConsensusCriteria;
     art: Article;
     dl: DigitalLibrary;
+    usersCriteria1: UserDesignation;
+    usersCriteria2: UserDesignation;
+    consensusCriteriaProcessed: boolean;
     
 }
 

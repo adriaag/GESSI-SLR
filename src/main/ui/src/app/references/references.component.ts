@@ -1,20 +1,30 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild, ViewEncapsulation} from '@angular/core';
 import { DataService } from '../data.service';
 import { Reference } from '../dataModels/reference';
 import { Researcher } from '../dataModels/researcher';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, SortDirection } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { Exclusion } from '../dataModels/exclusion';
 import { MatDialog} from '@angular/material/dialog';
 import { ReferenceInfoComponent } from '../reference-info/reference-info.component';
-import { ReferenceClassifyComponent } from '../reference-classify/reference-classify.component';
 import { Criteria } from '../dataModels/criteria';
+import { MatTooltipDefaultOptions, MAT_TOOLTIP_DEFAULT_OPTIONS } from '@angular/material/tooltip';
+
+
+export const tooltipsConf: MatTooltipDefaultOptions = {
+  showDelay: 500,
+  hideDelay: 50,
+  touchendHideDelay: 1000,
+  position: 'below',
+};
+
 
 @Component({
   selector: 'app-references',
   templateUrl: './references.component.html',
-  styleUrls: ['./references.component.css']
+  styleUrls: ['./references.component.css'],
+  providers: [{provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: tooltipsConf}],
+  encapsulation: ViewEncapsulation.None,
 })
 
 export class ReferencesComponent implements OnChanges, AfterViewInit{
@@ -22,21 +32,23 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   @Input('references') referenceslist!: Reference[]
   @Input('idProject') idProject!: number
   @Input('exclusionCriteria') exclusionCriteria!: Criteria[]
-  @Output() referencesUpdated = new EventEmitter();
+  @Output() referenceDeleted = new EventEmitter();
 
   references: Reference[] = [];
   sortedData: Reference[] = [];
   dataSource!: MatTableDataSource<Reference>;
-  displayedColumns: string[] = ['doi','ref', 'dl', 'year', 'auth', 'tit', 'ven', 'sta', 'cri', 'inf', 'cla', 'del'];
+  displayedColumns: string[] = ['doi','ref', 'dl', 'year', 'auth', 'tit', 'ven', 'abs', 'inf', 'del'];
   filterValue: string = ""
+
+  sortColumn: string = ""
+  sortDirection: SortDirection = ""
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-
   constructor(private dataService: DataService, private dialog: MatDialog) {}
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges() {
     this.references = this.referenceslist
     this.sortedData = this.references.slice();
     this.dataSource = new MatTableDataSource(this.referenceslist);
@@ -45,7 +57,6 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.filterData();
     this.applyFilterWhenReloading()
-
   }
 
   ngAfterViewInit() {
@@ -53,13 +64,16 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.filterData();
     this.dataSource.paginator = this.paginator;
+    this.applyFilterWhenReloading()
   }
 
   downloadExcel(): void {
     this.dataService.getExcelFile(this.idProject).subscribe((resposta) => {
         var newBlob = new Blob([resposta], { type: "application/vnd.ms-excel" });
         const url= window.URL.createObjectURL(newBlob);
-        window.open(url);
+        window.location.href = url;
+        //window.open(url);
+        
     });
   }
 
@@ -67,26 +81,6 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
     this.dialog.open(ReferenceInfoComponent, {
       data : ref
     });
-  }
-
-  editReferenceDialog(ref: Reference) {
-    let referenceEditDialog = this.dialog.open(ReferenceClassifyComponent, {
-      data: {
-        reference: ref,
-        exclusionCriteria: this.exclusionCriteria
-      }
-    })
-    referenceEditDialog.afterClosed().subscribe(result => {
-      if(result !== undefined)
-        this.updateReference(ref.idRef, result.type, result.criteria)
-    })
-
-  }
-
-  updateReference(id: number, type: string, idCriteria: number[]) {
-    this.dataService.editReferenceCriteria(id,this.idProject,type,idCriteria).subscribe((resposta) => {
-      this.referencesUpdated.emit()
-    })
   }
 
   requestDeleteReference(reference: Reference) {
@@ -97,7 +91,8 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
 
   deleteReference(reference: Reference): void {
     this.dataService.deleteReference(reference.idRef, this.idProject).subscribe((resposta) => {
-      this.referencesUpdated.emit()
+      this.referenceDeleted.emit(reference)
+      this.ngOnChanges()
     })
       
   }
@@ -118,16 +113,11 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
             }
             if(data.art.title !== null)filterText += data.art.title;
             if(data.art.ven !== null && data.art.ven.name !== null)filterText += data.art.ven.name;
-            if(data.state !== null)filterText += data.state;
-            if (data.exclusionDTOList != null) {
-              for (let exclusion of data.exclusionDTOList){
-                filterText += exclusion.nameICEC;
-              }
-            }
+            if(data.art.abstractA !== null)filterText += data.art.abstractA
 
             filterText = filterText.toLowerCase()
 
-            console.log(filterText, "Text per filtrar")
+            //console.log(filterText, "Text per filtrar")
             
             if (filterText.indexOf(filter) != -1) {
                 return true;
@@ -142,6 +132,10 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
   sortData() {
     let sortFunction =
     (refs: Reference[], sort: MatSort): Reference[] => {
+      if(this.sort !== undefined) {
+        this.sortColumn = sort.active
+        this.sortDirection = sort.direction
+      }
       if (!sort.active || sort.direction === '') {
         return refs;
       }
@@ -185,10 +179,8 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
               return compare(a.art.ven.name, null, isAsc);
             }
             return compare(a.art.ven.name, b.art.ven.name, isAsc);
-          case 'sta':
-            return compare(a.state,b.state, isAsc);
-          case 'cri':
-            return compareCriteria(a.exclusionDTOList, b.exclusionDTOList, isAsc);
+          case 'abs':
+            return compare(String(a.art.abstractA),String(b.art.abstractA), isAsc);
           default:
             return 0;
         }
@@ -253,36 +245,6 @@ function compareAuthors(a: Researcher[], b: Researcher[], isAsc: boolean) {
         return 1 * (isAsc ? 1 : -1)
       }
     }
-}
-
-function compareCriteria(a: Exclusion[], b: Exclusion[], isAsc: boolean) {
-  if (a !== null) {
-    if (b === null) {
-      return -1 * (isAsc ? 1 : -1)
-    }
-    else{
-      var nomsA = "";
-      for(let elem of a) {
-        nomsA += elem.nameICEC
-      }
-
-      var nomsB = "";
-      for(let elem of b) {
-        nomsB += elem.nameICEC
-      }
-
-      return compare(nomsA,nomsB,isAsc)
-    }
-
-  }
-  else {
-    if (b === null) {
-      return -1 * (isAsc ? 1 : -1)
-    }
-    else {
-      return 1 * (isAsc ? 1 : -1)
-    }
-  }
 }
 
 

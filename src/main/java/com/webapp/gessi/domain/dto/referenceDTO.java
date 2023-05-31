@@ -14,21 +14,27 @@ public class referenceDTO implements Serializable {
     private String doi;
     private int idDL;
     private int idProject;
-    private String state;
     private int idProjRef;
-    private List<ExclusionDTO> exclusionDTOList;
+    private consensusCriteriaDTO consensusCriteria;
     private articleDTO art;
     private digitalLibraryDTO dl;
+    private userDesignationDTO usersCriteria1;
+    private userDesignationDTO usersCriteria2;
+    private boolean consensusCriteriaProcessed;
 
 
-    public referenceDTO(int idRef, String doi, int idDL, int idProject, String state, int idProjRef, List<ExclusionDTO> exclusionDTOList) {
+    public referenceDTO(int idRef, String doi, int idDL, int idProject, int idProjRef, 
+    		consensusCriteriaDTO exclusionDTOList, userDesignationDTO usersCriteria1, 
+    		userDesignationDTO usersCriteria2, boolean consensusCriteriaProcessed) {
         this.idRef = idRef;
         this.doi = doi;
         this.idDL = idDL;
         this.idProject = idProject;
-        this.state = state;
         this.idProjRef = idProjRef;
-        this.exclusionDTOList = exclusionDTOList;
+        this.consensusCriteria = exclusionDTOList;
+        this.usersCriteria1 = usersCriteria1;
+        this.usersCriteria2 = usersCriteria2;
+        this.consensusCriteriaProcessed = consensusCriteriaProcessed;
     }
 
     public int getIdRef() {
@@ -79,14 +85,6 @@ public class referenceDTO implements Serializable {
         this.dl = dl;
     }
 
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
     public int getIdProjRef() {
         return idProjRef;
     }
@@ -94,27 +92,37 @@ public class referenceDTO implements Serializable {
     public void setdProjRef(int idProjRef) {
         this.idProjRef = idProjRef;
     }
-    public List<ExclusionDTO> getExclusionDTOList() {
-        return exclusionDTOList;
+    public consensusCriteriaDTO getExclusionDTOList() {
+        return this.consensusCriteria;
     }
 
-    public String getApplCriteriaString() {
-       if (this.exclusionDTOList != null) {
-           List<String> exclusionList = this.exclusionDTOList.stream().map(ExclusionDTO::getNameICEC).collect(Collectors.toList());
-           return String.join(", ", exclusionList);
-       }
-       return "";
+    public void setConsensusCriteria(consensusCriteriaDTO exclusionDTOList) {
+        this.consensusCriteria = exclusionDTOList;
     }
-
-    public String getExclusionDTOIdList() {
-        if (this.exclusionDTOList != null) {
-            List<Integer> exclusionList = this.exclusionDTOList.stream().map(ExclusionDTO::getIdICEC).collect(Collectors.toList());
-            return exclusionList.stream().map(String::valueOf).collect(Collectors.joining(", "));
-        }
-        return "";
+    
+    public userDesignationDTO getUsersCriteria1() {
+    	return this.usersCriteria1;
     }
-
-    public void setExclusionDTOList(List<ExclusionDTO> exclusionDTOList) {
-        this.exclusionDTOList = exclusionDTOList;
+    
+    public void setUsersCriteria1(userDesignationDTO usersCriteria) {
+    	this.usersCriteria1 = usersCriteria;
     }
+    
+    public userDesignationDTO getUsersCriteria2() {
+    	return this.usersCriteria2;
+    }
+    
+    public void setUsersCriteria2(userDesignationDTO usersCriteria) {
+    	this.usersCriteria2 = usersCriteria;
+    }
+    
+    public boolean getConsensusCriteriaProcessed() {
+    	return this.consensusCriteriaProcessed;
+ 
+    }
+    
+    public void setConsensusCriteriaProcessed(boolean processed) {
+    	this.consensusCriteriaProcessed = processed;
+    }
+    
 }

@@ -3,13 +3,16 @@ package com.webapp.gessi.domain.controllers;
 import com.webapp.gessi.config.DBConnection;
 import com.webapp.gessi.data.article;
 import com.webapp.gessi.data.Reference;
-import com.webapp.gessi.domain.dto.ExclusionDTO;
+import com.webapp.gessi.domain.dto.consensusCriteriaDTO;
 import com.webapp.gessi.domain.dto.importErrorDTO;
 import com.webapp.gessi.domain.dto.referenceDTO;
 import com.webapp.gessi.domain.dto.referenceDTOadd;
+import com.webapp.gessi.domain.dto.userDesignationDTO;
 import com.webapp.gessi.exceptions.BadBibtexFileException;
+import com.webapp.gessi.exceptions.TruncationException;
 
 import org.jbibtex.ParseException;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +40,7 @@ public class ReferenceController {
     }
 
     public static List<importErrorDTO> addReference(String nameDL, int idProject, MultipartFile file)
-            throws SQLException, IOException, BadBibtexFileException {
+            throws SQLException, IOException, BadBibtexFileException, NumberFormatException, TruncationException {
         return Reference.importar(nameDL, ProjectController.getById(idProject), file);
     }
 
@@ -62,25 +65,33 @@ public class ReferenceController {
         Reference.create();
     }
 
-    public static void updateReference(int idRef, String estado, List<Integer> applCriteria) throws SQLException {
-        Reference.update(idRef, estado);
+    public static void updateReference(int idRef, List<Integer> applCriteria) throws SQLException {
+    	
         List<Integer> applCriteriaList = new LinkedList<>(applCriteria);
         List<Integer> copyApplCriteriaList = new LinkedList<>(applCriteria);
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Statement s = ctx.getBean(Connection.class).createStatement();
-        List<Integer> currentExclusionDTOList = ExclusionController.getByIdRef(s, idRef).stream().map(ExclusionDTO::getIdICEC).collect(Collectors.toCollection(LinkedList::new));
+        List<Integer> currentExclusionDTOList = ConsensusCriteriaController.getByIdRef(s, idRef).getIdICEC();
         currentExclusionDTOList.forEach(applCriteriaList::remove);
         copyApplCriteriaList.forEach(currentExclusionDTOList::remove);
+        Reference.setProcessed(s,idRef);
+        
         if (!applCriteriaList.isEmpty()) {
-            List<ExclusionDTO> exclusionDTOList = new ArrayList<>();
-            applCriteriaList.forEach(value -> exclusionDTOList.add(new ExclusionDTO(idRef, value, null)));
-            ExclusionController.insertRows(exclusionDTOList);
+            consensusCriteriaDTO exclusionDTOList = new consensusCriteriaDTO(idRef, applCriteriaList);
+            ConsensusCriteriaController.insertRows(exclusionDTOList);
         }
         if (!currentExclusionDTOList.isEmpty()) {
-            List<ExclusionDTO> exclusionDTOList = new ArrayList<>();
-            currentExclusionDTOList.forEach(value -> exclusionDTOList.add(new ExclusionDTO(idRef, value, null)));
-            ExclusionController.deleteRows(exclusionDTOList);
+        	consensusCriteriaDTO exclusionDTOList = new consensusCriteriaDTO(idRef,currentExclusionDTOList);
+            ConsensusCriteriaController.deleteRows(exclusionDTOList);
         }
+    }
+    
+    public static void deleteConsensusCriteria(int idRef) throws BeansException, SQLException {
+    	ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Statement s = ctx.getBean(Connection.class).createStatement();
+        Reference.setUnprocessed(s,idRef);
+        ConsensusCriteriaController.deleteByIdRef(idRef);
+    	
     }
     
     public static void deleteReference(int idRef) throws SQLException {
@@ -94,10 +105,6 @@ public class ReferenceController {
     public static List<importErrorDTO> getErrors(int idProject) throws SQLException {
         return Reference.getErrors(idProject);
     }
-
-    public static void updateState(int idRef, String state) throws SQLException {
-        Reference.update(idRef, state);
-    }
     
     public static referenceDTO addReferenceManually (referenceDTOadd referenceData, int idProject) throws SQLException {
     	ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
@@ -105,13 +112,5 @@ public class ReferenceController {
     	return Reference.addReferenceManually(s, referenceData, idProject);
     }
     
-
-    @RequestMapping(value = "/createTables")
-    public void createTables(){
-        Reference.create();
-    }
-    @RequestMapping(value = "/deleteTables")
-    public void deleteTables(){
-        Reference.delete();
-    }
+    
 }

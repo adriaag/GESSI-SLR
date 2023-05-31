@@ -2,7 +2,6 @@ package com.webapp.gessi.data;
 
 import com.webapp.gessi.config.DBConnection;
 import com.webapp.gessi.domain.controllers.criteriaController;
-import com.webapp.gessi.domain.dto.ExclusionDTO;
 import com.webapp.gessi.domain.dto.ProjectDTO;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -45,7 +44,7 @@ public class Project {
             System.out.println("Dropped table Project");
         }
         catch (SQLException sqlException) {
-            System.out.println("Tabla Project not exist");
+        	sqlException.printStackTrace();
         }
     }
 

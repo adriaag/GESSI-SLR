@@ -10,6 +10,7 @@ import { FormControl } from '@angular/forms';
 import { LoginComponent } from '../login/login.component';
 import { User } from '../dataModels/user';
 import { AuthenticationService } from '../authentication.service';
+import { SortDirection } from '@angular/material/sort';
 
 @Component({
   selector: 'app-main',
@@ -24,8 +25,12 @@ export class MainComponent implements OnInit {
   references: Reference[] = [];
   errors: ImportError[] = [];
   dlNames: String[] = [];
+  usernames: string[] = []
   IC: Criteria[] = [];
   EC: Criteria[] = [];
+
+  dataLoaded: boolean = false
+  trigger: boolean = false
 
 
   constructor(private dataService: DataService, private authService: AuthenticationService, private dialog: MatDialog) {}
@@ -83,6 +88,7 @@ export class MainComponent implements OnInit {
   }
 
   projectDeleted(): void {
+    this.dataLoaded = false
     this.selectedProject.setValue(null)
     this.getProjects()
   }
@@ -98,6 +104,7 @@ export class MainComponent implements OnInit {
   }
 
   changeProject() {
+    this.dataLoaded = false
     this.getProjectData()
     this.getProjectErrors()
     this.getProjectCriteria()
@@ -111,6 +118,7 @@ export class MainComponent implements OnInit {
     this.dataService.getReferences(this.selectedProject.value.id).subscribe((resposta)=> {
       console.log(resposta , 'User resume response');
       this.references = resposta;
+      this.dataLoaded = true
     })
     console.log("reference", this.references)
 
@@ -138,6 +146,15 @@ export class MainComponent implements OnInit {
         this.dlNames = resposta;
       }
   })
+  }
+
+  getUsernames(): void {
+    this.dataService.getUsernames().subscribe({
+      next: (resposta) => {
+        this.usernames = resposta
+        console.log(resposta , 'Users');
+      }
+    })
   }
 
   //funció temporal. L'ubicació de projects ha de canviar
@@ -189,6 +206,7 @@ export class MainComponent implements OnInit {
       console.log(resposta)
       this.getProjects()
       this.getDLNames()
+      this.getUsernames()
     },error: (error) => {
       this.loginDialog()
 
@@ -199,6 +217,11 @@ export class MainComponent implements OnInit {
   logout() {
     this.authService.logout()
     this.loginDialog()
+  }
+
+  deleteReference(ref: any) {
+    this.references.splice(this.references.indexOf(ref),1)
+    this.trigger = !this.trigger
   }
 
 }

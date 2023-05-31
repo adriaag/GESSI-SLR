@@ -3,11 +3,14 @@ package com.webapp.gessi.presentation;
 
 import com.webapp.gessi.domain.controllers.ProjectController;
 import com.webapp.gessi.domain.controllers.ReferenceController;
+import com.webapp.gessi.domain.controllers.UserController;
+import com.webapp.gessi.domain.controllers.UserDesignationController;
+import com.webapp.gessi.domain.controllers.UserDesignationICECController;
 import com.webapp.gessi.domain.controllers.criteriaController;
 import com.webapp.gessi.domain.controllers.digitalLibraryController;
 import com.webapp.gessi.domain.dto.*;
 import com.webapp.gessi.exceptions.BadBibtexFileException;
-
+import com.webapp.gessi.exceptions.TruncationException;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -23,6 +26,7 @@ import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +35,7 @@ import org.json.JSONObject;
 
 @RestController
 @RequestMapping("/api/")
+@CrossOrigin(origins = {"http://localhost:4200"})
 public class Api implements ErrorController{
     private static final String PATH_PATTERN = "^([A-z0-9-_+\\.]+.(bib))$";
 
@@ -109,10 +114,43 @@ public class Api implements ErrorController{
     	
     }
     
-    @PutMapping(value=("/projects/{id}/references/{idRef}"))
-    public ResponseEntity<?> editReference(@PathVariable("idRef") int idRef, @RequestParam(name = "state") String state, @RequestParam(name = "criteria") List<Integer> criteria) {
+    @PutMapping(value=("/projects/{id}/references/{idRef}/userDesignations"))
+    public ResponseEntity<?> setUserDesignation(@PathVariable("idRef") int idRef, @RequestParam(name = "numDesignation") int numDesignation, 
+    		@RequestParam(name = "username") String username) {
         try {
-	    	ReferenceController.updateReference(idRef, state, criteria);
+        	if (numDesignation != 1 && numDesignation != 2) 
+        		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        	
+        	userDesignationDTO ud = UserDesignationController.insertRow(username, idRef,numDesignation);
+	        return ResponseEntity.status(HttpStatus.ACCEPTED).body(ud);
+        }
+        catch (SQLException e) {
+	    	return sqlExcHandler(e);	    	
+	    }
+   
+    }
+
+    @PutMapping(value=("/projects/{id}/references/{idRef}/userDesignations/{numDesignation}"))
+    public ResponseEntity<?> setUserDesignationICEC(@PathVariable("idRef") int idRef, @PathVariable("numDesignation") int numDesignation, 
+    		@RequestParam("username")String username, @RequestParam("processed") boolean processed, @RequestParam("criteriaList") List<Integer> criteriaList) {
+        try {
+        	if (numDesignation != 1 && numDesignation != 2) 
+        		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        	
+        	userDesignationDTO designation = new userDesignationDTO(username, idRef, numDesignation, processed,  criteriaList);
+        	UserDesignationController.addCriteria(designation);
+	        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        }
+        catch (SQLException e) {
+	    	return sqlExcHandler(e);	    	
+	    }
+   
+    }
+    
+    @PutMapping(value=("/projects/{id}/references/{idRef}"))
+    public ResponseEntity<?> editReference(@PathVariable("idRef") int idRef, @RequestParam(name = "criteria") List<Integer> criteria) {
+        try {
+	    	ReferenceController.updateReference(idRef,criteria);
 	        return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
         catch (SQLException e) {
@@ -141,8 +179,7 @@ public class Api implements ErrorController{
 	        }
 	        else {*/
 	            errors = ReferenceController.addReference(form.getdlNum(), form.getIdProject(), form.getFile());
-	            int num = Integer.parseInt(form.getdlNum());
-	            returnData.put("newDL", form.getdlNum());
+	            returnData.put("newDL",  digitalLibraryController.getNames().get(Integer.parseInt(form.getdlNum())));
 	            returnData.put("newName", StringUtils.cleanPath(nameFile));
 	            returnData.put("errors", errors);
 	       
@@ -177,6 +214,13 @@ public class Api implements ErrorController{
     		JSONObject returnData = new JSONObject();
     		returnData.put("message", e.getCause());
     		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnData.toString());    		
+    	}
+    	
+    	catch(TruncationException e) {
+    		JSONObject returnData = new JSONObject();
+    		returnData.put("message",e.getMessage());
+    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnData.toString());    		
+    		
     	}
     	
     }
@@ -313,6 +357,18 @@ public class Api implements ErrorController{
         JSONObject returnData = new JSONObject();
         returnData.put("message", "The database has been reset!");
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(returnData.toString());
+    }
+    
+    @GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
+    public ResponseEntity<?> getUsernames(){
+    	try {
+	    	List<String> usernames = UserController.getAllUsernames();
+	        return ResponseEntity.ok(usernames);
+    	}
+    	catch (SQLException e) {
+	    	return sqlExcHandler(e);
+	    	
+	    }
     }
     
     @RequestMapping(value = "/error") 

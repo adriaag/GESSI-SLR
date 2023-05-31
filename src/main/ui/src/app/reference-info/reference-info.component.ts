@@ -11,18 +11,5 @@ export class ReferenceInfoComponent{
 
   constructor(@Inject(MAT_DIALOG_DATA) public reference: Reference) {}
 
-  getCriteriaString(): String {
-    var text = ""
-    if (this.reference.exclusionDTOList !== null) {
-      for (let criteria of this.reference.exclusionDTOList) {
-        text += criteria.nameICEC+", "
-      }
-      
-    }
-
-    return text
-
-  }
-
 
 }
