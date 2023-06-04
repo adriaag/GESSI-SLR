@@ -228,9 +228,13 @@ public class Reference {
         user.createTable(s);
         userDesignation.createTable(s);
         userDesignationICEC.createTable(s);
+        projectUserInvolve.createTable(s);
+        projectDigitalLibrary.createTable(s);
     }
 
     private static void deleteTables(Statement s) throws SQLException {
+        projectUserInvolve.dropTable(s);
+        projectDigitalLibrary.dropTable(s);
     	userDesignationICEC.dropTable(s);
         userDesignation.dropTable(s);
         user.dropTable(s);   	
@@ -246,6 +250,7 @@ public class Reference {
         Criteria.dropTable(s); 
         Project.dropTable(s);
         digitalLibrary.dropTable(s);
+
         
         
         
@@ -449,7 +454,7 @@ public class Reference {
     }
 
     
-    private static String truncate(String text, int maxValue) {
+    public static String truncate(String text, int maxValue) {
     	if (text.length() > maxValue) {
         	text = text.substring(0, maxValue - 1);	
         }

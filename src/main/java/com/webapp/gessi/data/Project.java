@@ -3,6 +3,9 @@ package com.webapp.gessi.data;
 import com.webapp.gessi.config.DBConnection;
 import com.webapp.gessi.domain.controllers.criteriaController;
 import com.webapp.gessi.domain.dto.ProjectDTO;
+import com.webapp.gessi.domain.dto.projectDigitalLibraryDTO;
+import com.webapp.gessi.domain.dto.projectUserInvolveDTO;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -18,8 +21,13 @@ public class Project {
         try {
             s.execute("create TABLE project(" +
                     "id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
-                    "name VARCHAR(10000) NOT NULL UNIQUE, " +
+                    "name VARCHAR(1000) NOT NULL UNIQUE, " +
                     "idDuplicateCriteria INT, " +
+                    "topic VARCHAR(500), " +
+                    "researchQuestion VARCHAR(5000), "+
+                    "protocol VARCHAR(5000), "+
+                    "protocolImg BLOB(1M), "+
+                    "comments VARCHAR(5000), "+
                     "PRIMARY KEY(id))");
             System.out.println("Created table Project");
             return true;
@@ -74,27 +82,29 @@ public class Project {
         Statement s = conn.createStatement();
         ResultSet resultSet = s.executeQuery("SELECT * FROM project");
         conn.commit();
-        return convertResultSetToProjectDTO(resultSet);
+        return convertResultSetToProjectDTO(s, resultSet);
     }
 
     public static ProjectDTO getById (int id) throws SQLException {
         String query = "SELECT * FROM project WHERE id = ?";
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
+        Statement s = conn.createStatement();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
-        return convertResultSetToProjectDTO(resultSet).get(0);
+        return convertResultSetToProjectDTO(s, resultSet).get(0);
     }
 
     public static ProjectDTO getByName(String name) throws SQLException {
         String query = "SELECT * FROM project WHERE name = ?";
         ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Connection conn = ctx.getBean(Connection.class);
+        Statement s = conn.createStatement();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setString(1, name);
         ResultSet resultSet = preparedStatement.executeQuery();
-        List<ProjectDTO> projectDTOList = convertResultSetToProjectDTO(resultSet);
+        List<ProjectDTO> projectDTOList = convertResultSetToProjectDTO(s, resultSet);
         return projectDTOList.size() > 0 ? projectDTOList.get(0) : null;
     }
 
@@ -119,12 +129,46 @@ public class Project {
         preparedStatement.execute();
         conn.commit();
     }
+    
+    public static void updateProject(ProjectDTO project) throws SQLException {
+    	String query = "UPDATE project SET name = ?, topic = ?, researchQuestion = ?, protocol = ?, protocolImg = ?, comments = ? WHERE id = ?";
+    	ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Connection conn = ctx.getBean(Connection.class);
+        Statement s = conn.createStatement();
+        
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1, project.getName());
+        preparedStatement.setString(2, project.getTopic());
+        preparedStatement.setString(3, project.getResearchQuestion());
+        preparedStatement.setString(4, project.getProtocol());
+        if (project.getProtocolImg() != null) {
+            Blob imgBlob = conn.createBlob();
+            imgBlob.setBytes(1, project.getProtocolImg());
+            preparedStatement.setBlob(5, imgBlob);
+        }
+        else preparedStatement.setNull(5, java.sql.Types.BLOB);
 
-    private static List<ProjectDTO> convertResultSetToProjectDTO(ResultSet resultSet) throws SQLException {
+        preparedStatement.setString(6, project.getComments());
+        preparedStatement.setInt(7, project.getId());
+        preparedStatement.execute();
+        conn.commit();
+        
+        projectDigitalLibrary.updateByIdProject(s, project.getDigitalLibraries(), project.getId());
+        projectUserInvolve.updateByIdProject(s, project.getInvolvedUsers(), project.getId());
+    	
+    }
+
+    private static List<ProjectDTO> convertResultSetToProjectDTO(Statement s, ResultSet resultSet) throws SQLException {
         List<ProjectDTO> projectDTOList = new ArrayList<>();
         while (resultSet.next()) {
-            projectDTOList.add(new ProjectDTO(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getInt("idDuplicateCriteria")));
+        	byte[] img = resultSet.getBytes("protocolImg");
+        	projectUserInvolveDTO[] pUIList = projectUserInvolve.getByIdProject(s, resultSet.getInt("id"));
+        	projectDigitalLibraryDTO[] pDLList = projectDigitalLibrary.getByIdProject(s, resultSet.getInt("id"));
+            projectDTOList.add(new ProjectDTO(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getInt("idDuplicateCriteria"),
+            		resultSet.getString("topic"), resultSet.getString("researchQuestion"), resultSet.getString("protocol"), 
+            		img, resultSet.getString("comments"),pUIList,pDLList));
         }
+        
         return projectDTOList;
     }
     

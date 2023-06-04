@@ -12,7 +12,7 @@ import com.webapp.gessi.domain.dto.userDTO;
 
 public class user {
 		
-	private static final int usernameMaxLength = 50;
+	private static final int usernameMaxLength = 100;
 	private static final int passwordMaxLength = 60;
     /* create table affiliations(name varchar(50),
     PRIMARY KEY (name));*/

@@ -51,4 +51,8 @@ public class ProjectController {
     public static void updateName(int id, int idICEC) throws SQLException {
         Project.updateIdDuplicateCriteria(id, idICEC);
     }
+    
+    public static void updateProject(ProjectDTO projects) throws SQLException {
+    	Project.updateProject(projects);
+    }
 }

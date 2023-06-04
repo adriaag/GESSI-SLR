@@ -85,6 +85,19 @@ public class Api implements ErrorController{
 		
     }
     
+    @PutMapping(value="/projects/{id}")
+    public ResponseEntity<?> updateProject(@PathVariable("id") int idProj, @RequestBody ProjectDTO project) {
+    	try {
+    		ProjectController.updateProject(project);
+    		ProjectDTO ret = ProjectController.getById(project.getId());
+    		return ResponseEntity.status(HttpStatus.ACCEPTED).body(ret);
+    	}
+    	catch (SQLException e) {
+	    	return sqlExcHandler(e);	    	
+	    }
+    	
+    }
+    
     @DeleteMapping(value="/projects/{id}", produces = MediaType.APPLICATION_JSON_VALUE +"; charset=utf-8")
     public ResponseEntity<?> deleteProject(@PathVariable("id") int idProj) {
     	try {
