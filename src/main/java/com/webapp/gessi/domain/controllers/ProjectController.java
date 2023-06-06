@@ -5,7 +5,9 @@ import com.webapp.gessi.data.Project;
 import com.webapp.gessi.domain.dto.ProjectDTO;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -52,7 +54,16 @@ public class ProjectController {
         Project.updateIdDuplicateCriteria(id, idICEC);
     }
     
-    public static void updateProject(ProjectDTO projects) throws SQLException {
+    public static void updateProject(ProjectDTO projects) throws SQLException, IOException {
     	Project.updateProject(projects);
     }
+
+	public static void updateProtocolImg(int idProj, MultipartFile img) throws SQLException, IOException {
+		Project.updateProtocolImg(idProj, img.getBytes());
+		
+	}
+
+	public static byte[] getProtocolImg(int idProj) throws SQLException {
+		return Project.getProtocolImg(idProj);
+	}
 }

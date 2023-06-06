@@ -1,6 +1,6 @@
 package com.webapp.gessi.domain.dto;
 
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 public class ProjectDTO {
     private int id;
@@ -9,11 +9,10 @@ public class ProjectDTO {
     private String topic;
     private String researchQuestion;
     private String protocol;
-    private byte[] protocolImg;
     private String comments;
     private projectUserInvolveDTO[] involvedUsers;
     private projectDigitalLibraryDTO[] digitalLibraries;
-
+    
     public ProjectDTO(int id, String name, int idDuplicateCriteria, String topic, String researchQuestion,
     		String protocol, byte[] protocolImg, String comments, projectUserInvolveDTO[] involvedUsers, 
     		projectDigitalLibraryDTO[] digitalLibraries) {
@@ -23,7 +22,6 @@ public class ProjectDTO {
         this.topic = topic;
         this.researchQuestion = researchQuestion;
         this.protocol = protocol;
-        this.protocolImg = protocolImg;
         this.comments = comments;
         this.involvedUsers = involvedUsers;
         this.digitalLibraries = digitalLibraries;
@@ -71,11 +69,6 @@ public class ProjectDTO {
         this.protocol = protocol;
     }
     
-    public byte[] getProtocolImg() { return protocolImg; }
-
-    public void setProtocolImg(byte[] protocolImg) {
-        this.protocolImg = protocolImg;
-    }
     
     public String getComments() { return comments; }
 

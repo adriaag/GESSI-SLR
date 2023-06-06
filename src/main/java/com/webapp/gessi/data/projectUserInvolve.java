@@ -21,7 +21,8 @@ public class projectUserInvolve {
                     "idProject INT, " +
                     "username VARCHAR("+user.getUsernameMaxLength()+"), " +
                     "involveInfo VARCHAR("+involveInfoMaxLength+"), "+
-                    "PRIMARY KEY(idProject, username))");
+                    "PRIMARY KEY(idProject, username)," +
+                    "CONSTRAINT USR_FK_PUI FOREIGN KEY (username) REFERENCES users (username) ON DELETE CASCADE)");
             System.out.println("Created table projectUserInvolve");
             return true;
 
@@ -54,8 +55,11 @@ public class projectUserInvolve {
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setInt(1, idProject);
         preparedStatement.setString(2, username);
-        preparedStatement.setString(3, Reference.truncate(involveInfo, involveInfoMaxLength));
+        if (involveInfo != null)
+        	preparedStatement.setString(3, Reference.truncate(involveInfo, involveInfoMaxLength));
+        else preparedStatement.setNull(3, java.sql.Types.VARCHAR);
         preparedStatement.execute();
+        conn.commit();
         System.out.println("Inserted row " + idProject + ", " + username + " in Project");
     }
 
@@ -66,16 +70,20 @@ public class projectUserInvolve {
         preparedStatement.setInt(1, idProject);
         preparedStatement.setString(2, username);
         preparedStatement.execute();
+        conn.commit();
         System.out.println("Deleted row " + idProject + ", " + username + " in project");
     }
     
     public static void updateRow(Connection conn, int idProject, String username, String involveInfo) throws SQLException {
         String query = "UPDATE projectUserInvolve SET involveInfo = ? WHERE idProject = ? AND username = ?";
         PreparedStatement preparedStatement = conn.prepareStatement(query);
-        preparedStatement.setString(1, Reference.truncate(involveInfo, involveInfoMaxLength));
+        if (involveInfo != null)
+        	preparedStatement.setString(1, Reference.truncate(involveInfo, involveInfoMaxLength));
+        else preparedStatement.setNull(1, java.sql.Types.VARCHAR);
         preparedStatement.setInt(2, idProject);
         preparedStatement.setString(3, username);
-        preparedStatement.execute();
+        preparedStatement.executeUpdate();
+        conn.commit();
         System.out.println("Updated row " + idProject + ", " + username + " in Project");
     }
     

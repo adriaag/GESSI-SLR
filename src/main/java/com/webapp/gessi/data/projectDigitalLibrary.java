@@ -25,7 +25,8 @@ public class projectDigitalLibrary {
                     "idDL INT, " +
                     "searchString VARCHAR("+searchStringMaxLength+"), "+
                     "numSearchResults INT, "+
-                    "PRIMARY KEY(idProject, idDL))");
+                    "PRIMARY KEY(idProject, idDL),"+
+                    "CONSTRAINT DL_FK_PDL FOREIGN KEY (idDL) REFERENCES digitalLibraries (idDL) ON DELETE CASCADE)");
             System.out.println("Created table projectDigitalLibrary");
             return true;
 
@@ -58,9 +59,12 @@ public class projectDigitalLibrary {
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setInt(1, idProject);
         preparedStatement.setInt(2, idDL);
-        preparedStatement.setString(3, Reference.truncate(searchString, searchStringMaxLength));
+        if (searchString != null)
+        	preparedStatement.setString(3, Reference.truncate(searchString, searchStringMaxLength));
+        else preparedStatement.setNull(3, java.sql.Types.VARCHAR);
         preparedStatement.setInt(4, numSearchResults);
         preparedStatement.execute();
+        conn.commit();
         System.out.println("Inserted row " + idProject + ", " + idDL + " in Project");
     }
 
@@ -71,6 +75,7 @@ public class projectDigitalLibrary {
         preparedStatement.setInt(1, idProject);
         preparedStatement.setInt(2, idDL);
         preparedStatement.execute();
+        conn.commit();
         System.out.println("Deleted row " + idProject + ", " + idDL + " in project");
     }
     
@@ -78,11 +83,14 @@ public class projectDigitalLibrary {
         String query = "UPDATE projectDigitalLibrary SET searchString = ?, numSearchResults = ? WHERE idProject = ? AND idDL = ?";
         
         PreparedStatement preparedStatement = conn.prepareStatement(query);
-        preparedStatement.setString(1, Reference.truncate(searchString, searchStringMaxLength));
+        if (searchString != null)
+        	preparedStatement.setString(1, Reference.truncate(searchString, searchStringMaxLength));
+        else preparedStatement.setNull(1, java.sql.Types.VARCHAR);
         preparedStatement.setInt(2, numSearchResults);
         preparedStatement.setInt(3, idProject);
         preparedStatement.setInt(4, idDL);
-        preparedStatement.execute();
+        preparedStatement.executeUpdate();
+        conn.commit();
         System.out.println("Updated row " + idProject + ", " + idDL + " in Project");
     }
     

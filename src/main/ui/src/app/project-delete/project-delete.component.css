@@ -1,0 +1,59 @@
+.fila {
+    display:flex;
+    flex-direction:row;
+    justify-content: space-between;
+    margin-bottom: 20px;
+
+  }
+
+.username {
+    display:flex;
+    flex-direction:column;
+    width: 200px;
+    height: 100%;
+}
+
+.info {
+    display:flex;
+    flex-direction:column;
+    width: 75%;
+    height: 100%;
+}
+
+.searchString {
+    display:flex;
+    flex-direction:column;
+    width: 55%;
+    height: 100%;
+
+}
+
+.paperera {
+    display:flex;
+    flex-direction:column;
+    width: 5%;
+    height: 10px;
+    padding-block: 35px;
+}
+
+.center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.boto {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    text-align:center;
+    color: green;
+    transform: scale(2);
+  }
+
+  h3 {
+    font-size: 16pt;
+  }

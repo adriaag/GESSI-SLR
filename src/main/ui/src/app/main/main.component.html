@@ -62,7 +62,7 @@
       <app-errors *ngSwitchCase="'errors'" [errors]="errors"></app-errors>
       <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject.value.id" (newReferencesImported)="newReferences()"> </app-reference-import>
       <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC" [idDuplicateCriteria]="selectedProject.value.idDuplicateCriteria" [idProject]="selectedProject.value.id" (criteriaUpdated)="getProjectCriteria()"></app-criteria>
-      <app-project-delete *ngSwitchCase="'reset'" [idProject]="getIdProject()" [nameProject]="getNameProject()" (projectDeleted)="projectDeleted()" ></app-project-delete>
+      <app-project-delete *ngSwitchCase="'reset'" [project]="this.selectedProject.value" [usernames]="usernames" [digitalLibraries]="this.dlNames" [trigger]="triggerProject" (projectUpdated)="updateProject($event)" (projectDeleted)="projectDeleted()" ></app-project-delete>
   </div>
   <app-references [hidden]="selectedOption !== 'references'" [references]="references" [idProject]="getIdProject()" [exclusionCriteria]="EC" (referenceDeleted)="deleteReference($event)"></app-references>
   <app-screening [hidden]="selectedOption !== 'screening'" [references]="references" [usernames] = "usernames" [idProject]="getIdProject()" [exclusionCriteria]="this.EC" [inclusionCriteria]="this.IC" [trigger]="trigger"></app-screening>

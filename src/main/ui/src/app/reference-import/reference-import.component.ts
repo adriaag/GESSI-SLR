@@ -32,7 +32,6 @@ export class ReferenceImportComponent {
   handleFileInput(event: Event) {
     const target= event.target as HTMLInputElement;
     this.fileToUpload = (target.files)![0]
-    /** do something with the file **/
   };
 
   changeDL(value: any) {

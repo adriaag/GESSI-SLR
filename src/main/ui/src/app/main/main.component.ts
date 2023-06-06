@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Project } from '../dataModels/project';
 import { DataService } from '../data.service';
 import { Reference } from '../dataModels/reference';
@@ -10,7 +10,6 @@ import { FormControl } from '@angular/forms';
 import { LoginComponent } from '../login/login.component';
 import { User } from '../dataModels/user';
 import { AuthenticationService } from '../authentication.service';
-import { SortDirection } from '@angular/material/sort';
 
 @Component({
   selector: 'app-main',
@@ -31,6 +30,7 @@ export class MainComponent implements OnInit {
 
   dataLoaded: boolean = false
   trigger: boolean = false
+  triggerProject: boolean = false
 
 
   constructor(private dataService: DataService, private authService: AuthenticationService, private dialog: MatDialog) {}
@@ -90,6 +90,7 @@ export class MainComponent implements OnInit {
   projectDeleted(): void {
     this.dataLoaded = false
     this.selectedProject.setValue(null)
+    this.triggerProject = !this.triggerProject
     this.getProjects()
   }
 
@@ -105,6 +106,7 @@ export class MainComponent implements OnInit {
 
   changeProject() {
     this.dataLoaded = false
+    this.triggerProject = !this.triggerProject
     this.getProjectData()
     this.getProjectErrors()
     this.getProjectCriteria()
@@ -222,6 +224,14 @@ export class MainComponent implements OnInit {
   deleteReference(ref: any) {
     this.references.splice(this.references.indexOf(ref),1)
     this.trigger = !this.trigger
+  }
+
+  updateProject(project: Project) {
+    let index = 0
+    while(this.projects[index].id != project.id) ++index;
+    this.projects[index] = project
+    this.selectedProject.setValue(project)
+    this.triggerProject = !this.triggerProject
   }
 
 }
