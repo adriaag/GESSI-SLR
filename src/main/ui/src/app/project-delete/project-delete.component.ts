@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/
 import { FormArray, FormControl } from '@angular/forms';
 import { merge, Observable, of } from 'rxjs';
 import { DataService } from '../data.service';
-import { DigitalLibrary } from '../dataModels/digitalLibrary';
 import { Project } from '../dataModels/project';
 
 @Component({
@@ -17,6 +16,15 @@ export class ProjectDeleteComponent {
   @Input('trigger') trigger! : Boolean;
   @Output() projectDeleted = new EventEmitter();
   @Output() projectUpdated = new EventEmitter();
+
+  nameMaxLength = 1000
+  topicMaxLength = 500
+  researchQuestionMaxLength = 5000
+  protocolMaxLength = 5000
+  commentsMaxLength = 5000
+  infoMaxLength = 5000
+  searchStringMaxLength = 5000
+
 
   name: FormControl = new FormControl()
   topic: FormControl = new FormControl()
@@ -44,6 +52,9 @@ export class ProjectDeleteComponent {
   constructor(private dataService: DataService) {}
 
   operationMsg: string = ""
+  operationMsg2: string = ""
+  operationMsg3: string = ""
+  loading: boolean = false
 
 
   ngOnChanges(changes: SimpleChanges) {
@@ -63,6 +74,7 @@ export class ProjectDeleteComponent {
       next: (data: Blob) => {
       this.protocolImg = data
       this.imageToShow = URL.createObjectURL(this.protocolImg);
+      console.log(data)
       }
     })
 
@@ -93,7 +105,7 @@ export class ProjectDeleteComponent {
   }
 
   deleteProjectConfirm() {
-    let message: string = "Are you sure you wanna reset " + this.selectedProject.name + " ?"
+    let message: string = "Are you sure you wanna delete " + this.selectedProject.name + " ?\nNote: This action cannot be undone"
     if(confirm(message)) {   
       this.deleteProject()
     }
@@ -108,14 +120,14 @@ export class ProjectDeleteComponent {
 
   deleteProject() {
     this.dataService.deleteProject(this.selectedProject.id).subscribe((resposta)=> {
-      this.operationMsg = "Project successfully deleted"
+      this.operationMsg3 = "Project successfully deleted"
       this.projectDeleted.emit()
     })
   }
   
   deleteDB() {
       this.dataService.deleteDatabase().subscribe((resposta)=> {
-        this.operationMsg = "Database successfully deleted"
+        this.operationMsg2 = "Database successfully deleted"
         this.projectDeleted.emit()
       })
 
@@ -130,7 +142,8 @@ export class ProjectDeleteComponent {
     projectUpd.comments = this.comments.value
     projectUpd.involvedUsers = this.getInvolvedUsers()
     projectUpd.digitalLibraries = this.getDigitalLibraries()
-
+    
+    this.loading = true
     this.dataService.updateProject(projectUpd).subscribe({
       next: (value) => {
         //this.projectUpdated.emit(value)
@@ -138,9 +151,23 @@ export class ProjectDeleteComponent {
           this.dataService.updateProjectProtocolImg(this.selectedProject.id,this.protocolImgUpd).subscribe({
             next: (data) => {
               this.imageToShow = URL.createObjectURL(this.protocolImgUpd);
+              this.loading = false
+              this.operationMsg = "Project data successfully updated"
+            },
+            error: (error) => {
+              this.loading = false
+              this.operationMsg = "Error updating project"
             }
           })
+        else {
+          this.loading = false
+          this.operationMsg = "Project data successfully updated"
+        }
         
+      },
+      error: (error) => {
+        this.loading = false
+        this.operationMsg = "Error updating project"
       }
     })
 
@@ -268,6 +295,11 @@ export class ProjectDeleteComponent {
     console.log('validDL',this.digitalLibraries)
     this.filteredDLs = of(this.digitalLibraries.filter(option => !this.dlSelected(this.dlIndex[String(option)])))
     this.filteredDLs.subscribe((vlaue)=>{console.log('canvis',vlaue)})
+  }
+
+  getLength(controller: any) {
+    if (controller.value === null) return 0
+    else return controller.value.length
   }
 
   

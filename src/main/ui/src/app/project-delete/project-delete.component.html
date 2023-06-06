@@ -1,27 +1,42 @@
 <head>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
-<div class="container">
-    <h2> {{this.selectedProject.name}} </h2>
+
+<p *ngIf="operationMsg3.length > 0" class="alert alert-primary" role="alert">{{operationMsg3}}</p>
+
+<br>
+<div class="container"> 
+    <div class="fila">
+        <h2> {{this.selectedProject.name}} </h2>
+        <button id="modalButton" type="button" class="btn btn-danger eBtn" style="font-size:12px;" (click)="deleteProjectConfirm()"><i class="fa fa-trash"></i>
+        </button> 
+    </div>
     <form ngNativeValidate #form id="newCriteriaForm">
         <div class="form-group">
             <label for="project">Name</label>
-            <input type="text" id="name" required [formControl]="name" maxlength=100 class="form-control">
-            <mat-hint>{{name.value.length}}/100</mat-hint>
+            <input type="text" id="name" required [formControl]="name" [maxlength]="nameMaxLength" class="form-control">
+            <mat-hint>{{name.value.length}}/{{nameMaxLength}}</mat-hint>
         </div>
         <div class="form-group">
             <label for="project">Topic</label>
-            <input type="text" id="topic" [formControl]="topic" class="form-control">
+            <input type="text" id="topic" [formControl]="topic" [maxlength]="topicMaxLength" class="form-control">
+            <mat-hint>{{getLength(topic)}}/{{topicMaxLength}}</mat-hint>
         </div>
         <div class="form-group">
             <label for="project">Research Questions</label>
-            <textarea type="text" id="topic" [formControl]="researchQuestion" class="form-control"></textarea>
+            <textarea type="text" id="topic" [formControl]="researchQuestion" [maxlength]="researchQuestionMaxLength" class="form-control"></textarea>
+            <mat-hint>{{getLength(researchQuestion)}}/{{researchQuestionMaxLength}}</mat-hint>
         </div>
         <div class="form-group">
             <label for="project">Protocol</label>
-            <textarea type="text" id="topic" [formControl]="protocol" class="form-control"></textarea>
-            <input id="file" type="file" name="file" (change)="handleFileInput($event)" class="form-control" placeholder="Upload image" accept="image/*">
-            <img [src]="imageToShow" />
+            <textarea type="text" id="topic" [formControl]="protocol" [maxlength]="protocolMaxLength" class="form-control"></textarea>
+            <mat-hint>{{getLength(protocol)}}/{{protocolMaxLength}}</mat-hint>
+            <label class="fileContainer">
+                <mat-icon>upload</mat-icon>                
+                <input id="file" type="file" name="file" (change)="handleFileInput($event)" class="form-control" placeholder="Upload image" accept="image/*">
+            </label>
+            
+            <img *ngIf="(protocolImg !== undefined && protocolImg.size > 0) || (protocolImgUpd !== undefined && protocolImgUpd.size > 0)" [src]="imageToShow" />
         </div>
         <br>
         <div class="form-group">
@@ -39,7 +54,8 @@
                 </div>
                 <div class="info">
                     <label for="project">Info</label>
-                    <input type="text" id="userinfo" [formControl]="$any(involvedUsersInfo.at(i))" class="form-control">
+                    <input type="text" id="userinfo" [formControl]="$any(involvedUsersInfo.at(i))" [maxlength]="infoMaxLength" class="form-control">
+                    <mat-hint>{{getLength(involvedUsersInfo.at(i))}}/{{infoMaxLength}}</mat-hint>
                 </div>
                 <div class="paperera">
                     <button id="modalButton" type="button" class="btn btn-danger eBtn" style="font-size:12px;" (click)="deleteUser(i)"><i class="fa fa-trash"></i>
@@ -65,7 +81,8 @@
                 </div>
                 <div class="searchString">
                     <label for="project">Search String</label>
-                    <textarea type="text" id="searchstring" [formControl]="$any(dlSearchString.at(i))" class="form-control"></textarea>
+                    <textarea type="text" id="searchstring" [formControl]="$any(dlSearchString.at(i))" [maxlength]="searchStringMaxLength" class="form-control"></textarea>
+                    <mat-hint>{{getLength(dlSearchString.at(i))}}/{{searchStringMaxLength}}</mat-hint>
                 </div>
                 <div class="username">
                     <label for="project">Number of Results</label>
@@ -86,15 +103,23 @@
 
         <div class="form-group">
             <label for="project">Comments</label>
-            <textarea type="text" id="topic" [formControl]="comments" class="form-control"></textarea>
+            <textarea type="text" id="topic" [formControl]="comments" [maxlength]="commentsMaxLength" class="form-control"></textarea>
+            <mat-hint>{{getLength(comments)}}/{{commentsMaxLength}}</mat-hint>
         </div>
         <div class="footer">
+            <p *ngIf="operationMsg.length > 0" class="alert alert-primary" role="alert">{{operationMsg}}</p>
+            <mat-spinner *ngIf="this.loading"></mat-spinner>
             <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right" (click)="form.checkValidity()? updateProject() : null">Update project data</button>
         </div>
         
-    </form>
-
-    
-
-    
+    </form>  
 </div>
+
+<br><br><br>
+<h2> Recreate Database</h2>
+    <span>Note that if you press the reset button all the content of the database will be completely removed. </span>
+    <button class="btn btn-primary eBtn" type="button" style="font-size:14px" (click)="deleteDBConfirm()">
+        <i class="fa fa-refresh">Reset</i>
+    </button>
+    <br>
+<br><br><br>
