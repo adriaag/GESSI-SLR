@@ -548,7 +548,7 @@ public class article {
         try {
             s.execute("create table articles( doi varchar(100), type varchar(50), citeKey varchar(50), " +
                     "idVen int, title varchar(200), keywords varchar(1000), number varchar(10), numpages INT, " +
-                    "pages varchar(20), volume varchar(20), año INT, abstract varchar(6000), manuallyImported boolean, " +
+                    "pages varchar(20), volume varchar(20), año INT, abstract varchar(10000), manuallyImported boolean, " +
                     "PRIMARY KEY (doi), " +
                     "CONSTRAINT VEN_FK_R FOREIGN KEY (idVen) REFERENCES venues (idVen) ON DELETE CASCADE)");
             //type y citekey not null

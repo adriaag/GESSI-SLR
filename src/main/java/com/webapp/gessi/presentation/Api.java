@@ -85,6 +85,51 @@ public class Api implements ErrorController{
 		
     }
     
+    @PutMapping(value="/projects/{id}")
+    public ResponseEntity<?> updateProject(@PathVariable("id") int idProj, @RequestBody ProjectDTO project) {
+    	try {
+    		ProjectController.updateProject(project);
+    		ProjectDTO ret = ProjectController.getById(project.getId());
+    		return ResponseEntity.status(HttpStatus.ACCEPTED).body(ret);
+    	}
+    	catch (SQLException e) {
+	    	return sqlExcHandler(e);	    	
+	    } 
+    	catch (IOException e) {
+	    	e.printStackTrace();
+			return internalServerError();	
+		}
+    	
+    }
+    
+    @GetMapping(value="/projects/{id}/protocolImg",produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<?> getProtocolImg(@PathVariable("id") int idProj) {
+    	try {
+    		byte[] img = ProjectController.getProtocolImg(idProj);
+    		return ResponseEntity.ok(img); 
+    	}
+    	catch (SQLException e) {
+	    	return sqlExcHandler(e);	    	
+	    } 
+    	
+    }
+    
+    @PostMapping(value="/projects/{id}/protocolImg")
+    public ResponseEntity<?> updateProtocolImg(@PathVariable("id") int idProj, @RequestParam("image") MultipartFile img) {
+    	try {
+    		ProjectController.updateProtocolImg(idProj, img);
+    		return new ResponseEntity<>(HttpStatus.CREATED);
+    	}
+    	catch (SQLException e) {
+	    	return sqlExcHandler(e);	    	
+	    } 
+    	catch (IOException e) {
+			e.printStackTrace();
+			return internalServerError();
+		} 
+    	
+    }
+    
     @DeleteMapping(value="/projects/{id}", produces = MediaType.APPLICATION_JSON_VALUE +"; charset=utf-8")
     public ResponseEntity<?> deleteProject(@PathVariable("id") int idProj) {
     	try {

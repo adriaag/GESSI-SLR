@@ -39,6 +39,36 @@ export class DataService {
       )
   }
 
+  updateProject(project: Project): Observable<Project> {
+    return this.http.put<Project>(
+      `${this.rootUrl}/projects/${project.id}`,project,this.setHttpHeader())
+      .pipe(
+        tap(data => console.log("Data:", data)),
+        catchError(this.handleError),
+      )
+  }
+
+  updateProjectProtocolImg(idProject: number, image: File): Observable<{}> {
+    const formData: FormData = new FormData();
+    formData.append('image', image);
+    return this.http.post(
+      `${this.rootUrl}/projects/${idProject}/protocolImg`,formData,this.setHttpHeader())
+      .pipe(
+        tap(data => console.log("Data:", data)),
+        catchError(this.handleError),
+      )
+  }
+
+  getProjectProtocolImg(idProject: number): Observable<Blob> {
+    return this.http.get(
+      `${this.rootUrl}/projects/${idProject}/protocolImg`,{responseType: 'blob'})
+      .pipe(
+        tap(data => console.log("Data:", data)),
+        catchError(this.handleError),
+      )
+  }
+
+
   deleteProject(idProject: number): Observable<{message: string}> {
     return this.http.delete<{message: string}>(
       `${this.rootUrl}/projects/${idProject}`,this.setHttpHeader())

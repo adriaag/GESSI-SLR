@@ -36,7 +36,7 @@ export class ReferenceImportManuallyComponent {
   numberMaxLength = 10;
   pagesMaxLength = 20;
   volumeMaxLength = 20;
-  abstractMaxLength = 6000;
+  abstractMaxLength = 10000;
   affiliationNamesMaxLength = 300;
 
 close(){
