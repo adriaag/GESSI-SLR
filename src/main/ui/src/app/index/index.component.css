@@ -21,3 +21,11 @@
 .btn:hover {
     background-color: RoyalBlue;
 }
+
+body {
+    background-color: white;
+}
+
+.btn3 {
+    background-color: #1c4c96;
+  }

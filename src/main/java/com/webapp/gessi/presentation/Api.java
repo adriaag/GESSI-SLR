@@ -257,13 +257,13 @@ public class Api implements ErrorController{
     	}
     	catch(BadBibtexFileException e) {
     		JSONObject returnData = new JSONObject();
-    		returnData.put("message", e.getCause());
+    		returnData.put("message", e.getCause()+"\nNo reference was imported");
     		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnData.toString());    		
     	}
     	
     	catch(TruncationException e) {
     		JSONObject returnData = new JSONObject();
-    		returnData.put("message",e.getMessage());
+    		returnData.put("message",e.getMessage()+"\nAll the references until this error ocurred were imported");
     		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnData.toString());    		
     		
     	}

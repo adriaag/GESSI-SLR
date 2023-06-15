@@ -83,3 +83,11 @@
     text-align: right;
     top: 0;
 }
+
+.container {
+    background-color: white;
+  }
+
+  .btn3 {
+    background-color: #1c4c96;
+  }

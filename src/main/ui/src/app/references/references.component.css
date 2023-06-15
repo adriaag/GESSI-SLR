@@ -1,5 +1,5 @@
 .btn2 {
-  background-color: DodgerBlue;
+  background-color: #1c4c96;
   border: none;
   color: white;
   padding: 12px 30px;
@@ -7,9 +7,13 @@
   font-size: 20px;
 }
 
+.btn3 {
+  background-color: #1c4c96;
+}
+
 /* Darker background on mouse-over */
 .btn2:hover {
-    background-color: RoyalBlue;
+    background-color: rgb(65, 105, 225);
 }
 
 table {
@@ -49,6 +53,14 @@ table {
     max-width:1500px !important;
     max-height: 500px !important;
     font-size: 11pt !important;
+  }
 
+  body {
+    background-color: lightgray;
+  }
+  
+  .mat-sort-header-content{
+    color: white;
+    font-weight: bold;
+  }
 
-}

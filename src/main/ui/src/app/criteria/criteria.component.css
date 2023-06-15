@@ -4,3 +4,7 @@ h4 {
     align-items: flex-end;
     font-size: 1rem;
   }
+
+  body {
+    background-color: white;
+}

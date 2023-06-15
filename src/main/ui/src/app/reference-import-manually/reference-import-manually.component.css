@@ -15,14 +15,14 @@
 
 .oneRow {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
 }
 
-mat-form-field {
+.form-group {
     width: 100%;
 }
 
-mat-dialog-content {
-    max-height: initial;
-}
+.btn3 {
+    background-color: #1c4c96;
+  }

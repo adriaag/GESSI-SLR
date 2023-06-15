@@ -5,7 +5,8 @@
 <p *ngIf="operationMsg3.length > 0" class="alert alert-primary" role="alert">{{operationMsg3}}</p>
 
 <br>
-<div class="container"> 
+<div class="container">
+    <br>
     <div class="fila">
         <h2> {{this.selectedProject.name}} </h2>
         <button id="modalButton" type="button" class="btn btn-danger eBtn" style="font-size:12px;" (click)="deleteProjectConfirm()"><i class="fa fa-trash"></i>
@@ -106,20 +107,29 @@
             <textarea type="text" id="topic" [formControl]="comments" [maxlength]="commentsMaxLength" class="form-control"></textarea>
             <mat-hint>{{getLength(comments)}}/{{commentsMaxLength}}</mat-hint>
         </div>
-        <div class="footer">
-            <p *ngIf="operationMsg.length > 0" class="alert alert-primary" role="alert">{{operationMsg}}</p>
-            <mat-spinner *ngIf="this.loading"></mat-spinner>
-            <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right" (click)="form.checkValidity()? updateProject() : null">Update project data</button>
-        </div>
+        <p *ngIf="operationMsg.length > 0" class="alert alert-primary" role="alert">{{operationMsg}}</p>
+        <mat-spinner *ngIf="this.loading"></mat-spinner>
+        <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right btn3" (click)="form.checkValidity()? updateProject() : null">Update project data</button>
         
-    </form>  
+    </form> 
+    <br><br><br> 
 </div>
 
-<br><br><br>
-<h2> Recreate Database</h2>
+<br><br>
+<div class="container">
+    <br>
+    <h2>Errors</h2>
+    <app-errors [errors]="errors"></app-errors>
+    <br><br>
+</div>
+
+<br><br>
+<div class="container">
+    <br>
+    <h2> Recreate Database</h2>
     <span>Note that if you press the reset button all the content of the database will be completely removed. </span>
-    <button class="btn btn-primary eBtn" type="button" style="font-size:14px" (click)="deleteDBConfirm()">
+    <button class="btn btn-primary eBtn btn3" type="button" style="font-size:14px" (click)="deleteDBConfirm()">
         <i class="fa fa-refresh">Reset</i>
     </button>
-    <br>
-<br><br><br>
+    <br><br>
+</div>

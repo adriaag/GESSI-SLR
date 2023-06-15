@@ -2,14 +2,13 @@
 <head>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
-
 <body>
-    <div class="m-3">
-        <h2>Add Papers</h2>
-    </div>
+    <br>
+    <h2>Add Papers</h2>
     <br>
     <form ngNativeValidate #form method="post" enctype="multipart/form-data">
         <div class=" container" >
+            <br>
             <h3> Import papers (bibTex format) </h3>
             <div class="form-group">
                 <label for="file">File</label>
@@ -25,7 +24,7 @@
             </div>
             <h4>
                 <button type="reset" class="btn btn-secondary">Clear</button>
-                <button type="submit" id="createReference" (click)="form.checkValidity()? submitFile(): null" class="btn btn-primary">Import</button>
+                <button type="submit" id="createReference" (click)="form.checkValidity()? submitFile(): null" class="btn btn-primary btn3">Import</button>
             </h4>
             <br>
             <mat-spinner *ngIf="this.loading"></mat-spinner>
@@ -60,7 +59,11 @@
     </form>
     <br>
     <div class=" container" >
+        <br>
         <h3> Add Paper </h3>
-        <app-reference-import-manually (importSubmitted)="createReference($event)"></app-reference-import-manually>
+        <app-reference-import-manually [dataLoading]="manualRefLoading" (importSubmitted)="createReference($event)"></app-reference-import-manually>
+        <br>
     </div>
+    <br>
+    <br>
 </body>

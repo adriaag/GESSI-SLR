@@ -33,10 +33,6 @@
                       <a *ngIf="this.selectedOption === 'screening'" class="nav-link active">Screening</a>
                       <a *ngIf="this.selectedOption !== 'screening'" class="nav-link" (click)="changeOption('screening')">Screening</a>
                   </li>
-                    <li class="nav-item">
-                      <a *ngIf="this.selectedOption === 'errors'" class="nav-link active">Errors</a>
-                      <a *ngIf="this.selectedOption !== 'errors'" class="nav-link" (click)="changeOption('errors')">Errors</a>
-                    </li>
                     <li  class="nav-item">
                       <a *ngIf="this.selectedOption === 'reset'" class="nav-link active">Administration</a>
                       <a *ngIf="this.selectedOption !== 'reset'" class="nav-link" (click)="changeOption('reset')">Administration</a>
@@ -57,14 +53,13 @@
         </div>
     </nav>
   </header>
+
   <div [ngSwitch]="selectedOption">
-      <app-index *ngSwitchCase="'index'"></app-index>
-      <app-errors *ngSwitchCase="'errors'" [errors]="errors"></app-errors>
-      <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject.value.id" (newReferencesImported)="newReferences()"> </app-reference-import>
-      <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC" [idDuplicateCriteria]="selectedProject.value.idDuplicateCriteria" [idProject]="selectedProject.value.id" (criteriaUpdated)="getProjectCriteria()"></app-criteria>
-      <app-project-delete *ngSwitchCase="'reset'" [project]="this.selectedProject.value" [usernames]="usernames" [digitalLibraries]="this.dlNames" [trigger]="triggerProject" (projectUpdated)="updateProject($event)" (projectDeleted)="projectDeleted()" ></app-project-delete>
+    <app-index *ngSwitchCase="'index'"></app-index>
+    <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject.value.id" (newReferencesImported)="newReferences()"> </app-reference-import>
+    <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC" [idDuplicateCriteria]="selectedProject.value.idDuplicateCriteria" [idProject]="selectedProject.value.id" (criteriaUpdated)="getProjectCriteria()"></app-criteria>
+    <app-project-delete *ngSwitchCase="'reset'" [project]="this.selectedProject.value" [usernames]="usernames" [digitalLibraries]="this.dlNames" [errors]="errors" [trigger]="triggerProject" (projectUpdated)="updateProject($event)" (projectDeleted)="projectDeleted()" ></app-project-delete>
   </div>
   <app-references [hidden]="selectedOption !== 'references'" [references]="references" [idProject]="getIdProject()" [exclusionCriteria]="EC" (referenceDeleted)="deleteReference($event)"></app-references>
   <app-screening [hidden]="selectedOption !== 'screening'" [references]="references" [usernames] = "usernames" [idProject]="getIdProject()" [exclusionCriteria]="this.EC" [inclusionCriteria]="this.IC" [trigger]="trigger"></app-screening>
-
   <mat-spinner *ngIf="!dataLoaded && dlNames.length > 0 && (selectedOption === 'references' || selectedOption === 'screening')"></mat-spinner>

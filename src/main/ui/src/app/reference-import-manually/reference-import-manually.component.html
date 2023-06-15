@@ -4,88 +4,88 @@
 </head>
 
 <div class="m-3">
-    <mat-dialog-content>
-        <form ngNativeValidate #form id="newReferenceForm">
-            <mat-form-field>
-                <mat-label for="doi">DOI</mat-label>
-                <input matInput placeholder="Enter doi" [formControl]="doi" required maxlength={{doiMaxLength}} type="text">
-                <mat-error *ngIf="doi.invalid">Doi is required to create a reference</mat-error>
-                <mat-hint>{{getLength(doi)}}/{{doiMaxLength}}</mat-hint>
-            </mat-form-field> 
-            <br>
-            <mat-form-field>
-                <mat-label for="author">Author</mat-label>
-                <input matInput [formControl]="authorNames" placeholder="Enter Authors" type="text" pattern="([^,;]+, [^,;]+;)*">
-                <mat-error *ngIf="authorNames.invalid">REMEMBER! surname, name; surname, name; ...</mat-error>
-                <mat-hint>format: surname, name;surname, name; ...</mat-hint>
-            </mat-form-field>
-            <br>
-            <mat-form-field>
-                <mat-label for="title">Title</mat-label>
-                <input id="title" matInput [formControl]="title" placeholder="Enter title" maxlength={{titleMaxLength}} type="text">
-                <mat-hint>{{getLength(title)}}/{{titleMaxLength}}</mat-hint>
-            </mat-form-field>
-            <br>
-            <mat-form-field>
-                <mat-label for="venue">Venue</mat-label>
-                <input id="venue" matInput [formControl]="nameVen" placeholder="Enter venue" maxlength={{nameVenMaxLength}} type="text">
-                <mat-hint>{{getLength(nameVen)}}/{{nameVenMaxLength}}</mat-hint>
-            </mat-form-field>
-            <br>
-            <div class ="oneRow">
-                <mat-form-field>
-                    <mat-label for="year">Year</mat-label>
-                    <input id="year" matInput [formControl]="any" placeholder="Enter year" type="number" min="0" max="9999" oninput="validity.valid||(value='');">
-                </mat-form-field>
-                <mat-form-field>
-                    <mat-label for="vol">Volume</mat-label>
-                    <input id="vol" matInput [formControl]="volume" placeholder="Enter volume" maxlength={{volumeMaxLength}} type="text">
-                    <mat-hint>{{getLength(volume)}}/{{volumeMaxLength}}</mat-hint>
-                </mat-form-field>
-                <mat-form-field>
-                    <mat-label for="num">Number</mat-label>
-                    <input id="num" matInput [formControl]="number" placeholder="Enter number" maxlength={{numberMaxLength}} type="text">
-                    <mat-hint>{{getLength(number)}}/{{numberMaxLength}}</mat-hint>
-                </mat-form-field>            
-                <mat-form-field>
-                    <mat-label for="pages">Pages</mat-label>
-                    <input id="pages" matInput [formControl]="pages" placeholder="Enter pages" maxlength={{pagesMaxLength}} type="text">
-                    <mat-hint>{{getLength(pages)}}/{{pagesMaxLength}}</mat-hint>
-                </mat-form-field>
+    <form ngNativeValidate #form id="newReferenceForm">
+        <div class="form-group">
+            <mat-label for="doi">DOI (or id in case the paper has not a DOI)</mat-label>
+            <input matInput placeholder="Enter doi" [formControl]="doi" required maxlength={{doiMaxLength}} type="text" class="form-control">
+            <mat-error *ngIf="doi.invalid">Doi is required to create a reference</mat-error>
+            <mat-hint>{{getLength(doi)}}/{{doiMaxLength}}</mat-hint>
+        </div>
+         <div class="form-group">
+            <mat-label for="author">Author</mat-label>
+            <input matInput [formControl]="authorNames" placeholder="Enter Authors" type="text" pattern="([^,;]+, [^,;]+;)*" class="form-control">
+            <mat-error *ngIf="authorNames.invalid">REMEMBER! surname, name; surname, name; ...</mat-error>
+            <mat-hint>format: surname, name;surname, name; ...</mat-hint>
+         </div>
+         <div class="form-group">
+            <mat-label for="title">Title</mat-label>
+            <input id="title" matInput [formControl]="title" placeholder="Enter title" maxlength={{titleMaxLength}} type="text" class="form-control">
+            <mat-hint>{{getLength(title)}}/{{titleMaxLength}}</mat-hint>
+         </div>
+         <div class="form-group">
+            <mat-label for="venue">Venue</mat-label>
+            <input id="venue" matInput [formControl]="nameVen" placeholder="Enter venue" maxlength={{nameVenMaxLength}} type="text" class="form-control">
+            <mat-hint>{{getLength(nameVen)}}/{{nameVenMaxLength}}</mat-hint>
+         </div>
+        <div class ="oneRow">
+             <div class="form-group">
+                <mat-label for="year">Year</mat-label>
+                <input id="year" matInput [formControl]="any" placeholder="Enter year" type="number" min="0" max="9999" oninput="validity.valid||(value='');" class="form-control">
+                <mat-hint>Numbers only</mat-hint>
+             </div>
+             <div class="form-group">
+                <mat-label for="vol">Volume</mat-label>
+                <input id="vol" matInput [formControl]="volume" placeholder="Enter volume" maxlength={{volumeMaxLength}} type="text" class="form-control">
+                <mat-hint>{{getLength(volume)}}/{{volumeMaxLength}}</mat-hint>
+             </div>
+             <div class="form-group">
+                <mat-label for="num">Number</mat-label>
+                <input id="num" matInput [formControl]="number" placeholder="Enter number" maxlength={{numberMaxLength}} type="text" class="form-control">
+                <mat-hint>{{getLength(number)}}/{{numberMaxLength}}</mat-hint>
+             </div>            
+             <div class="form-group">
+                <mat-label for="pages">Pages</mat-label>
+                <input id="pages" matInput [formControl]="pages" placeholder="Enter pages" maxlength={{pagesMaxLength}} type="text" class="form-control">
+                <mat-hint>{{getLength(pages)}}/{{pagesMaxLength}}</mat-hint>
+             </div>
+        </div>
+        <div class="oneRow">
+             <div class="form-group">
+                <mat-label for="numpages">Number of pages</mat-label>
+                <input id="numpages" matInput [formControl]="numpages" placeholder="Enter number" type="number" min="0" oninput="validity.valid||(value='');" class="form-control">
+                <mat-hint>Numbers only</mat-hint>
             </div>
-            <div class="oneRow">
-                <mat-form-field>
-                    <mat-label for="numpages">Number of pages</mat-label>
-                    <input id="numpages" matInput [formControl]="numpages" placeholder="Enter number" type="number" min="0" oninput="validity.valid||(value='');">
-                </mat-form-field>
-                <mat-form-field>
-                    <mat-label for="type">Type</mat-label>
-                    <input id="type" matInput [formControl]="type" placeholder="Enter type" type={{typeMaxLength}} maxlength="50">
-                    <mat-hint>{{getLength(type)}}/{{typeMaxLength}}</mat-hint>
-                </mat-form-field>
-            </div>
-            <mat-form-field>
-                <mat-label for="text">Abstract</mat-label>
-                <textarea matInput rows="4" cols="50" id="abs" placeholder="Enter article's abstract"
-                type="text" [formControl]="abstract" maxlength={{abstractMaxLength}}></textarea>
-                <mat-hint>{{getLength(abstract)}}/{{abstractMaxLength}}</mat-hint>
-            </mat-form-field>
-            <br>
-            <mat-form-field>
-                <mat-label for="keywords">Keywords</mat-label>
-                <input id="keywords" matInput [formControl]="keywords" placeholder="Enter keywords" maxlength={{keywordsMaxLength}} type="text">
-                <mat-hint>{{getLength(keywords)}}/{{keywordsMaxLength}}</mat-hint>
-            </mat-form-field>
-            <br>
-            <mat-form-field>
-                <mat-label for="aff">Affiliations</mat-label>
-                <input id="aff" matInput [formControl]="affiliationNames" placeholder="Enter affiliation names" pattern="([^;]{1,{{affiliationNamesMaxLength}}};)*$" type="text">
-                <mat-error *ngIf="affiliationNames.invalid">REMEMBER! name1;name2; ...</mat-error>
-                <mat-hint>format: name1;name2;...</mat-hint>
-            </mat-form-field>
-        </form>
+             <div class="form-group">
+                <mat-label for="type">Type</mat-label>
+                <input id="type" matInput [formControl]="type" placeholder="Enter type" type={{typeMaxLength}} maxlength="50" class="form-control">
+                <mat-hint>{{getLength(type)}}/{{typeMaxLength}}</mat-hint>
+             </div>
+        </div>
+         <div class="form-group">
+            <mat-label for="text">Abstract</mat-label>
+            <textarea matInput rows="4" cols="50" id="abs" placeholder="Enter article's abstract"
+            type="text" [formControl]="abstract" maxlength={{abstractMaxLength}} class="form-control"></textarea>
+            <mat-hint>{{getLength(abstract)}}/{{abstractMaxLength}}</mat-hint>
+         </div>
+         <div class="form-group">
+            <mat-label for="keywords">Keywords</mat-label>
+            <input id="keywords" matInput [formControl]="keywords" placeholder="Enter keywords" maxlength={{keywordsMaxLength}} type="text" class="form-control">
+            <mat-hint>{{getLength(keywords)}}/{{keywordsMaxLength}}</mat-hint>
+         </div>
+         <div class="form-group">
+            <mat-label for="aff">Affiliations</mat-label>
+            <input id="aff" matInput [formControl]="affiliationNames" placeholder="Enter affiliation names" pattern="([^;]{1,{{affiliationNamesMaxLength}}};)*$" type="text" class="form-control">
+            <mat-error *ngIf="affiliationNames.invalid">REMEMBER! name1;name2; ...</mat-error>
+            <mat-hint>format: name1;name2;...</mat-hint>
+         </div>
+    </form>
 
-        <button type="reset" class="btn btn-secondary pull-left" (click)="reset()">Clear</button>
-        <button type="submit" id="createReferenceSubmit" class="btn btn-primary pull-right" (click)="form.checkValidity()? close() : doi.markAsTouched()">Import</button>
-    </mat-dialog-content>
+    <button type="reset" class="btn btn-secondary pull-left" (click)="reset()">Clear</button>
+    <button type="submit" id="createReferenceSubmit" class="btn btn-primary btn3 pull-right" (click)="form.checkValidity()? close() : doi.markAsTouched()">Import</button>
+    <br>
+    <br>
+    <mat-spinner *ngIf="dataLoading"></mat-spinner>
+    <br>
+    <br>
+
 </div>

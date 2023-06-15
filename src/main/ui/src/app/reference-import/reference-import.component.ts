@@ -28,6 +28,7 @@ export class ReferenceImportComponent {
   errorFile: string = "";
   importBool: boolean = false;
   loading: boolean = false;
+  manualRefLoading: boolean = false;
 
   handleFileInput(event: Event) {
     const target= event.target as HTMLInputElement;
@@ -64,9 +65,17 @@ export class ReferenceImportComponent {
   }
 
   createReference(refData: AddReference) {
-    this.dataService.createReferenceFromForm(refData, this.idProject).subscribe((resposta)=> {
+    this.manualRefLoading = true;
+    this.dataService.createReferenceFromForm(refData, this.idProject).subscribe({
+      next: (resposta)=> {
       console.log(resposta)
       this.newReferencesImported.emit();
+      this.manualRefLoading = false;
+      alert("Reference importes successfully")
+      },
+      error: (err) => {
+        this.manualRefLoading = false;
+      }
     })
   }
 

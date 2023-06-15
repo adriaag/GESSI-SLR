@@ -2,3 +2,19 @@ h4 {
     display: flex;
     justify-content: space-between;
   }
+
+  h2 {
+    margin-left: 5%;
+  }
+
+  .container {
+    background-color: white;
+  }
+
+  body {
+    background-color: lightgray;
+  }
+
+  .btn3 {
+    background-color: #1c4c96;
+  }

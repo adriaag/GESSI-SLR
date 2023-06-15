@@ -75,7 +75,7 @@
         <ng-container matColumnDef="inf">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Info</th>
             <td mat-cell *matCellDef="let row">
-                <button class="btn btn-primary" (click)="viewReference(row)"
+                <button class="btn btn-primary btn3" (click)="viewReference(row)"
                             style="font-size:12px" ><i class="fa fa-info-circle" aria-hidden="true"></i>
                 </button>
             </td>
@@ -102,12 +102,12 @@
 
 
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [style]="row.state === 'in' ? 'background-color:  #BDECD6': row.state === 'out' ? 'background-color: #FFEBEE' : 'background-color: #E1F5FE'"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns" [style]="'background: #1c4c96'"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [style]="'background-color: #ffffff'"></tr>
     
-        <tr class="mat-row" *matNoDataRow>
-            <td *ngIf="referenceslist.length > 0" class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
-            <td *ngIf="referenceslist.length <= 0" class="mat-cell" colspan="4">No data available in table</td>
+        <tr class="mat-row" *matNoDataRow [style]="'background: ffffff'">
+            <td *ngIf="referenceslist.length > 0" class="mat-cell" colspan="4" [style]="'background-color: #ffffff'">No data matching the filter "{{input.value}}" </td>
+            <td *ngIf="referenceslist.length <= 0" class="mat-cell" colspan="4" [style]="'background-color: #ffffff'">No data available in table</td>
         </tr>
         
     </table>

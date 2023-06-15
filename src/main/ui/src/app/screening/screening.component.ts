@@ -32,7 +32,7 @@ export class ScreeningComponent {
   references: Reference[] = [];
   sortedData: Reference[] = [];
   dataSource!: MatTableDataSource<Reference>;
-  displayedColumns: string[] = ['ref','tit', 'usr1', 'sta1','icec1','usr2','sta2','icec2', 'cons','disc','consDes'];
+  displayedColumns: string[] = ['ref','tit', 'abs', 'usr1', 'sta1','icec1','usr2','sta2','icec2', 'cons','disc','consDes'];
   filterValue: string = ""
 
   sortColumn: string = ""

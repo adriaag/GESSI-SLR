@@ -61,3 +61,16 @@ table {
 .icNeg {
   color: black
 }
+
+body {
+  background-color: lightgray;
+}
+
+.mat-mdc-paginator-outer-container {
+  background-color: lightgray;
+}
+
+.mat-sort-header-content{
+  color: white;
+  font-weight: bold;
+}

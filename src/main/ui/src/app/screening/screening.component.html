@@ -177,12 +177,12 @@
 
 
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [style]="getFinalDecision(row) === 'IN' ? 'background-color:  #BDECD6': getFinalDecision(row) === 'OUT' ? 'background-color: #FFEBEE' : 'background-color: #E1F5FE'"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns" [style]="'background: #1c4c96'"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [style]="getFinalDecision(row) === 'IN' ? 'background-color:  #BDECD6': getFinalDecision(row) === 'OUT' ? 'background-color: #FFEBEE' : 'background-color: #FFFFFF'"></tr>
     
         <tr class="mat-row" *matNoDataRow>
-            <td *ngIf="referenceslist.length > 0" class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
-            <td *ngIf="referenceslist.length <= 0" class="mat-cell" colspan="4">No data available in table</td>
+            <td *ngIf="referenceslist.length > 0" class="mat-cell" colspan="4" [style]="'background-color: #ffffff'">No data matching the filter "{{input.value}}"</td>
+            <td *ngIf="referenceslist.length <= 0" class="mat-cell" colspan="4" [style]="'background-color: #ffffff'">No data available in table</td>
         </tr>
         
     </table>

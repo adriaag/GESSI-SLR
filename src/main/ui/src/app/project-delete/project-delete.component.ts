@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/
 import { FormArray, FormControl } from '@angular/forms';
 import { merge, Observable, of } from 'rxjs';
 import { DataService } from '../data.service';
+import { ImportError } from '../dataModels/importError';
 import { Project } from '../dataModels/project';
 
 @Component({
@@ -13,6 +14,7 @@ export class ProjectDeleteComponent {
   @Input('project') selectedProject! : Project;
   @Input('usernames') usernames! : string[];
   @Input('digitalLibraries') digitalLibraries!: String[];
+  @Input('errors') errors!: ImportError[];
   @Input('trigger') trigger! : Boolean;
   @Output() projectDeleted = new EventEmitter();
   @Output() projectUpdated = new EventEmitter();

@@ -35,7 +35,7 @@
             </div>
             <div class="footer">
                 <button type="reset" class="btn btn-secondary pull-left">Clear</button>
-                <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right" (click)="form.checkValidity()? close() : null">
+                <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right btn3" (click)="form.checkValidity()? close() : null">
                     <div *ngIf="criteria.id === -1">Create criteria</div>
                     <div *ngIf="criteria.id !== -1">Edit criteria</div>
                 </button>

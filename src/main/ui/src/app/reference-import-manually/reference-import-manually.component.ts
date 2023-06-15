@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 //import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AddReference } from '../dataModels/addReference';
@@ -12,6 +12,7 @@ export class ReferenceImportManuallyComponent {
   //constructor(public dialogRef: MatDialogRef<ReferenceImportManuallyComponent>) {}
   constructor(){}
 
+  @Input('dataLoading') dataLoading!: boolean
   @Output() importSubmitted = new EventEmitter<AddReference>();
   
   doi = new FormControl();
