@@ -71,7 +71,6 @@ export class ScreeningComponent {
 
   ngOnChanges() {
     if(this.sort !== undefined) {
-      console.log('dir', this.orderDir)
       this.sort.active = this.orderCol
       this.sort.direction = this.orderDir as SortDirection
     }
@@ -514,7 +513,6 @@ export class ScreeningComponent {
     if (numD == 2) {
       let userCtrl = this.usr2.at(this.refind[ref.idProjRef])
       if(userCtrl !== undefined){
-        console.log(userCtrl.value)
       if(userCtrl.value === 'None') return ''
       }
       

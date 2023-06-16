@@ -53,6 +53,7 @@ export class ReferencesComponent implements OnChanges, AfterViewInit{
 
   ngOnChanges() {
     if(this.sort !== undefined) {
+      console.log(this.orderCol, this.orderDir)
       this.sort.active = this.orderCol
       this.sort.direction = this.orderDir as SortDirection
     }

@@ -237,7 +237,7 @@ public class Api implements ErrorController{
 	        }
 	        else {*/
 	            errors = ReferenceController.addReference(form.getdlNum(), form.getIdProject(), form.getFile());
-	            returnData.put("newDL",  digitalLibraryController.getNames().get(Integer.parseInt(form.getdlNum())));
+	            returnData.put("newDL",  digitalLibraryController.getNames().get(Integer.parseInt(form.getdlNum())-1));
 	            returnData.put("newName", StringUtils.cleanPath(nameFile));
 	            returnData.put("errors", errors);
 	       

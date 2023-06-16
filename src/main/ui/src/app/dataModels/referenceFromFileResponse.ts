@@ -1,7 +1,7 @@
 import { ImportError } from "./importError";
 
 export interface ReferenceFromFileResponse {
-    newDL: number;
+    newDL: string;
     newName: string;
     errors: ImportError[];
     refsImp: number;

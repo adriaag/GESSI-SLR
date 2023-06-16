@@ -18,8 +18,8 @@ export class ReferenceImportComponent {
   constructor(private dialog: MatDialog, private dataService: DataService){}
 
   fileToUpload!: File;
-  digitalLibraryId: Number = NaN;
-  newDL: number = NaN;
+  digitalLibraryId: number = NaN;
+  newDL: string = "";
   newName: string = "";
   errors: ImportError[] = [];
   refsImp: number = NaN;
