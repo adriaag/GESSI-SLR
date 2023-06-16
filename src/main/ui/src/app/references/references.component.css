@@ -64,3 +64,7 @@ table {
     font-weight: bold;
   }
 
+  .mat-sort-header-arrow {
+    color: white;
+  }
+

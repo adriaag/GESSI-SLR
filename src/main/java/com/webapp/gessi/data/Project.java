@@ -34,6 +34,10 @@ public class Project {
                     "protocol VARCHAR(5000), "+
                     "protocolImg BLOB(1M), "+
                     "comments VARCHAR(5000), "+
+                    "orderColSearch VARCHAR(10), "+
+                    "orderDirSearch VARCHAR(10), "+
+                    "orderColScreen VARCHAR(10), "+
+                    "orderDirScreen VARCHAR(10), "+
                     "PRIMARY KEY(id))");
             System.out.println("Created table Project");
             return true;
@@ -168,7 +172,8 @@ public class Project {
         	projectDigitalLibraryDTO[] pDLList = projectDigitalLibrary.getByIdProject(s, resultSet.getInt("id"));
             projectDTOList.add(new ProjectDTO(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getInt("idDuplicateCriteria"),
             		resultSet.getString("topic"), resultSet.getString("researchQuestion"), resultSet.getString("protocol"), 
-            		img, resultSet.getString("comments"),pUIList,pDLList));
+            		img, resultSet.getString("comments"),pUIList,pDLList, resultSet.getString("orderColSearch"), 
+            		resultSet.getString("orderDirSearch"), resultSet.getString("orderColScreen"), resultSet.getString("orderDirScreen")));
         }
         
         return projectDTOList;
@@ -187,12 +192,32 @@ public class Project {
             preparedStatement.setBlob(1, imgBlob);
             System.out.println("Image updated. Size: "+imgBlob.length());
         }
-        else preparedStatement.setNull(5, java.sql.Types.BLOB);
+        else preparedStatement.setNull(1, java.sql.Types.BLOB);
         preparedStatement.setInt(2, idProj);
         preparedStatement.executeUpdate();
         conn.commit();
 		
 		
+	}
+	
+	public static void updateOrder(int idProj, String orderColSearch, String orderDirSearch, 
+    		String orderColScreen, String orderDirScreen) throws SQLException {
+		
+		String query = "UPDATE project SET orderColSearch = ?, orderDirSearch= ?, orderColScreen = ?, orderDirScreen = ? WHERE id = ?";
+    	ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Connection conn = ctx.getBean(Connection.class);
+        Statement s = conn.createStatement();
+        
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1, orderColSearch);
+        preparedStatement.setString(2, orderDirSearch);
+        preparedStatement.setString(3, orderColScreen);
+        preparedStatement.setString(4, orderDirScreen);
+        preparedStatement.setInt(5, idProj);
+        preparedStatement.executeUpdate();
+        conn.commit();
+        
+        System.out.println("order updated");
 	}
 	
     private static String truncate(String text, int maxValue) {

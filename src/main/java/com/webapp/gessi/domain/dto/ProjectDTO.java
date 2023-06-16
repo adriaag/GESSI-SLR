@@ -1,6 +1,5 @@
 package com.webapp.gessi.domain.dto;
 
-import org.springframework.web.multipart.MultipartFile;
 
 public class ProjectDTO {
     private int id;
@@ -12,10 +11,15 @@ public class ProjectDTO {
     private String comments;
     private projectUserInvolveDTO[] involvedUsers;
     private projectDigitalLibraryDTO[] digitalLibraries;
+    private String orderColSearch;
+    private String orderDirSearch;
+    private String orderColScreen;
+    private String orderDirScreen;
     
     public ProjectDTO(int id, String name, int idDuplicateCriteria, String topic, String researchQuestion,
     		String protocol, byte[] protocolImg, String comments, projectUserInvolveDTO[] involvedUsers, 
-    		projectDigitalLibraryDTO[] digitalLibraries) {
+    		projectDigitalLibraryDTO[] digitalLibraries, String orderColSearch, String orderDirSearch, 
+    		String orderColScreen, String orderDirScreen) {
         this.id = id;
         this.name = name;
         this.idDuplicateCriteria = idDuplicateCriteria;
@@ -25,6 +29,10 @@ public class ProjectDTO {
         this.comments = comments;
         this.involvedUsers = involvedUsers;
         this.digitalLibraries = digitalLibraries;
+        this.orderColSearch = orderColSearch;
+        this.orderDirSearch = orderDirSearch;
+        this.orderColScreen = orderColScreen;
+        this.orderDirScreen = orderDirScreen;
     }
 
     public ProjectDTO() {}
@@ -87,6 +95,15 @@ public class ProjectDTO {
     public void setDigitalLibraries(projectDigitalLibraryDTO[] digitalLibraries) {
         this.digitalLibraries = digitalLibraries;
     }
+    
+    public String getOrderColSearch() {return this.orderColSearch;}
+    
+    public String getOrderDirSearch() {return this.orderDirSearch;}
+    
+    public String getOrderDirScreen() {return this.orderDirScreen;}
+    
+    public String getOrderColScreen() {return this.orderColScreen;}
+    
     
     
     

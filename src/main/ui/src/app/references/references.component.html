@@ -17,7 +17,7 @@
         </mat-form-field>
 
     </h1>
-    <table mat-table [dataSource]="dataSource" matSort [matSortActive]="this.sortColumn" [matSortDirection]="this.sortDirection" class="table table-striped" id="dataTable">
+    <table mat-table [dataSource]="dataSource" matSort [matSortActive]="this.sortColumn" [matSortDirection]="this.sortDirection" (matSortChange)="sortChange($event)" class="table table-striped" id="dataTable">
             
         <ng-container matColumnDef="doi">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>DOI</th>

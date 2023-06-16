@@ -68,6 +68,21 @@ export class DataService {
       )
   }
 
+  updateProjectOrder(idProject: number, orderColSearch: string, orderDirSearch: string,
+    orderColScreen: string, orderDirScreen: string): Observable<{}> {
+    const formData: FormData = new FormData();
+    formData.append('orderColSearch', orderColSearch);
+    formData.append('orderDirSearch', orderDirSearch);
+    formData.append('orderColScreen', orderColScreen);
+    formData.append('orderDirScreen', orderDirScreen);
+    return this.http.post(
+      `${this.rootUrl}/projects/${idProject}/order`,formData,this.setHttpHeader())
+      .pipe(
+        tap(data => console.log("Data:", data)),
+        catchError(this.handleError),
+      )
+  }
+
 
   deleteProject(idProject: number): Observable<{message: string}> {
     return this.http.delete<{message: string}>(

@@ -17,4 +17,8 @@ export interface Project {
 	    searchString: string;
 	    numSearchResults: number;
     }[];
+    orderColSearch: string;
+    orderDirSearch: string;
+    orderColScreen: string;
+    orderDirScreen: string;
 }

@@ -10,7 +10,7 @@
         </mat-form-field>
 
     </h1>
-    <table mat-table [dataSource]="dataSource" matSort class="table table-striped" [matSortActive]="this.sortColumn" [matSortDirection]="this.sortDirection" id="dataTable">
+    <table mat-table [dataSource]="dataSource" matSort class="table table-striped" [matSortActive]="this.sortColumn" [matSortDirection]="this.sortDirection" (matSortChange)="sortChange($event)" id="dataTable">
             
         <ng-container matColumnDef="ref">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>#ref</th>

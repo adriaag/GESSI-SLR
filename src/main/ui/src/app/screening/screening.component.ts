@@ -23,9 +23,12 @@ export class ScreeningComponent {
   @Input('exclusionCriteria') exclusionCriteria!: Criteria[]
   @Input('inclusionCriteria') inclusionCriteria!: Criteria[]
   @Input('usernames') usernames!: string[]
+  @Input('orderCol') orderCol!: string
+  @Input('orderDir') orderDir!: string
   @Input('trigger') trigger!: boolean //Pensat per tal que s'executi ngOnChanges quan
                                       //es modifiquin els inputs. Angular compara els 
                                       //inputs per referència. 
+  @Output() orderChanged = new EventEmitter();
 
   criterias: Criteria[] = [];
 
@@ -66,10 +69,16 @@ export class ScreeningComponent {
 
   constructor(private dataService: DataService, private dialog: MatDialog) {}
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges() {
+    if(this.sort !== undefined) {
+      console.log('dir', this.orderDir)
+      this.sort.active = this.orderCol
+      this.sort.direction = this.orderDir as SortDirection
+    }
+
     this.references = this.referenceslist
     this.criterias = this.exclusionCriteria.concat(this.inclusionCriteria)
-    this.uploadUsr1()
+    this.uploadForm()
     this.sortedData = this.references.slice();
     this.dataSource = new MatTableDataSource(this.referenceslist);
     this.dataSource.paginator = this.paginator;
@@ -117,7 +126,11 @@ export class ScreeningComponent {
     this.applyFilterWhenReloading()
   }
 
-  uploadUsr1() {
+  sortChange(event: {active: string, direction: string}) {
+    this.orderChanged.emit({col: event.active, dir: event.direction})
+  }
+
+  uploadForm() {
     this.usr1 =  new FormArray<FormControl>([])
     this.crit1 =  new FormArray<FormControl>([])
     this.critEnabled1 = new FormArray<FormControl>([])

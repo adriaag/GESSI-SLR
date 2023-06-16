@@ -130,6 +130,19 @@ public class Api implements ErrorController{
     	
     }
     
+    @PostMapping(value="/projects/{id}/order")
+    public ResponseEntity<?> updateOrder(@PathVariable("id") int idProj, @RequestParam("orderColSearch") String orderColSearch, 
+    		@RequestParam("orderDirSearch") String orderDirSearch, @RequestParam("orderColScreen") String orderColScreen, 
+    		@RequestParam("orderDirScreen") String orderDirScreen) {
+    	try {
+    		ProjectController.updateOrder(idProj, orderColSearch, orderDirSearch, orderColScreen, orderDirScreen);
+    		return new ResponseEntity<>(HttpStatus.CREATED);
+    	}
+    	catch (SQLException e) {
+	    	return sqlExcHandler(e);	    	
+	    } 
+    }
+    
     @DeleteMapping(value="/projects/{id}", produces = MediaType.APPLICATION_JSON_VALUE +"; charset=utf-8")
     public ResponseEntity<?> deleteProject(@PathVariable("id") int idProj) {
     	try {

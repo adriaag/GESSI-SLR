@@ -66,4 +66,9 @@ public class ProjectController {
 	public static byte[] getProtocolImg(int idProj) throws SQLException {
 		return Project.getProtocolImg(idProj);
 	}
+	
+	public static void updateOrder(int idProj, String orderColSearch, String orderDirSearch, 
+    		String orderColScreen, String orderDirScreen) throws SQLException {
+		Project.updateOrder(idProj, orderColSearch, orderDirSearch, orderColScreen, orderDirScreen);
+	}
 }

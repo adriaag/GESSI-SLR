@@ -234,4 +234,90 @@ export class MainComponent implements OnInit {
     this.triggerProject = !this.triggerProject
   }
 
+  private getOrder( table: string, type: string): string {
+    let project = this.selectedProject.value
+    if(project == null) return ""
+    let ret = ""
+    switch(table) {
+      case 'search':
+        switch(type) {
+          case 'col':
+            ret = project.orderColSearch;
+            break
+          case 'dir':
+            ret = project.orderDirSearch;
+            break
+          default:
+            ret = ""
+            break
+        };
+        break
+      case 'screen':
+        switch(type) {
+          case 'col':
+            ret = project.orderColScreen;
+            break
+          case 'dir':
+            ret = project.orderDirScreen;
+            break
+          default:
+            ret = ""
+            break
+        };
+      break
+      default:
+        ret = ""
+    }
+    return ret !== 'null'? ret : "";
+  }
+
+  getOrderColSearch(): string {
+    return this.getOrder('search','col')
+  }
+
+  getOrderDirSearch(): string {
+    return this.getOrder('search','dir')
+  }
+
+  getOrderColScreen(): string {
+    return this.getOrder('screen','col')
+  }
+
+  getOrderDirScreen(): string {
+    return this.getOrder('screen','dir')
+  }
+
+  updateOrderSearch(order: {col: string, dir: string}) {
+    this.updateOrder(order.col, order.dir, this.getOrderColScreen(), this.getOrderDirScreen())
+  }
+
+  updateOrderScreen(order: {col: string, dir: string}) {
+    this.updateOrder(this.getOrderColSearch(), this.getOrderDirSearch(), order.col, order.dir)
+  }
+
+  private updateOrder(orderColSearch: string, orderDirSearch: string, 
+    orderColScreen: string, orderDirScreen: string) {
+      this.dataService.updateProjectOrder(this.getIdProject(), orderColSearch, orderDirSearch,
+        orderColScreen, orderDirScreen).subscribe({
+          next: (result) => {
+            let i = this.getPosProject(this.getIdProject())
+            this.projects[i].orderColSearch = orderColSearch
+            this.projects[i].orderDirSearch = orderDirSearch
+            this.projects[i].orderColScreen = orderColScreen
+            this.projects[i].orderDirScreen = orderDirScreen
+
+          }
+        })
+
+  }
+
+  private getPosProject(id: number): number {
+    let i = 0
+    for(let proj of this.projects) {
+      if(proj.id === id) return i;
+      i += 1
+    }
+    return -1
+  }
+
 }
