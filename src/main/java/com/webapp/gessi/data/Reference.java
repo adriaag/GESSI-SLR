@@ -52,8 +52,11 @@ public class Reference {
         if (idDL != null) preparedStatement.setString(3, idDL);
         preparedStatement.execute();
         ResultSet rs = preparedStatement.getResultSet();
-        if (rs.next())
-            return rs.getInt("idRef");
+        if (rs.next()) {
+        	int idRef = rs.getInt("idRef");
+        	userDesignation.insertRow(s, "None" , idRef, 2);
+        }
+        	
         return -2;
     }
 

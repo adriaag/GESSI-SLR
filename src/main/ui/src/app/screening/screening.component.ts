@@ -89,7 +89,7 @@ export class ScreeningComponent {
     merge(...this.usr1.controls.map(control => control.valueChanges))
     .subscribe((value) => {
       console.log('usuaris',value)
-      this.filteredOptionsUsr = of(this.filtreUsr(value))
+      this.filteredOptionsUsr = of(this.filtreUsr(value,1))
     })
 
     merge(...this.crit1.controls.map(control => control.valueChanges))
@@ -101,7 +101,7 @@ export class ScreeningComponent {
     merge(...this.usr2.controls.map(control => control.valueChanges))
     .subscribe((value) => {
       console.log('usuaris2',value)
-      this.filteredOptionsUsr = of(this.filtreUsr(value))
+      this.filteredOptionsUsr = of(this.filtreUsr(value,2))
     })
 
     merge(...this.crit2.controls.map(control => control.valueChanges))
@@ -173,8 +173,14 @@ export class ScreeningComponent {
       }
       else {
         f = new FormControl(ref.usersCriteria2.username)
-        c = new FormControl(ref.usersCriteria2.criteriaList)
-        if (ref.usersCriteria2.processed) cEnable2.disable()
+        if (ref.usersCriteria2.username === "None") {
+          cEnable2.disable()
+          c = new FormControl()
+        }
+        else {
+          c = new FormControl(ref.usersCriteria2.criteriaList)
+          if (ref.usersCriteria2.processed) cEnable2.disable()
+        }
       }
       this.usr2.push(f)
       this.crit2.push(c)
@@ -201,16 +207,18 @@ export class ScreeningComponent {
     }
   }
 
-  filtreUsr(value: string): string[] {
+  filtreUsr(value: string, numD: number): string[] {
     console.log(this.focusedUserAlt, 'Focused user filtre')
+    let specialUsr = new Array<string>()
+    if(numD === 2) specialUsr.push('None')
     if (value !== null) {
       const filterValue = value.toLowerCase();
-      return this.usernames.filter(option => 
+      return specialUsr.concat(this.usernames.filter(option => 
         option.toLowerCase().includes(filterValue)
-        && option != this.focusedUserAlt)
+        && option != this.focusedUserAlt))
     }
 
-    return this.usernames.filter(option => option != this.focusedUserAlt)
+    return specialUsr.concat(this.usernames.filter(option => option != this.focusedUserAlt))
   }
 
 
@@ -264,14 +272,17 @@ export class ScreeningComponent {
       if(numD === 1) this.userDirty[idProjRef] = {usr1: username, usr2: ''}
       else this.userDirty[idProjRef] = {usr1: '', usr2: username}
     }
+
+    let specialUsr = new Array<string>
+    if(numD === 2) specialUsr.push('None')
     
     usrCtrl.at(this.refind[idProjRef]).setValue('')
     if(udAlt !== null){
-      this.filteredOptionsUsr = of(this.usernames.filter(option => option != udAlt.username))
+      this.filteredOptionsUsr = of(specialUsr.concat(this.usernames.filter(option => option != udAlt.username)))
       this.focusedUserAlt = udAlt.username
     }
     else {
-      this.filteredOptionsUsr = of(this.usernames)
+      this.filteredOptionsUsr = of(specialUsr.concat(this.usernames))
       this.focusedUserAlt = ''
     }
     
@@ -500,12 +511,21 @@ export class ScreeningComponent {
     let uc
     numD == 1? uc = ref.usersCriteria1: uc = ref.usersCriteria2
 
+    if (numD == 2) {
+      let userCtrl = this.usr2.at(this.refind[ref.idProjRef])
+      if(userCtrl !== undefined){
+        console.log(userCtrl.value)
+      if(userCtrl.value === 'None') return ''
+      }
+      
+      
+    }
     if (uc !== null) {
       if (uc.processed) {
         if (uc.criteriaList.length > 0) return 'out'
         else return 'in'
       }
-      else return 'undiecided'
+      else return 'undecided'
     }
     return 'unassigned'
 
@@ -514,7 +534,9 @@ export class ScreeningComponent {
   getConsensusState(ref: Reference): string {
     let sta1 = this.getState(ref, 1)
     let sta2 = this.getState(ref, 2)
-
+    if (sta2 === '')
+      return (sta1 === 'in' || sta1 === 'out')? 'YES' : ''
+    
     if ((sta1 === 'in' || sta1 == 'out') && (sta2 === 'in' || sta2 === 'out')) {
       if (sta1 === sta2) {
         if (sta1 == 'in') return 'YES'

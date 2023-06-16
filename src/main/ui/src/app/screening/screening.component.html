@@ -130,7 +130,7 @@
                 </mat-form-field>
                 <button mat-icon-button class="boto" (click)="updateCriteria2(row)">
                     <mat-icon class="icVerd" *ngIf="$any(critEnabled2.at(refind[row.idProjRef])).enabled">done</mat-icon>
-                    <mat-icon class="icNeg" *ngIf="$any(critEnabled2.at(refind[row.idProjRef])).disabled && row.usersCriteria2 !== null">edit</mat-icon>
+                    <mat-icon class="icNeg" *ngIf="$any(critEnabled2.at(refind[row.idProjRef])).disabled && row.usersCriteria2 !== null && row.usersCriteria2.username !== 'None'">edit</mat-icon>
                 </button>
             </td>   
         </ng-container>

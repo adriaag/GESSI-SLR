@@ -23,6 +23,12 @@ public class user {
             		+ "PASSWORD VARCHAR("+passwordMaxLength+"), "
             		+ "PRIMARY KEY (USERNAME))");
             System.out.println("Created table user");
+            
+            insertUser(s, "None", "1234567890"); //Usuari especial que es fa servir quan
+            									//es vol classificar una referència a partir de els IC/EC
+            									//d'un sol usuari. Mai es podrà iniciar sessió, ja que les contrasenyes a la 
+            									//base de dades estan encriptades i tenen un altre format
+            System.out.println("Special user None inserted");
         } catch (SQLException t  ){
             if (t.getSQLState().equals("X0Y32"))
                 System.out.println("Table user exists");
@@ -31,6 +37,7 @@ public class user {
             	System.out.println(t.getCause());
             }
         }
+          
     }
     public static void dropTable(Statement s) throws SQLException {
         try{
@@ -72,7 +79,7 @@ public class user {
     }
     
     public static List<String> getAllUsernames(Statement s) throws SQLException {
-    	String query ="SELECT username from users";
+    	String query ="SELECT username from users WHERE username != 'None'";
     	Connection conn = s.getConnection();
     	PreparedStatement preparedStatement = conn.prepareStatement(query);
     	ResultSet rs = preparedStatement.executeQuery();
@@ -84,6 +91,17 @@ public class user {
     	
     	return usernames;
     	
+    	
+    }
+    
+    private static void insertUser(Statement s, String username, String password) throws SQLException {
+    	String query ="INSERT INTO USERS(username, password) VALUES (?,?)";
+    	Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1,username);
+        preparedStatement.setString(2, password);
+        preparedStatement.executeUpdate();
+        conn.commit();
     	
     }
   
