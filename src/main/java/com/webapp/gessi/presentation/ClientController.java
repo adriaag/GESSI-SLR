@@ -11,5 +11,10 @@ public class ClientController {
 	public String loadUI() {
 		return "forward:/ui/index.html";
 	}
-
+	
+	@RequestMapping({"/ui/forgotPassword"})
+	public String loadUIa() {
+		return "forward:/ui/index.html";
+	}
+	
 }
