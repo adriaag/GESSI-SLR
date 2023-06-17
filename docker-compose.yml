@@ -11,7 +11,7 @@ services:
 
   webapp:
     container_name: gessi-webapp
-    image: com.webapp.gessi/gessi-slr:1.2.0
+    image: com.webapp.gessi/gessi-slr:1.3.0
     depends_on:
       - derby
     ports:

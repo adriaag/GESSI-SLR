@@ -24,9 +24,9 @@ build:
 
 save-image:
 	@mkdir -p docker-images
-	@docker save com.webapp.gessi/gessi-slr:1.1.0 | gzip > "./docker-images/gessi-slr.tar.gz"
+	@docker save com.webapp.gessi/gessi-slr:1.3.0 | gzip > "./docker-images/gessi-slr.tar.gz"
 	@docker save opavlova/db-derby:latest | gzip > "./docker-images/db-derby.tar.gz"
 
 save-image-tomcat:
 	@mkdir -p docker-images
-	@docker save com.webapp.gessi/gessi-slr:1.1.0 | gzip > "./docker-images/gessi-slr.tar.gz"
+	@docker save com.webapp.gessi/gessi-slr:1.3.0 | gzip > "./docker-images/gessi-slr.tar.gz"
