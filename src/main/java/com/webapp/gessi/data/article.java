@@ -115,48 +115,6 @@ public class article {
         return time;
     }
 
-    //Guarda las referencias que no se pueden guardar en la BD
-    public static Timestamp iniCheck(Statement sta, String idDL, MultipartFile file) throws IOException {
-        ByteArrayInputStream stream0 = new ByteArrayInputStream(file.getBytes());
-        String myString = IOUtils.toString(stream0, StandardCharsets.UTF_8);
-        ByteArrayInputStream stream = new ByteArrayInputStream(myString.getBytes(StandardCharsets.UTF_8));
-
-        Scanner sc = new Scanner(stream);
-        sc.useDelimiter("\\@");
-        ArrayList<String> list = new ArrayList<String>();
-
-        Pattern patternKey = Pattern.compile("\\{(.*),");
-        Pattern patternDOI = Pattern.compile("doi=(.*)\\}");
-        Pattern patternDOI2 = Pattern.compile("doi =(.*)\\}");
-        Pattern patternDOI3 = Pattern.compile("DOI =(.*)\\}");
-
-        Timestamp timesql = new Timestamp(new java.util.Date().getTime());
-        while(sc.hasNext()) {
-            String data = sc.next();
-            String doi = null;
-
-            Matcher doiM = patternDOI.matcher(data);
-            Matcher doiM2 = patternDOI2.matcher(data);
-            Matcher doiM3 = patternDOI3.matcher(data);
-            if (doiM.find()) {
-                doi = doiM.group(1).replaceAll("\\{", "")
-                        .replaceAll(",", "").replaceAll("=", "");
-            } else if (doiM2.find()) {
-                doi = doiM2.group(1).replaceAll("\\{", "")
-                        .replaceAll(",", "").replaceAll("=", "");
-            } else if (doiM3.find()) {
-                doi = doiM3.group(1).replaceAll("\\{", "")
-                        .replaceAll(",", "").replaceAll("=", "");
-            }
-            Matcher bibM = patternKey.matcher(data);
-            if(bibM.find()) {
-                String citeKey = bibM.group(1).replaceAll("\\{", "").replaceAll(",", "");
-                list.add(citeKey);
-            }
-        }
-        return timesql;
-    }
-
     public static ResultSet getAllData(Statement s) throws SQLException {
         ResultSet rs;
         rs = s.executeQuery("SELECT * FROM articles");

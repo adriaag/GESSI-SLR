@@ -57,13 +57,7 @@ public class researcher implements Serializable {
 	        System.out.println("Inserted row with idRes " + name + " in researchers");
 	        s.getConnection().commit();
 	        
-	        query = "SELECT idRes FROM researchers where name = ?";
-	        preparedStatement = conn.prepareStatement(query);
-	        preparedStatement.setString(1, truncate(name, nameMaxLength));
-	        preparedStatement.execute();
-	        ResultSet rs = preparedStatement.getResultSet();
-	        rs.next();
-	        return rs.getInt(1);
+	        return getByName(s,name);
     	}
     	System.out.println("Researcher exists");
     	return id;
@@ -74,7 +68,8 @@ public class researcher implements Serializable {
         Integer[] ret = new Integer[splitArray.length];
         int i = 0;
         for(String x : splitArray) {
-            ret[i++] = insertRow(s,x);
+            ret[i] = insertRow(s,x);
+            ++i;
         }
         return ret;
     }
