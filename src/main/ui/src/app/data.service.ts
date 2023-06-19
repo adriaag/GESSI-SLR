@@ -10,6 +10,7 @@ import { CriteriaResponse } from './criteriaResponse';
 import { environment } from 'src/environments/environment';
 import { AddReference } from './dataModels/addReference';
 import { UserDesignation } from './dataModels/userDesignation';
+import { Article } from './dataModels/article';
 
 @Injectable({
   providedIn: 'root'
@@ -180,6 +181,15 @@ export class DataService {
       tap(data => console.log("Data:", data)),
       catchError(this.handleError),
     )
+  }
+
+  getArticle(doi: string): Observable<Article> {
+    return this.http.get<Article>(
+      `${this.rootUrl}/article?doi=${doi}`,this.setHttpHeader())
+      .pipe(
+        tap(data => console.log("Data:", data)),
+        catchError(this.handleError),
+      )
   }
 
   getCriteria(idProject: number): Observable<CriteriaResponse> {

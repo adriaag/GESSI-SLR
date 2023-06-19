@@ -7,7 +7,7 @@
     <form ngNativeValidate #form id="newReferenceForm">
         <div class="form-group">
             <mat-label for="doi">DOI (or id in case the paper has not a DOI)</mat-label>
-            <input matInput placeholder="Enter doi" [formControl]="doi" required maxlength={{doiMaxLength}} type="text" class="form-control">
+            <input matInput placeholder="Enter doi" [formControl]="doi" required maxlength={{doiMaxLength}} type="text" class="form-control" (focusout)="getArticle(doi.value)">
             <mat-error *ngIf="doi.invalid">Doi is required to create a reference</mat-error>
             <mat-hint>{{getLength(doi)}}/{{doiMaxLength}}</mat-hint>
         </div>

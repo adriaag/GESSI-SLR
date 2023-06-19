@@ -1,7 +1,9 @@
 import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { DataService } from '../data.service';
 //import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AddReference } from '../dataModels/addReference';
+import { Article } from '../dataModels/article';
 
 @Component({
   selector: 'app-reference-import-manually',
@@ -9,8 +11,8 @@ import { AddReference } from '../dataModels/addReference';
   styleUrls: ['./reference-import-manually.component.css']
 })
 export class ReferenceImportManuallyComponent {
-  //constructor(public dialogRef: MatDialogRef<ReferenceImportManuallyComponent>) {}
-  constructor(){}
+
+  constructor(private dataService: DataService){}
 
   @Input('dataLoading') dataLoading!: boolean
   @Output() importSubmitted = new EventEmitter<AddReference>();
@@ -95,6 +97,36 @@ reset() {
   this.any.reset();
   this.abstract.reset();
   this.affiliationNames.reset();
+}
+
+getArticle(doi: string) {
+  this.dataService.getArticle(doi).subscribe({
+    next: (art: Article) => {
+      if(art !== null) {
+        this.authorNames.setValue(this.arrayToString(art.researchers))
+        this.type.setValue(art.type);
+        if(art.ven !== null) this.nameVen.setValue(art.ven.name);
+        this.title.setValue(art.title);
+        this.keywords.setValue(art.keywords);
+        this.number.setValue(art.keywords);
+        this.numpages.setValue(art.numpages);
+        this.pages.setValue(art.pages);
+        this.volume.setValue(art.volume);
+        this.any.setValue(art.any);
+        this.abstract.setValue(art.abstractA);
+        this.affiliationNames.setValue(this.arrayToString(art.companies));
+      }
+    }
+  })
+}
+
+private arrayToString(array: any): string {
+  let ret: string = ""
+  for (let a of array) {
+    ret += a.name + ";"
+  }
+  return ret;
+
 }
 
 }
