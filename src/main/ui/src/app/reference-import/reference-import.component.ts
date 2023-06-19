@@ -15,7 +15,7 @@ export class ReferenceImportComponent {
   @Input('idProject') idProject!: number
   @Output() newReferencesImported = new EventEmitter();
 
-  constructor(private dialog: MatDialog, private dataService: DataService){}
+  constructor(private dataService: DataService){}
 
   fileToUpload!: File;
   digitalLibraryId: number = NaN;
@@ -29,6 +29,7 @@ export class ReferenceImportComponent {
   importBool: boolean = false;
   loading: boolean = false;
   manualRefLoading: boolean = false;
+  manualMsg = ""
 
   handleFileInput(event: Event) {
     const target= event.target as HTMLInputElement;
@@ -66,30 +67,17 @@ export class ReferenceImportComponent {
 
   createReference(refData: AddReference) {
     this.manualRefLoading = true;
+    this.manualMsg = "";
     this.dataService.createReferenceFromForm(refData, this.idProject).subscribe({
       next: (resposta)=> {
       console.log(resposta)
       this.newReferencesImported.emit();
       this.manualRefLoading = false;
-      alert("Reference importes successfully")
+      this.manualMsg = "Reference imported successfully"
       },
       error: (err) => {
         this.manualRefLoading = false;
       }
-    })
-  }
-
-  openImportManuallyDialog(){
- 
-    const manRefDialog = this.dialog.open(ReferenceImportManuallyComponent, {
-      maxHeight: '100vh', height: '100%', width: '60%'}
-    )
-
-    manRefDialog.afterClosed().subscribe(result => {
-      if (result !== undefined) {
-        this.createReference(result)
-      }
-
     })
   }
 

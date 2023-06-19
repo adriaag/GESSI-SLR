@@ -62,6 +62,7 @@
         <br>
         <h3> Add Paper </h3>
         <app-reference-import-manually [dataLoading]="manualRefLoading" (importSubmitted)="createReference($event)"></app-reference-import-manually>
+        <p *ngIf="manualMsg.length > 0" class="alert alert-primary" role="alert">{{manualMsg}}</p>
         <br>
     </div>
     <br>

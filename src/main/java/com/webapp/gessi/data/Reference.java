@@ -55,6 +55,7 @@ public class Reference {
         if (rs.next()) {
         	int idRef = rs.getInt("idRef");
         	userDesignation.insertRow(s, "None" , idRef, 2);
+        	return idRef;
         }
         	
         return -2;
@@ -321,38 +322,7 @@ public class Reference {
         newRef.setDl(dl);
 
         Statement s3 = conn.createStatement();
-        ResultSet rsAr = article.getArticle(s3,doiR);
-        articleDTO ar = null;
-        if(rsAr.next()) {
-            ar = new articleDTO(rsAr.getString(1), rsAr.getString(2),
-                    rsAr.getString(3), rsAr.getInt(4), rsAr.getString(5),
-                    rsAr.getString(6), rsAr.getString(7),
-                    rsAr.getInt(8), rsAr.getString(9), rsAr.getString(10),
-                    rsAr.getInt(11), rsAr.getString(12));
-            rsAr = venue.getVenue(s3,rsAr.getInt(4));
-            venueDTO v = null;
-            if (rsAr.next())
-                v = new venueDTO(rsAr.getInt(1), rsAr.getString(2), rsAr.getString(3));
-            ar.setVen(v);
-
-            rsAr = company.getCompanies(s3,doiR);
-            List<companyDTO> c = new ArrayList<>();
-            companyDTO auxC;
-            while (rsAr.next()) {
-                auxC = new companyDTO(rsAr.getInt(1), rsAr.getString(2));
-                c.add(auxC);
-            }
-            ar.setCompanies(c);
-
-            rsAr = researcher.getResearchers(s3,doiR);
-            List<researcherDTO> rss = new ArrayList<>();
-            researcherDTO auxR;
-            while (rsAr.next()) {
-                auxR = new researcherDTO(rsAr.getInt(1), rsAr.getString(2));
-                rss.add(auxR);
-            }
-            ar.setResearchers(rss);
-        }
+        articleDTO ar = article.obtainArticleDTO(s2, doiR);
         newRef.setArt(ar);
     }
 

@@ -2,7 +2,10 @@ package com.webapp.gessi.data;
 
 import com.webapp.gessi.domain.dto.ProjectDTO;
 import com.webapp.gessi.domain.dto.articleDTO;
+import com.webapp.gessi.domain.dto.companyDTO;
 import com.webapp.gessi.domain.dto.referenceDTOadd;
+import com.webapp.gessi.domain.dto.researcherDTO;
+import com.webapp.gessi.domain.dto.venueDTO;
 import com.webapp.gessi.exceptions.BadBibtexFileException;
 import com.webapp.gessi.exceptions.TruncationException;
 
@@ -22,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -590,6 +594,42 @@ public class article {
 
     public static void setReferencesDuplicated(int i) {
         referencesDuplicated = i;
+    }
+    
+    public static articleDTO obtainArticleDTO (Statement s, String doi) throws SQLException {
+    	ResultSet rsAr = article.getArticle(s,doi);
+        articleDTO ar = null;
+        if(rsAr.next()) {
+            ar = new articleDTO(rsAr.getString(1), rsAr.getString(2),
+                    rsAr.getString(3), rsAr.getInt(4), rsAr.getString(5),
+                    rsAr.getString(6), rsAr.getString(7),
+                    rsAr.getInt(8), rsAr.getString(9), rsAr.getString(10),
+                    rsAr.getInt(11), rsAr.getString(12));
+            rsAr = venue.getVenue(s,rsAr.getInt(4));
+            venueDTO v = null;
+            if (rsAr.next())
+                v = new venueDTO(rsAr.getInt(1), rsAr.getString(2), rsAr.getString(3));
+            ar.setVen(v);
+
+            rsAr = company.getCompanies(s,doi);
+            List<companyDTO> c = new ArrayList<>();
+            companyDTO auxC;
+            while (rsAr.next()) {
+                auxC = new companyDTO(rsAr.getInt(1), rsAr.getString(2));
+                c.add(auxC);
+            }
+            ar.setCompanies(c);
+
+            rsAr = researcher.getResearchers(s,doi);
+            List<researcherDTO> rss = new ArrayList<>();
+            researcherDTO auxR;
+            while (rsAr.next()) {
+                auxR = new researcherDTO(rsAr.getInt(1), rsAr.getString(2));
+                rss.add(auxR);
+            }
+            ar.setResearchers(rss);
+        }
+        return ar;
     }
     
     private static String truncate(String text, int maxValue) {

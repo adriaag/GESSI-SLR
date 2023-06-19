@@ -3,6 +3,7 @@ package com.webapp.gessi.domain.controllers;
 import com.webapp.gessi.config.DBConnection;
 import com.webapp.gessi.data.article;
 import com.webapp.gessi.data.Reference;
+import com.webapp.gessi.domain.dto.articleDTO;
 import com.webapp.gessi.domain.dto.consensusCriteriaDTO;
 import com.webapp.gessi.domain.dto.importErrorDTO;
 import com.webapp.gessi.domain.dto.referenceDTO;
@@ -110,6 +111,13 @@ public class ReferenceController {
     	ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
         Statement s = ctx.getBean(Connection.class).createStatement(); 	
     	return Reference.addReferenceManually(s, referenceData, idProject);
+    }
+    
+    public static articleDTO getArticle(String doi) throws SQLException {
+    	ApplicationContext ctx = new AnnotationConfigApplicationContext(DBConnection.class);
+        Statement s = ctx.getBean(Connection.class).createStatement();
+    	return article.obtainArticleDTO(s, doi);
+    	
     }
     
     

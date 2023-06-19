@@ -158,6 +158,7 @@ public class Api implements ErrorController{
 	    }
 
     }
+       
     
     @GetMapping(value = "/projects/{id}/references", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
     public ResponseEntity<?> getReferences(@PathVariable("id") Integer idProject){
@@ -338,6 +339,19 @@ public class Api implements ErrorController{
 	    	return sqlExcHandler(e);
 	    	
 	    }
+    }
+    
+    @GetMapping(value = "/article", produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
+    public ResponseEntity<?> getArticle(@RequestParam("doi") String doi){
+    	try {
+	        articleDTO ar = ReferenceController.getArticle(doi);
+	        //if (ar == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	        return ResponseEntity.ok(ar);
+    	}
+    	catch (SQLException e) {
+	    	return sqlExcHandler(e);	    	
+	    }
+    	
     }
     
     
