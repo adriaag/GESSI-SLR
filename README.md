@@ -92,7 +92,7 @@ docker-compose -p gessi-slr down
 - [Derby DB](http://localhost:1033/GESSISLR)
 - Connect to DB: `jdbc:derby://localhost:1033/GESSISLR;`
 
-## How I register new users?
+## How do I register new users?
 1. With a database manages software connect to http://gessi3.essi.upc.edu:1033/GESSISLR.
 2. Log in with database credentials. (Tip: if you don't know them, you can find the credentials on the running docker image. More details below)
 3. Go to GESSISLR schema.
@@ -102,7 +102,7 @@ INSERT INTO USERS (USERNAME, PASSWORD) VALUES ('username','password');
 ```
 NOTE: password inserted must be encrypted with BCrypt encoder. If not, login for the inserted user wonn't be possible.
 
-## How I recover server credentials?
+## How do I recover server credentials?
 1. Establish connection with the server (ssh)
 2. Execute:
    ```shell
