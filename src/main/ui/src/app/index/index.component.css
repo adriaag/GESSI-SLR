@@ -1,0 +1,53 @@
+.boton {
+    border: 1px solid #2e518b; /*anchura, estilo y color borde*/
+    padding: 10px; /*espacio alrededor texto*/
+    background-color: #2e518b; /*color botón*/
+    color: #ffffff; /*color texto*/
+    text-decoration: none; /*decoración texto*/
+    text-transform: uppercase; /*capitalización texto*/
+    font-family: 'Helvetica', sans-serif; /*tipografía texto*/
+    border-radius: 50px; /*bordes redondos*/
+}
+.btn {
+    background-color: DodgerBlue;
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* Darker background on mouse-over */
+.btn:hover {
+    background-color: RoyalBlue;
+}
+
+body {
+    background-color: lightgray;
+  }
+
+.btn3 {
+    background-color: #1c4c96;
+  }
+
+  .container {
+    background-color: white;
+    max-width: 1400px;
+  }
+
+  .fila {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .cellEsq {
+    width: 100%;
+  }
+
+  h2 {
+    margin-left: 5%;
+  }
+
+
+  
+

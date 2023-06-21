@@ -1,0 +1,66 @@
+<body>
+<br>
+<h2>Criteria</h2>
+<br>
+
+<div class="container">
+    <div>
+        <h4>
+            <span><b>INCLUSION CRITERIA</b></span>
+            <div class="d-flex mt-3">
+                <a (click)="openCriteriaDialog(null,'inclusion')"><button class="btn"><i class="fa fa-plus-circle"></i> New Inclusion Criteria </button></a>
+            </div>
+        </h4>
+        <table class="table table-striped table-bordered">
+            <tr class="btn-info" style="background: #1c4c96">
+                <th class="col-3">Name</th>
+                <th>Description</th>
+                <th class="col-1">Edit</th>
+                <th class="col-1">Delete</th>
+            </tr>
+            <tr *ngIf="inclusionCriteria.length == 0">
+                <td colspan="5">No Records found of Criteria. Add some...!</td>
+            </tr>
+            <tr *ngFor="let criteria of inclusionCriteria">
+                <td>{{criteria.name}}</td>
+                <td>{{criteria.text}}</td>
+                <td><button type="button" class="btn btn-primary eBtn" style="font-size:12px" data-toggle="modal" (click)="openCriteriaDialog(criteria,'')"><i class="fa fa-edit"></i>
+                </button></td>
+                <td><button type="button" class="btn btn-danger eBtn" style="font-size:12px" data-toggle="modal" (click)="requestDeleteCriteria(criteria)"><i class="fa fa-trash"></i>
+                </button></td>
+            </tr>
+        </table>
+        <br>
+        <h4>
+            <span><b>EXCLUSION CRITERIA</b></span>
+            <div class="d-flex mt-3">
+                <a (click)="openCriteriaDialog(null,'exclusion')"><button class="btn"><i class="fa fa-plus-circle"></i> New Exclusion Criteria </button></a>
+            </div>
+        </h4>
+        <table class="table table-striped table-bordered">
+            <tr class="btn-info" style="background: #1c4c96 ">
+                <th class="col-3">Name</th>
+                <th>Description</th>
+                <th class="col-1">Edit</th>
+                <th class="col-1">Delete</th>
+            </tr>
+            <tr *ngIf="exclusionCriteria.length == 0">
+                <td colspan="5">No Records found of Criteria. Add some...!</td>
+            </tr>
+            <tr *ngFor="let criteria of exclusionCriteria">
+                <td>{{criteria.name}}</td>
+                <td>{{criteria.text}}</td>
+                <td><button type="button" class="btn btn-primary eBtn" style="font-size:12px" (click)="openCriteriaDialog(criteria,'')"><i class="fa fa-edit"></i>
+                </button></td>
+                <td><button *ngIf="criteria.id !== idDuplicateCriteria" type="button" class="btn btn-danger eBtn" style="font-size:12px" data-toggle="modal" (click)="requestDeleteCriteria(criteria)"><i class="fa fa-trash"></i>
+                </button></td>
+            </tr>
+        </table>
+    </div>
+    {{errors}}
+    <br> 
+</div>
+<br>
+</body>
+      
+        

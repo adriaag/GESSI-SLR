@@ -10,9 +10,10 @@ public class digitalLibrary {
         return rs;
     }
 
+    //obviem maunallyImported
     public static ArrayList<String> getNames(Statement s) throws SQLException {
         ArrayList<String> ret = new ArrayList<String>();
-        ResultSet rs = s.executeQuery("SELECT name FROM digitalLibraries ORDER BY idDL asc ");
+        ResultSet rs = s.executeQuery("SELECT name FROM digitalLibraries WHERE idDl > 0 ORDER BY idDL asc ");
         while(rs.next()) {
             ret.add(rs.getString("name"));
         }
@@ -82,6 +83,12 @@ public class digitalLibrary {
         psInsert.setString(2, "SpringerLink");
         psInsert.setString(3, "https://link.springer.com/");
         psInsert.setString(4, "6");
+        psInsert.executeUpdate();
+        
+        psInsert.setString(1, "-1");
+        psInsert.setString(2, "Manually Imorted");
+        psInsert.setNull(3, java.sql.Types.VARCHAR);
+        psInsert.setString(4, "9999");
         psInsert.executeUpdate();
     }
 

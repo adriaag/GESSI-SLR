@@ -1,0 +1,21 @@
+.mar {
+    padding: 50px 50px 100px;
+}
+
+.dialog-title {
+    display: flex;
+    justify-content: space-between;
+  }
+
+.boto {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+}
+
+.btn3 {
+    background-color: #1c4c96;
+  }

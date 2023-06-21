@@ -1,0 +1,48 @@
+<head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<div class="m-3">
+    <div mat-dialog-title class="dialog-title">
+        <h2 *ngIf="criteria.id === -1">New {{criteria.type}} Criteria</h2>
+        <h2 *ngIf="criteria.id !== -1">Edit Criteria</h2>
+        <button class="boto" mat-icon-button aria-label="close dialog" [mat-dialog-close]="">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+    <mat-dialog-content>
+        <form ngNativeValidate #form id="newCriteriaForm">
+            <div hidden class="form-group">
+                <label for="project">Id</label>
+                <input type="number" id="project" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="idICEC">Criteria name</label>
+                <input id="idICEC" [formControl]="name" placeholder="Enter identifier ICEC" required type="text" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="text">Description</label>
+                <textarea rows="4" cols="50" id="text" placeholder="Enter description" required
+                            type="text" [formControl]="desc" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="type">Type</label>
+                <select id="type" required [formControl]="type" class="form-control">
+                    <option value="" hidden="true">Select a type</option>
+                    <option value="inclusion" [disabled]="inclusionDisabled">Inclusion</option>
+                    <option value="exclusion" [disabled]="!inclusionDisabled">Exclusion</option>
+                </select>
+            </div>
+            <div class="footer">
+                <button type="reset" class="btn btn-secondary pull-left">Clear</button>
+                <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right btn3" (click)="form.checkValidity()? close() : null">
+                    <div *ngIf="criteria.id === -1">Create criteria</div>
+                    <div *ngIf="criteria.id !== -1">Edit criteria</div>
+                </button>
+            </div>
+        </form>
+        <br>
+        <br>
+        <!--<div> <p style="color:#ff0000">{{errors}}</p> </div>-->
+    </mat-dialog-content>
+</div>

@@ -1,0 +1,116 @@
+table {
+    width: 100%;
+  }
+  
+  .mat-form-field {
+    font-size: 14px;
+    width: 20%;
+  }
+  
+  .th-center{
+    text-align: center;
+  }
+  .th-left{
+    text-align: left;
+  }
+  .th-right{
+    text-align: right;
+  }
+
+  mat-paginator {
+    display: block;
+  }
+  
+  .mat-paginator-container {
+    display: flex;
+    align-items: center;
+  }
+
+  h1 {
+    display: flex;
+    justify-content: right;
+  }
+
+  .mdc-tooltip__surface{
+    max-width:1500px !important;
+    max-height: 500px !important;
+    font-size: 11pt !important;
+
+
+}
+
+.doubleCell{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.boto {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+
+}
+
+.icVerd {
+  color: green
+}
+
+.icNeg {
+  color: black
+}
+
+body {
+  background-color: lightgray;
+}
+
+.mat-mdc-paginator-outer-container {
+  background-color: lightgray;
+}
+
+.mat-sort-header-content{
+  color: white;
+  font-weight: bold;
+}
+
+td, th {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+::ng-deep .mdc-notched-outline > * {
+  border-color: var(--icecBorderColor) !important;
+
+}
+
+::ng-deep .mdc-text-field--disabled .mdc-notched-outline > * {
+  border: none !important;
+}
+
+.mat-mdc-standard-chip {
+  --mdc-chip-elevated-disabled-container-color: transparent;
+  --mdc-chip-with-icon-disabled-icon-color: transparent;
+  --mdc-chip-with-trailing-icon-disabled-trailing-icon-color: transparent;
+
+}
+
+::ng-deep .mdc-text-field--disabled .mdc-floating-label {
+  color: transparent;
+}
+
+
+::ng-deep .mat-mdc-standard-chip.mdc-evolution-chip--disabled {
+  opacity: 1 !important;
+}
+
+.critSel {
+  --icecBorderColor: black;
+}
+
+h2 {
+  margin-left: 5%;
+}
+

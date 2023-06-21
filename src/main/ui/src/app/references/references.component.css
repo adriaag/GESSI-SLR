@@ -1,0 +1,74 @@
+.btn2 {
+  background-color: #1c4c96;
+  border: none;
+  color: white;
+  padding: 12px 30px;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.btn3 {
+  background-color: #1c4c96;
+}
+
+/* Darker background on mouse-over */
+.btn2:hover {
+    background-color: rgb(65, 105, 225);
+}
+
+table {
+    width: 100%;
+  }
+  
+  .mat-form-field {
+    font-size: 14px;
+    width: 20%;
+  }
+  
+  .th-center{
+    text-align: center;
+  }
+  .th-left{
+    text-align: left;
+  }
+  .th-right{
+    text-align: right;
+  }
+
+  mat-paginator {
+    display: block;
+  }
+  
+  .mat-paginator-container {
+    display: flex;
+    align-items: center;
+  }
+
+  h1 {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .mdc-tooltip__surface{
+    max-width:1500px !important;
+    max-height: 500px !important;
+    font-size: 11pt !important;
+  }
+
+  body {
+    background-color: lightgray;
+  }
+  
+  .mat-sort-header-content{
+    color: white;
+    font-weight: bold;
+  }
+
+  .mat-sort-header-arrow {
+    color: white;
+  }
+
+  h2 {
+    margin-left: 5%;
+  }
+

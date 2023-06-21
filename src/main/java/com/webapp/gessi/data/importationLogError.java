@@ -7,12 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class importationLogError {
+	
+	private static final int doiMaxLength = 100;
+	private static final int bibtexMaxLength = 10000;
+	
     public static boolean createTable(Statement s) {
         try {
             s.execute("create TABLE ImportationLogError(" +
                     "idLogErr INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), time timestamp, " +
-                    "doi VARCHAR(100), idDL int, BibTex VARCHAR(10000),  PRIMARY KEY (idLogErr)," +
-                    "CONSTRAINT DL_FK_I FOREIGN KEY (idDL) REFERENCES DIGITALLIBRARIES(idDL) ON DELETE CASCADE)");
+                    "doi VARCHAR(100), idDL int NOT NULL, idProject int NOT NULL, BibTex VARCHAR(10000),  PRIMARY KEY (idLogErr)," +
+                    "CONSTRAINT DL_FK_I FOREIGN KEY (idDL) REFERENCES DIGITALLIBRARIES(idDL) ON DELETE CASCADE," +
+                    "CONSTRAINT PR_FK_I FOREIGN KEY (idProject) REFERENCES PROJECT(id) ON DELETE CASCADE)");
             System.out.println("Created table importationLogError");
             return true;
 
@@ -35,54 +40,78 @@ public class importationLogError {
     public static boolean ifExistsDOI(Statement s, String key) throws SQLException {
         //ejemplo key = 8984351
         System.out.println("DOI exists in articles");
-        ResultSet rs = s.executeQuery("SELECT * FROM referencias r INNER JOIN articles a on r.DOI = a.DOI AND a.CITEKEY ='" + key + "'");
+        String query = "SELECT * FROM referencias r INNER JOIN articles a on r.DOI = a.DOI AND a.CITEKEY = ? ";
+        Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1, key);
+        preparedStatement.execute();
+        ResultSet rs = preparedStatement.getResultSet();
         return rs.next();
     }
 
-    public static void insertRow(Statement s, String doi, String data, String idDL, Timestamp timesql) {
-        try {
+    public static void insertRow(Statement s, String doi, String data, String idDL, int idProject, Timestamp timesql) throws SQLException {
+
             PreparedStatement prepStatement = s.getConnection().
-                    prepareStatement("INSERT INTO ImportationLogError(time, doi, idDL, BibTex) VALUES (?,?,?,?)");
+                    prepareStatement("INSERT INTO ImportationLogError(time, doi, idDL, idProject, BibTex) VALUES (?,?,?,?,?)");
             prepStatement.setTimestamp(1, timesql);
-            prepStatement.setString(2, doi);
+            prepStatement.setString(2, truncate(doi, doiMaxLength));
             prepStatement.setInt(3, Integer.parseInt(idDL));
-            prepStatement.setString(4, data);
+            prepStatement.setInt(4, idProject);
+            prepStatement.setString(5, truncate(data, bibtexMaxLength));
 
             int numberOfRowsInserted = prepStatement.executeUpdate();
             System.out.println("numberOfRowsInserted=" + numberOfRowsInserted);
 
             prepStatement.close(); // close PreparedStatement
             System.out.println("Inserted row in importation log error");
-        } catch (SQLException e) {
-            while (e != null) {
-                System.err.println("\n----- SQLException -----");
-                System.err.println("  SQL State:  " + e.getSQLState());
-                System.err.println("  Error Code: " + e.getErrorCode());
-                System.err.println("  Message:    " + e.getMessage());
-                e = e.getNextException();
-            }
-        }
     }
 
     public static List<importErrorDTO> getErrors(Statement s, Timestamp timesql) throws SQLException {
         ResultSet rs;
-        rs = s.executeQuery("SELECT time, idDL,doi,BibTex FROM IMPORTATIONLOGERROR WHERE time=TIMESTAMP('"+ timesql.toString()+"')");
+        String query = "SELECT time, idDL,doi,BibTex, idProject FROM IMPORTATIONLOGERROR WHERE time=?";
+        Connection conn = s.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setTimestamp(1, timesql);
+        preparedStatement.execute();
+        rs = preparedStatement.getResultSet();
         ArrayList<importErrorDTO> ret = new ArrayList<importErrorDTO>();
         while (rs.next()) {
-            ret.add(new importErrorDTO(rs.getTimestamp(1),rs.getInt(2),rs.getString(3),rs.getString(4)));
+            ret.add(new importErrorDTO(rs.getTimestamp(1),rs.getInt(2),rs.getString(3),rs.getString(4),rs.getInt(5)));
         }
         return ret;
     }
 
     public static List<importErrorDTO> getAllErrors(Statement s) throws SQLException {
         ResultSet rs;
-        rs = s.executeQuery("SELECT time, idDL,doi,BibTex FROM IMPORTATIONLOGERROR");
+        rs = s.executeQuery("SELECT time, idDL,doi,BibTex, idProject FROM IMPORTATIONLOGERROR");
         ArrayList<importErrorDTO> ret = new ArrayList<importErrorDTO>();
         while (rs.next()) {
-            ret.add(new importErrorDTO(rs.getTimestamp(1),rs.getInt(2),rs.getString(3),rs.getString(4)));
+            ret.add(new importErrorDTO(rs.getTimestamp(1),rs.getInt(2),rs.getString(3),rs.getString(4),rs.getInt(5)));
         }
         return ret;
     }
+    
+    public static List<importErrorDTO> getErrorsFromProject(Statement s, int idProject) throws SQLException {
+        ResultSet rs;
+        String query = "SELECT time, idDL,doi,BibTex, idProject FROM IMPORTATIONLOGERROR WHERE idProject = ?";
+        PreparedStatement prepStatement = s.getConnection().prepareStatement(query);
+        prepStatement.setInt(1, idProject);
+        rs = prepStatement.executeQuery();
+        ArrayList<importErrorDTO> ret = new ArrayList<importErrorDTO>();
+        while (rs.next()) {
+            ret.add(new importErrorDTO(rs.getTimestamp(1),rs.getInt(2),rs.getString(3),rs.getString(4),rs.getInt(5)));
+        }
+        prepStatement.close();
+        return ret;
+    }
+    
+    private static String truncate(String text, int maxValue) {
+    	if (text.length() > maxValue) {
+        	text = text.substring(0, maxValue - 1);	
+        }
+    	return text;
+    }
+
 
     /*
     INSERT INTO IMPORTATIONLOGERROR (IDLOGERR ,TIME) VALUES (100,TIMESTAMP('1960-01-01 23:03:20'));

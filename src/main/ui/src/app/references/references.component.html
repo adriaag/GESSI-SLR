@@ -1,0 +1,116 @@
+<html>
+<body>
+<br>
+<h2>All references</h2>
+<br>
+<div class="m-3" >
+    <h1>
+        <div class="d-flex mt-3">
+            <a (click)="downloadExcel()" target="_blank"><button class="btn2"><i class="fa fa-download"></i> Download references (.xls)</button></a>
+        </div>
+
+        <mat-form-field >
+            <mat-label>Filter References</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Search" [value]="this.filterValue" #input>
+        </mat-form-field>
+
+    </h1>
+    <table mat-table [dataSource]="dataSource" matSort [matSortActive]="this.sortColumn" [matSortDirection]="this.sortDirection" (matSortChange)="sortChange($event)" class="table table-striped" id="dataTable">
+            
+        <ng-container matColumnDef="doi">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>DOI</th>
+                <td mat-cell *matCellDef="let row"> {{row.art.doi}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="ref">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>#ref</th>
+            <td mat-cell *matCellDef="let row">{{row.idProjRef}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="dl">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>DL</th>
+            <td mat-cell *matCellDef="let row">
+                <div *ngIf="row.dl !== null">{{row.dl.name}}</div>
+                <div *ngIf="row.dl === null">-</div>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="year">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Year</th>
+            <td mat-cell *matCellDef="let row">{{row.art.any}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="auth">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Authors</th>
+            <td mat-cell *matCellDef="let row">
+                <span *ngFor="let researcher of row.art.researchers let i = 'index'; let last = 'last'">
+                    <span *ngIf="i < 1">{{researcher.name}};<br></span>
+                    <span *ngIf="i == 1">{{researcher.name}}</span>
+                    <span *ngIf="i == 1 && !last">...</span>
+                </span>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="tit">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+            <td mat-cell *matCellDef="let row">
+                <div *ngIf="row.art.title !== null && row.art.title.length >= 65">{{row.art.title.substring(0,65)}}...</div> 
+                <div *ngIf="row.art.title !== null && row.art.title.length < 65">{{row.art.title}}</div>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="ven">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Venue</th>
+            <td mat-cell *matCellDef="let row">
+                <div *ngIf="row.art.ven != null">
+                    <div *ngIf="row.art.ven.name.length >=45">{{row.art.ven.name.substring(0,45)}}...</div>
+                    <div *ngIf="row.art.ven.name.length < 45">{{row.art.ven.name}}</div>
+                </div>
+                <div *ngIf="row.art.ven == null"> <p></p></div>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="inf">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Info</th>
+            <td mat-cell *matCellDef="let row">
+                <button class="btn btn-primary btn3" (click)="viewReference(row)"
+                            style="font-size:12px" ><i class="fa fa-info-circle" aria-hidden="true"></i>
+                </button>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="del">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Delete</th>
+            <td mat-cell *matCellDef="let row">
+                <button id="modalButton" type="button" class="btn btn-danger eBtn" style="font-size:12px" (click)="requestDeleteReference(row)"><i class="fa fa-trash"></i>
+                </button>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="abs">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Abstract</th>
+            <td matTooltip={{row.art.abstractA}} *matCellDef="let row">
+                <div *ngIf="row.art.abstractA !== null">
+                    <div *ngIf="row.art.abstractA.length >= 100">{{row.art.abstractA.substring(0,50)}}...</div>
+                    <div *ngIf="row.art.abstractA.length < 100">{{row.art.abstractA}}</div>
+                </div>
+                <div *ngIf="row.art.abstractA === null"> <p></p></div>
+            </td>
+        </ng-container>
+
+
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns" [style]="'background: #1c4c96'"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [style]="'background-color: #ffffff'"></tr>
+    
+        <tr class="mat-row" *matNoDataRow [style]="'background: ffffff'">
+            <td *ngIf="referenceslist.length > 0" class="mat-cell" colspan="4" [style]="'background-color: #ffffff'">No data matching the filter "{{input.value}}" </td>
+            <td *ngIf="referenceslist.length <= 0" class="mat-cell" colspan="4" [style]="'background-color: #ffffff'">No data available in table</td>
+        </tr>
+        
+    </table>
+    <mat-paginator [pageSizeOptions]="[5000, 500, 100, 50]" showFirstLastButtons aria-label="Select page of references"></mat-paginator>
+
+</div>
+</body>
+</html>

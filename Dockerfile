@@ -1,11 +1,11 @@
 FROM maven:3.8 as maven
-LABEL MAINTAINER="marc.almirall@estudiantat.upc.edu"
+LABEL MAINTAINER="adria.aumatell@estudiantat.upc.edu"
 LABEL APPLICATION="Sample Application"
 
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 
-RUN mvn package
+RUN mvn package -P prod
 
 FROM tomcat:9.0
 

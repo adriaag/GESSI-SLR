@@ -1,0 +1,136 @@
+<head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<br>
+<h2>Project</h2>
+<br>
+<p *ngIf="operationMsg3.length > 0" class="alert alert-primary" role="alert">{{operationMsg3}}</p>
+
+<div class="container">
+    <br>
+    <div class="fila">
+        <div class="noPad"> {{this.selectedProject.name}} </div>
+        <button id="modalButton" type="button" class="btn btn-danger eBtn" style="font-size:12px;" (click)="deleteProjectConfirm()"><i class="fa fa-trash"></i>
+        </button> 
+    </div>
+    <form ngNativeValidate #form id="newCriteriaForm">
+        <div class="form-group">
+            <label for="project">Name</label>
+            <input type="text" id="name" required [formControl]="name" [maxlength]="nameMaxLength" class="form-control">
+            <mat-hint>{{name.value.length}}/{{nameMaxLength}}</mat-hint>
+        </div>
+        <div class="form-group">
+            <label for="project">Topic</label>
+            <input type="text" id="topic" [formControl]="topic" [maxlength]="topicMaxLength" class="form-control">
+            <mat-hint>{{getLength(topic)}}/{{topicMaxLength}}</mat-hint>
+        </div>
+        <div class="form-group">
+            <label for="project">Research Questions</label>
+            <textarea type="text" id="topic" [formControl]="researchQuestion" [maxlength]="researchQuestionMaxLength" class="form-control"></textarea>
+            <mat-hint>{{getLength(researchQuestion)}}/{{researchQuestionMaxLength}}</mat-hint>
+        </div>
+        <div class="form-group">
+            <label for="project">Protocol</label>
+            <textarea type="text" id="topic" [formControl]="protocol" [maxlength]="protocolMaxLength" class="form-control"></textarea>
+            <mat-hint>{{getLength(protocol)}}/{{protocolMaxLength}}</mat-hint>
+            <label class="fileContainer">
+                <mat-icon>upload</mat-icon>                
+                <input id="file" type="file" name="file" (change)="handleFileInput($event)" class="form-control" placeholder="Upload image" accept="image/*">
+            </label>
+            
+            <img *ngIf="(protocolImg !== undefined && protocolImg.size > 0) || (protocolImgUpd !== undefined && protocolImgUpd.size > 0)" [src]="imageToShow" />
+        </div>
+        <br>
+        <div class="form-group">
+            <h3>Users</h3>
+            <div *ngFor="let usernameCtrl of involvedUsersUsername.controls; let i = index" class="fila">
+                <div class="username">
+                    <label for="project">Username</label>
+                    <input placeholder="Select Username..." [matAutocomplete]="auto"  (focusin)="resetFilter(i)" (focusout)="removeCtrlValue(i,0)"
+                    [formControl]="$any(usernameCtrl)" class="userInputField">
+                    <mat-autocomplete #auto="matAutocomplete"  (optionSelected)="changeUser(i)" (closed)="removeCtrlValue(i,1)">
+                        <mat-option *ngFor="let username of filteredUsernames | async" [value]="username">
+                            {{username}}
+                        </mat-option>
+                    </mat-autocomplete>
+                </div>
+                <div class="info">
+                    <label for="project">Info</label>
+                    <input type="text" id="userinfo" [formControl]="$any(involvedUsersInfo.at(i))" [maxlength]="infoMaxLength" class="form-control">
+                    <mat-hint>{{getLength(involvedUsersInfo.at(i))}}/{{infoMaxLength}}</mat-hint>
+                </div>
+                <div class="paperera">
+                    <button id="modalButton" type="button" class="btn btn-danger eBtn" style="font-size:12px;" (click)="deleteUser(i)"><i class="fa fa-trash"></i>
+                    </button>
+                </div>                              
+            </div> 
+            <div class="center">
+                <button *ngIf="involvedUsersUsername.length < usernames.length" mat-icon-button class="boto" (click)="addUser()">
+                    <mat-icon>add_circle</mat-icon>
+                </button>       
+            </div>
+
+        </div>
+        <br>
+        <div class="form-group">
+            <h3>Digital Libraries</h3>
+            <div *ngFor="let idCtrl of this.dlId.controls; let i = index" class="fila">
+                <div class="username">
+                    <label for="project">Digital Library</label>
+                    <select id="type" required [formControl]="$any(idCtrl)" class="form-control">
+                        <option *ngFor="let option of digitalLibraries; let dlInd = index" [value]="dlInd+1" [disabled]="dlSelected(dlInd+1)">{{option}}</option>
+                    </select>
+                </div>
+                <div class="searchString">
+                    <label for="project">Search String</label>
+                    <textarea type="text" id="searchstring" [formControl]="$any(dlSearchString.at(i))" [maxlength]="searchStringMaxLength" class="form-control"></textarea>
+                    <mat-hint>{{getLength(dlSearchString.at(i))}}/{{searchStringMaxLength}}</mat-hint>
+                </div>
+                <div class="username">
+                    <label for="project">Number of Results</label>
+                    <input type="number" id="topic" [formControl]="$any(dlNumResults.at(i))" class="form-control">   
+                </div>
+                <div class="paperera">
+                    <button id="modalButton" type="button" class="btn btn-danger eBtn" style="font-size:12px" (click)="deleteDL(i)"><i class="fa fa-trash"></i>
+                    </button>
+                </div>               
+            </div>
+            <div class="center">
+                <button *ngIf="dlId.length < digitalLibraries.length" mat-icon-button class="boto" (click)="addDL()">
+                    <mat-icon>add_circle</mat-icon>
+                </button>     
+            </div>
+        </div>
+        <br>
+
+        <div class="form-group">
+            <label for="project">Comments</label>
+            <textarea type="text" id="topic" [formControl]="comments" [maxlength]="commentsMaxLength" class="form-control"></textarea>
+            <mat-hint>{{getLength(comments)}}/{{commentsMaxLength}}</mat-hint>
+        </div>
+        <p *ngIf="operationMsg.length > 0" class="alert alert-primary" role="alert">{{operationMsg}}</p>
+        <mat-spinner *ngIf="this.loading"></mat-spinner>
+        <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right btn3" (click)="form.checkValidity()? updateProject() : null">Update project data</button>
+        
+    </form> 
+    <br><br>
+</div>
+
+<br>
+<div class="container">
+    <br>
+    <app-errors [errors]="errors"></app-errors>
+    <br><br>
+</div>
+
+<br>
+<div class="container">
+    <br>
+    <div class="noPad"> Recreate Database</div>
+    <span>Note that if you press the reset button all the content of the database will be completely removed. </span>
+    <button class="btn btn-primary eBtn btn3" type="button" style="font-size:14px" (click)="deleteDBConfirm()">
+        <i class="fa fa-refresh">Reset</i>
+    </button>
+    <br><br>
+</div>
+<br>

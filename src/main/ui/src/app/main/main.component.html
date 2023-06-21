@@ -1,0 +1,66 @@
+<header fragment="header">
+    <nav class="navbar navbar-expand-lg py-3 navbar-dark shadow-sm navbar-fixed-top" style="background-color: #153053;">
+        <div class="container-fluid"><!--style="background-color: #356ac3;"-->
+            <!-- GESSi logo -->
+  
+            <a id="logo" href="#" class="navbar-brand">
+                <!-- Logo Image -->
+                <img src="assets/favicon.ico" class="rounded-circle z-depth-0" alt="" height="35">
+                
+                <!-- Logo Text -->
+                <span class="text-uppercase font-weight-bold"> GESSI-SLR</span>
+            </a>
+            <div style="width: 50%">
+                <ul class="nav nav-tabs justify-content-center">
+                    <li  class="nav-item">
+                        <a *ngIf="this.selectedOption === 'index'" class="nav-link active">Home</a>
+                        <a *ngIf="this.selectedOption !== 'index'" class="nav-link" (click)="changeOption('index')">Home</a>
+  
+                    </li>
+                    <li class="nav-item">
+                      <a *ngIf="this.selectedOption === 'import'" class="nav-link active">Import</a>
+                      <a *ngIf="this.selectedOption !== 'import'" class="nav-link" (click)="changeOption('import')">Import</a>
+                    </li>
+                    <li  class="nav-item">
+                      <a *ngIf="this.selectedOption === 'criteria'" class="nav-link active">IC/EC</a>
+                      <a *ngIf="this.selectedOption !== 'criteria'" class="nav-link" (click)="changeOption('criteria')">IC/EC</a>
+                    </li>
+                    <li class="nav-item">
+                        <a *ngIf="this.selectedOption === 'references'" class="nav-link active">Search Result</a>
+                        <a *ngIf="this.selectedOption !== 'references'" class="nav-link" (click)="changeOption('references')">Search Result</a>
+                    </li>
+                    <li class="nav-item">
+                      <a *ngIf="this.selectedOption === 'screening'" class="nav-link active">Screening</a>
+                      <a *ngIf="this.selectedOption !== 'screening'" class="nav-link" (click)="changeOption('screening')">Screening</a>
+                  </li>
+                    <li  class="nav-item">
+                      <a *ngIf="this.selectedOption === 'reset'" class="nav-link active">Project</a>
+                      <a *ngIf="this.selectedOption !== 'reset'" class="nav-link" (click)="changeOption('reset')">Project</a>
+                    </li>
+                </ul>
+  
+            </div>
+            <div class="d-flex justify-content-between" style="width: 20%">
+              <label style="display: flex;" for="idProject"></label>
+              <mat-select required id="idProject" (selectionChange)="changeProject()" [formControl]="selectedProject" class="form-control" [compareWith]="compareProjectObjects">
+                  <mat-option *ngFor="let project of projects" [value]="project">{{project.name}}</mat-option>
+                    
+              </mat-select>
+              <button type="button" class="btn btn-primary eBtn" (click)="createProjectDialog()">
+                  <i class="fa fa-plus"></i>
+              </button>
+            </div>
+        </div>
+    </nav>
+  </header>
+  <div *ngIf="dataLoaded || dlNames.length < 0">
+    <div [ngSwitch]="selectedOption">
+      <app-index *ngSwitchCase="'index'"></app-index>
+      <app-reference-import *ngSwitchCase="'import'" [dlNames]="dlNames" [idProject]="selectedProject.value.id" (newReferencesImported)="newReferences()"> </app-reference-import>
+      <app-criteria *ngSwitchCase="'criteria'" [inclusionCriteria]="IC" [exclusionCriteria]="EC" [idDuplicateCriteria]="selectedProject.value.idDuplicateCriteria" [idProject]="selectedProject.value.id" (criteriaUpdated)="getProjectCriteria()"></app-criteria>
+      <app-project-delete *ngSwitchCase="'reset'" [project]="this.selectedProject.value" [usernames]="usernames" [digitalLibraries]="this.dlNames" [errors]="errors" [trigger]="triggerProject" (projectUpdated)="updateProject($event)" (projectDeleted)="projectDeleted()" ></app-project-delete>
+    </div>
+  </div>
+  <app-references [hidden]="selectedOption !== 'references' || !dataLoaded" [references]="references" [idProject]="getIdProject()" [exclusionCriteria]="EC" [orderCol]="getOrderColSearch()" [orderDir]="getOrderDirSearch()" (referenceDeleted)="deleteReference($event)" (orderChanged)="updateOrderSearch($event)"></app-references>
+  <app-screening [hidden]="selectedOption !== 'screening' || !dataLoaded" [references]="references" [usernames] = "usernames" [idProject]="getIdProject()" [exclusionCriteria]="this.EC" [inclusionCriteria]="this.IC" [orderCol]="getOrderColScreen()" [orderDir]="getOrderDirScreen()" [trigger]="trigger" (orderChanged)="updateOrderScreen($event)"></app-screening>
+  <mat-spinner *ngIf="!dataLoaded && dlNames.length > 0"></mat-spinner>

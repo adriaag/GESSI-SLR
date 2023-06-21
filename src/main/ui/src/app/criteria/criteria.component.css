@@ -1,0 +1,16 @@
+h4 {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-size: 1rem;
+  }
+
+  body {
+    background-color: lightgray;
+}
+h2 {
+  margin-left: 5%;
+}
+.container {
+  background-color: white;
+}

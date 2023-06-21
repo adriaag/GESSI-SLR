@@ -1,0 +1,9 @@
+spring.datasource.url = jdbc:derby://localhost:1033/GESSISLR
+spring.datasource.username = #Usuari de la Base de Dades
+spring.datasource.password = #Contrasenya usuari Base de Dades
+security.tokenSecret = #Secret del token d'autenticació
+spring.mail.username = #Correu forgot password (en el cas de Google,
+					   #ha de tenir l'autenticació en dos passos acitvat)
+spring.mail.password = #Constrasenya correu forgot password (en el cas de Google,
+					   #no és la contranenya del compte, sinó que és una app password)
+webapp.frontUrl = http://localhost:4200/
