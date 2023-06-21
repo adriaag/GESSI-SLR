@@ -41,7 +41,7 @@ table {
 
 .doubleCell{
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
 }
 
@@ -52,6 +52,7 @@ table {
   cursor: pointer;
   overflow: hidden;
   outline: none;
+
 }
 
 .icVerd {
@@ -74,3 +75,42 @@ body {
   color: white;
   font-weight: bold;
 }
+
+td, th {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+::ng-deep .mdc-notched-outline > * {
+  border-color: var(--icecBorderColor) !important;
+
+}
+
+::ng-deep .mdc-text-field--disabled .mdc-notched-outline > * {
+  border: none !important;
+}
+
+.mat-mdc-standard-chip {
+  --mdc-chip-elevated-disabled-container-color: transparent;
+  --mdc-chip-with-icon-disabled-icon-color: transparent;
+  --mdc-chip-with-trailing-icon-disabled-trailing-icon-color: transparent;
+
+}
+
+::ng-deep .mdc-text-field--disabled .mdc-floating-label {
+  color: transparent;
+}
+
+
+::ng-deep .mat-mdc-standard-chip.mdc-evolution-chip--disabled {
+  opacity: 1 !important;
+}
+
+.critSel {
+  --icecBorderColor: black;
+}
+
+h2 {
+  margin-left: 5%;
+}
+

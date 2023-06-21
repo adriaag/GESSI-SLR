@@ -6,5 +6,11 @@ h4 {
   }
 
   body {
-    background-color: white;
+    background-color: lightgray;
+}
+h2 {
+  margin-left: 5%;
+}
+.container {
+  background-color: white;
 }

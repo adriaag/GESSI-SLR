@@ -91,3 +91,13 @@
   .btn3 {
     background-color: #1c4c96;
   }
+
+  .noPad {
+    margin-bottom: .5rem;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.2;
+    color: inherit;
+    font-size: 2rem;
+  }
+

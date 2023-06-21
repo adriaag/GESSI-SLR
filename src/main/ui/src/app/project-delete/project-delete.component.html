@@ -1,14 +1,15 @@
 <head>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
-
+<br>
+<h2>Project</h2>
+<br>
 <p *ngIf="operationMsg3.length > 0" class="alert alert-primary" role="alert">{{operationMsg3}}</p>
 
-<br>
 <div class="container">
     <br>
     <div class="fila">
-        <h2> {{this.selectedProject.name}} </h2>
+        <div class="noPad"> {{this.selectedProject.name}} </div>
         <button id="modalButton" type="button" class="btn btn-danger eBtn" style="font-size:12px;" (click)="deleteProjectConfirm()"><i class="fa fa-trash"></i>
         </button> 
     </div>
@@ -112,24 +113,24 @@
         <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right btn3" (click)="form.checkValidity()? updateProject() : null">Update project data</button>
         
     </form> 
-    <br><br><br> 
+    <br><br>
 </div>
 
-<br><br>
+<br>
 <div class="container">
     <br>
-    <h2>Errors</h2>
     <app-errors [errors]="errors"></app-errors>
     <br><br>
 </div>
 
-<br><br>
+<br>
 <div class="container">
     <br>
-    <h2> Recreate Database</h2>
+    <div class="noPad"> Recreate Database</div>
     <span>Note that if you press the reset button all the content of the database will be completely removed. </span>
     <button class="btn btn-primary eBtn btn3" type="button" style="font-size:14px" (click)="deleteDBConfirm()">
         <i class="fa fa-refresh">Reset</i>
     </button>
     <br><br>
 </div>
+<br>

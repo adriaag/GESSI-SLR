@@ -23,9 +23,31 @@
 }
 
 body {
-    background-color: white;
-}
+    background-color: lightgray;
+  }
 
 .btn3 {
     background-color: #1c4c96;
   }
+
+  .container {
+    background-color: white;
+    max-width: 1400px;
+  }
+
+  .fila {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .cellEsq {
+    width: 100%;
+  }
+
+  h2 {
+    margin-left: 5%;
+  }
+
+
+  
+

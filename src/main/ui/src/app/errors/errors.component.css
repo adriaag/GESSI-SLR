@@ -2,3 +2,12 @@ h1 {
     display: flex;
     justify-content: right;
   }
+
+  .noPad {
+    margin-bottom: .5rem;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.2;
+    color: inherit;
+    font-size: 2rem;
+  }

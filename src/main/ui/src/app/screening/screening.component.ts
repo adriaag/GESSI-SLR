@@ -1,9 +1,9 @@
-import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormArray, FormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort, MatSortable, SortDirection } from '@angular/material/sort';
+import { MatSort, SortDirection } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { merge, Observable, of} from 'rxjs';
 import { DataService } from '../data.service';
@@ -15,7 +15,7 @@ import { UserDesignation } from '../dataModels/userDesignation';
 @Component({
   selector: 'app-screening',
   templateUrl: './screening.component.html',
-  styleUrls: ['./screening.component.css']
+  styleUrls: ['./screening.component.css'],
 })
 export class ScreeningComponent {
   @Input('references') referenceslist!: Reference[]

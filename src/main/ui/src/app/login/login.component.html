@@ -3,18 +3,18 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
-<div class="m-3">
     <div mat-dialog-title class="dialog-title">
         <h2>Log in</h2>
     </div>
+    <br>
     <mat-dialog-content>
         <form ngNativeValidate #form id="newReferenceForm">
-            <mat-form-field>
+            <mat-form-field appearance="outline">
                 <mat-label for="usr">Username</mat-label>
                 <input matInput placeholder="Username" [formControl]="username" required type="text">
             </mat-form-field>
             <br>
-            <mat-form-field>
+            <mat-form-field appearance="outline">
                 <mat-label>Password</mat-label>
                 <input matInput [formControl]="password" required [type]="hide ? 'password' : 'text'">
                 <button class="boto" mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
@@ -26,4 +26,3 @@
         <button type="submit" id="createCriteriaSubmit" class="btn btn-primary pull-right btn3" (click)="form.checkValidity()? close() : username.markAsTouched();password.markAsTouched()">Log in</button>
     </mat-dialog-content>
    
-</div>
