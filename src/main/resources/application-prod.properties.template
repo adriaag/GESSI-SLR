@@ -6,4 +6,4 @@ spring.mail.username = #Correu forgot password (en el cas de Google,
 					   #ha de tenir l'autenticació en dos passos acitvat)
 spring.mail.password = #Constrasenya correu forgot password (en el cas de Google,
 					   #no és la contranenya del compte, sinó que és una app password)
-webapp.frontUrl = http://localhost:1034/gessi-slr/
+webapp.frontUrl = http://gessi3.essi.upc.edu:1034/gessi-slr/ui/ #URL del frontend, canviar si cal
